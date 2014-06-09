@@ -1,0 +1,37 @@
+read
+ mol 1
+ file 'protein.pdb'
+ pdb 
+end
+set                    ! set
+    charge             ! the charges
+    radii              ! and the radii
+    param mine         ! using mine parameter set
+    file 'charmm.dat'   ! from the file amber.dat 
+end
+!print apar all end
+!print rpar all end
+!print mpar all end
+
+elec                   ! Now calculate the electrostatic potential
+    calc               ! first on a large but relatively coarse grid
+    dime 40 40 40      ! of 110**3 points
+    grid 2.5           ! using a grid spacing of 1.0 Angstroms
+    mol 1               ! for the ligand (molecule 1)
+    ions ions         ! Set the ionic strength to 145mM
+    maxits 500         ! Set the max. no. of iterations to 500
+    pdie pdie          ! Set the internal dielectric to 4
+    sdie sdie          ! Set the solvent dielectric to 78
+    nsph 100           ! Use 400 sphere points for surface calc.
+    rion 2.0           ! Set the ion-exclusion radius to 2.0A
+    nmap 1.4           ! use probe-accessible surface
+    bcfl 2             ! Set boundary potentials by treating each atom
+                       ! as a Debye-Huckel ion 
+    center         ! center the grid on molecule 1
+                                            ! center of molecule
+    conv 1E-2
+    solver 1
+    linear             ! Use the non-linear Poisson-Boltzmann equation
+end
+
+write binary grid phi file grid_x.grd end 

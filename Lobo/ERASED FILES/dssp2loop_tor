@@ -1,0 +1,98 @@
+#!/usr/bin/perl
+
+if (!defined(@ARGV)) {
+    die "you must specify an input file\n"; 
+}
+
+open(SELECTFILE,"<$ARGV[0]") or die "file not found\n";
+
+# first 28 rows contain no relevant data
+for ($i=0; $i<28;$i++) {
+    if (!defined($listitem = <SELECTFILE>)) {
+	die "invalid input file\n";
+    }
+}
+while (defined($listitem = <SELECTFILE>)) {
+
+    $state = lc(substr($listitem,16,1));
+    $name =  uc(substr($listitem,13,1));
+
+    if (($state eq ' ') || ($state eq 't') || ($state eq 's')
+	|| ($state eq 'g') || ($state eq 'i') || ($state eq 'b'))
+    {
+	$phi = substr($listitem,103,6);
+	$psi = substr($listitem,109,6);
+	
+
+	# translate 1-letter into 3-letter code
+	if ($name eq 'A') {
+	    $type = "ALA";
+	}
+	elsif ($name eq 'C') {
+	    $type = "CYS";
+	}
+	elsif ($name eq 'D') {
+	    $type = "ASP";
+	}
+	elsif ($name eq 'E') {
+	    $type = "GLU";
+	}
+	elsif ($name eq 'F') {
+	    $type = "PHE";
+	}
+	elsif ($name eq 'G') {
+	    $type = "GLY";
+	}
+	elsif ($name eq 'H') {
+	    $type = "HIS";
+	}
+	elsif ($name eq 'I') {
+	    $type = "ILE";
+	}
+	elsif ($name eq 'K') {
+	    $type = "LYS";
+	}
+	elsif ($name eq 'L') {
+	    $type = "LEU";
+	}
+	elsif ($name eq 'M') {
+	    $type = "MET";
+	}
+	elsif ($name eq 'N') {
+	    $type = "ASN";
+	}
+	elsif ($name eq 'P') {
+	    $type = "PRO";
+	}
+	elsif ($name eq 'Q') {
+	    $type = "GLN";
+	}
+	elsif ($name eq 'R') {
+	    $type = "ARG";
+	}
+	elsif ($name eq 'S') {
+	    $type = "SER";
+	}
+	elsif ($name eq 'T') {
+	    $type = "THR";
+	}
+	elsif ($name eq 'V') {
+	    $type = "VAL";
+	}
+	elsif ($name eq 'W') {
+	    $type = "TRP";
+	}
+	elsif ($name eq 'Y') {
+	    $type = "TYR";
+	}
+	else {
+	    $type = $name;
+	}
+
+	if (($phi != "360.0") && ($psi != "360.0"))
+	{
+	    print "         $phi  $psi  $type\n";
+	}
+    }
+    
+}

@@ -1,0 +1,257 @@
+lun mar 10 15:36:28 CET 2003
+Removing files from previous runs
+sasa.nrg not found
+phinrg_w_m_a.nrg not found
+mm.nrg not found
+rmsd.dat not found
+STO FACENDO LA PROTEINA: protein0.pdb
+                         :-)  G  R  O  M  A  C  S  (-:
+
+              GROningen Mixture of Alchemy and Childrens' Stories
+
+                            :-)  VERSION 3.1.4  (-:
+
+
+       Copyright (c) 1991-2002, University of Groningen, The Netherlands
+         This program is free software; you can redistribute it and/or
+          modify it under the terms of the GNU General Public License
+         as published by the Free Software Foundation; either version 2
+             of the License, or (at your option) any later version.
+
+                               :-)  pdb2gmx  (-:
+
+Option     Filename  Type          Description
+------------------------------------------------------------
+  -f    protein.pdb  Input         Generic structure: gro g96 pdb tpr tpb tpa
+  -o protein_gmx.pdb  Output        Generic structure: gro g96 pdb
+  -p    protein.top  Output        Topology file
+  -i      posre.itp  Output        Include file for topology
+  -n      clean.ndx  Output, Opt.  Index file
+  -q      clean.pdb  Output, Opt.  Generic structure: gro g96 pdb
+
+      Option   Type  Value  Description
+------------------------------------------------------
+      -[no]h   bool     no  Print help info and quit
+      -[no]X   bool     no  Use dialog box GUI to edit command line options
+       -nice    int      0  Set the nicelevel
+  -[no]merge   bool     no  Merge multiple chains into one molecule
+  -[no]inter   bool     no  Set the next 6 options to interactive
+     -[no]ss   bool     no  Interactive SS bridge selection
+    -[no]ter   bool     no  Interactive termini selection, iso charged
+    -[no]lys   bool     no  Interactive Lysine selection, iso charged
+    -[no]asp   bool     no  Interactive Aspartic Acid selection, iso charged
+    -[no]glu   bool     no  Interactive Glutamic Acid selection, iso charged
+    -[no]his   bool     no  Interactive Histidine selection, iso checking
+                            H-bonds
+      -angle   real    135  Minimum hydrogen-donor-acceptor angle for a H-bond
+                            (degrees)
+       -dist   real    0.3  Maximum donor-acceptor distance for a H-bond (nm)
+    -[no]una   bool     no  Select aromatic rings with united CH atoms on
+                            Phenylalanine, Tryptophane and Tyrosine
+    -[no]H14   bool     no  Use 1-4 interactions between hydrogen atoms
+   -[no]ignh   bool     no  Ignore hydrogen atoms that are in the pdb file
+-[no]missing   bool     no  Continue when atoms are missing, dangerous
+    -posrefc   real   1000  Force constant for position restraints
+      -dummy   enum   none  Convert atoms to dummy atoms: none, hydrogens or
+                            aromatics
+ -[no]heavyh   bool     no  Make hydrogen atoms heavy
+-[no]deuterate bool     no  Change the mass of hydrogens to 2 amu
+
+Opening library file /usr/local/gromacs/share/top/xlateat.dat
+13 out of 13 lines of xlateat.dat converted succesfully
+Opening library file /usr/local/gromacs/share/top/aminoacids.dat
+All occupancy fields zero. This is probably not an X-Ray structure
+Opening library file /usr/local/gromacs/share/top/FF.dat
+Opening library file /usr/local/gromacs/share/top/ffgmx2.atp
+Atomtype 1Atomtype 2Atomtype 3Atomtype 4Atomtype 5Atomtype 6Atomtype 7Atomtype 8Atomtype 9Atomtype 10Atomtype 11Atomtype 12Atomtype 13Atomtype 14Atomtype 15Atomtype 16Atomtype 17Atomtype 18Atomtype 19Atomtype 20Atomtype 21Atomtype 22Atomtype 23Atomtype 24Atomtype 25Atomtype 26Atomtype 27Atomtype 28Atomtype 29Atomtype 30Atomtype 31Atomtype 32Atomtype 33Atomtype 34Atomtype 35Atomtype 36Atomtype 37Atomtype 38Atomtype 39Atomtype 40Atomtype 41Atomtype 42Atomtype 43Atomtype 44Atomtype 45Atomtype 46Atomtype 47Atomtype 48Atomtype 49Atomtype 50Atomtype 51Atomtype 52Atomtype 53Atomtype 54Atomtype 55
+Opening library file /usr/local/gromacs/share/top/ffgmx2.rtp
+Using default value - not generating all possible dihedrals
+Using default value - excluding 3 bonded neighbors
+Residue 1Residue 2Residue 3Residue 4Residue 5Residue 6Residue 7Residue 8Residue 9Residue 10Residue 11Residue 12Residue 13Residue 14Residue 15Residue 16Residue 17Residue 18Residue 19Residue 20Residue 21Residue 22Residue 23Residue 24Residue 25Residue 26Residue 27Residue 28Residue 29Residue 30Residue 31Residue 32Residue 33Residue 34
+Sorting it all out...
+Opening library file /usr/local/gromacs/share/top/ffgmx2.hdb
+Opening library file /usr/local/gromacs/share/top/ffgmx2-n.tdb
+Opening library file /usr/local/gromacs/share/top/ffgmx2-c.tdb
+
+Back Off! I just backed up protein.top to ./#protein.top.1#
+Opening library file /usr/local/gromacs/share/top/specbond.dat
+5 out of 5 lines of specbond.dat converted succesfully
+Special Atom Distance matrix:
+                   CYS23   HIS30   CYS88
+                   SG158  NE2210   SG670
+   HIS30  NE2210   1.460
+   CYS88   SG670   0.201   1.600
+   HIS90  NE2689   1.001   0.998   1.024
+Linking CYS-23 SG-158 and CYS-88 SG-670...
+There are 174 donors and 163 acceptors
+There are 291 hydrogen bonds
+Will use HISB for residue 30
+Will use HISB for residue 90
+Making bonds...
+Number of bonds was 1670, now 1670
+Generating angles and dihedrals...
+before sorting: 8836 dihedrals
+after sorting: 631 dihedrals
+There are 7188 pairs before sorting
+There are  631 dihedrals,  576 impropers, 2997 angles
+          3555 pairs,     1670 bonds and     0 dummies
+Total mass 11848.280 a.m.u.
+Total charge 3.000 e
+Writing topology
+
+Back Off! I just backed up posre.itp to ./#posre.itp.1#
+
+Writing coordinate file...
+
+Back Off! I just backed up protein_gmx.pdb to ./#protein_gmx.pdb.1#
+
+gcq#85: "All Beauty Must Die" (Nick Cave)
+
+Reading protein.pdb...
+Read 836 atoms
+Analyzing pdb file
+There are 1 chains and 0 blocks of water and 108 residues with 836 atoms
+
+  chain  #res #atoms
+  1 ' '   108    836  
+
+
+Select the Force Field:
+ 0: Gromacs Forcefield (see manual)
+ 1: Gromacs Forcefield with all hydrogens (proteins only)
+ 2: GROMOS96 43a1 Forcefield (official distribution)
+ 3: GROMOS96 43b1 Vacuum Forcefield (official distribution)
+ 4: GROMOS96 43a2 Forcefield (development) (improved alkane dihedrals)
+ 5: OPLS-AA/L all-atom force field (2001 aminoacid dihedrals)
+Using ffgmx2 force field
+Reading residue database... (ffgmx2)
+Processing chain 1 (836 atoms, 108 residues)
+Checking for duplicate atoms....
+N-terminus: NH3+
+C-terminus: COO-
+Now there are 108 residues with 1648 atoms
+                         :-)  G  R  O  M  A  C  S  (-:
+
+                          GROtesk MACabre and Sinister
+
+                            :-)  VERSION 3.1.4  (-:
+
+
+       Copyright (c) 1991-2002, University of Groningen, The Netherlands
+         This program is free software; you can redistribute it and/or
+          modify it under the terms of the GNU General Public License
+         as published by the Free Software Foundation; either version 2
+             of the License, or (at your option) any later version.
+
+                               :-)  pdb2gmx  (-:
+
+Option     Filename  Type          Description
+------------------------------------------------------------
+  -f    protein.pdb  Input         Generic structure: gro g96 pdb tpr tpb tpa
+  -o    protein.gro  Output        Generic structure: gro g96 pdb
+  -p    protein.top  Output        Topology file
+  -i      posre.itp  Output        Include file for topology
+  -n      clean.ndx  Output, Opt.  Index file
+  -q      clean.pdb  Output, Opt.  Generic structure: gro g96 pdb
+
+      Option   Type  Value  Description
+------------------------------------------------------
+      -[no]h   bool     no  Print help info and quit
+      -[no]X   bool     no  Use dialog box GUI to edit command line options
+       -nice    int      0  Set the nicelevel
+  -[no]merge   bool     no  Merge multiple chains into one molecule
+  -[no]inter   bool     no  Set the next 6 options to interactive
+     -[no]ss   bool     no  Interactive SS bridge selection
+    -[no]ter   bool     no  Interactive termini selection, iso charged
+    -[no]lys   bool     no  Interactive Lysine selection, iso charged
+    -[no]asp   bool     no  Interactive Aspartic Acid selection, iso charged
+    -[no]glu   bool     no  Interactive Glutamic Acid selection, iso charged
+    -[no]his   bool     no  Interactive Histidine selection, iso checking
+                            H-bonds
+      -angle   real    135  Minimum hydrogen-donor-acceptor angle for a H-bond
+                            (degrees)
+       -dist   real    0.3  Maximum donor-acceptor distance for a H-bond (nm)
+    -[no]una   bool     no  Select aromatic rings with united CH atoms on
+                            Phenylalanine, Tryptophane and Tyrosine
+    -[no]H14   bool     no  Use 1-4 interactions between hydrogen atoms
+   -[no]ignh   bool     no  Ignore hydrogen atoms that are in the pdb file
+-[no]missing   bool     no  Continue when atoms are missing, dangerous
+    -posrefc   real   1000  Force constant for position restraints
+      -dummy   enum   none  Convert atoms to dummy atoms: none, hydrogens or
+                            aromatics
+ -[no]heavyh   bool     no  Make hydrogen atoms heavy
+-[no]deuterate bool     no  Change the mass of hydrogens to 2 amu
+
+Opening library file /usr/local/gromacs/share/top/xlateat.dat
+13 out of 13 lines of xlateat.dat converted succesfully
+Opening library file /usr/local/gromacs/share/top/aminoacids.dat
+All occupancy fields zero. This is probably not an X-Ray structure
+Opening library file /usr/local/gromacs/share/top/FF.dat
+Opening library file /usr/local/gromacs/share/top/ffgmx2.atp
+Atomtype 1Atomtype 2Atomtype 3Atomtype 4Atomtype 5Atomtype 6Atomtype 7Atomtype 8Atomtype 9Atomtype 10Atomtype 11Atomtype 12Atomtype 13Atomtype 14Atomtype 15Atomtype 16Atomtype 17Atomtype 18Atomtype 19Atomtype 20Atomtype 21Atomtype 22Atomtype 23Atomtype 24Atomtype 25Atomtype 26Atomtype 27Atomtype 28Atomtype 29Atomtype 30Atomtype 31Atomtype 32Atomtype 33Atomtype 34Atomtype 35Atomtype 36Atomtype 37Atomtype 38Atomtype 39Atomtype 40Atomtype 41Atomtype 42Atomtype 43Atomtype 44Atomtype 45Atomtype 46Atomtype 47Atomtype 48Atomtype 49Atomtype 50Atomtype 51Atomtype 52Atomtype 53Atomtype 54Atomtype 55
+Opening library file /usr/local/gromacs/share/top/ffgmx2.rtp
+Using default value - not generating all possible dihedrals
+Using default value - excluding 3 bonded neighbors
+Residue 1Residue 2Residue 3Residue 4Residue 5Residue 6Residue 7Residue 8Residue 9Residue 10Residue 11Residue 12Residue 13Residue 14Residue 15Residue 16Residue 17Residue 18Residue 19Residue 20Residue 21Residue 22Residue 23Residue 24Residue 25Residue 26Residue 27Residue 28Residue 29Residue 30Residue 31Residue 32Residue 33Residue 34
+Sorting it all out...
+Opening library file /usr/local/gromacs/share/top/ffgmx2.hdb
+Opening library file /usr/local/gromacs/share/top/ffgmx2-n.tdb
+Opening library file /usr/local/gromacs/share/top/ffgmx2-c.tdb
+
+Back Off! I just backed up protein.top to ./#protein.top.2#
+Opening library file /usr/local/gromacs/share/top/specbond.dat
+5 out of 5 lines of specbond.dat converted succesfully
+Special Atom Distance matrix:
+                   CYS23   HIS30   CYS88
+                   SG158  NE2210   SG670
+   HIS30  NE2210   1.460
+   CYS88   SG670   0.201   1.600
+   HIS90  NE2689   1.001   0.998   1.024
+Linking CYS-23 SG-158 and CYS-88 SG-670...
+There are 174 donors and 163 acceptors
+There are 291 hydrogen bonds
+Will use HISB for residue 30
+Will use HISB for residue 90
+Making bonds...
+Number of bonds was 1670, now 1670
+Generating angles and dihedrals...
+before sorting: 8836 dihedrals
+after sorting: 631 dihedrals
+There are 7188 pairs before sorting
+There are  631 dihedrals,  576 impropers, 2997 angles
+          3555 pairs,     1670 bonds and     0 dummies
+Total mass 11848.280 a.m.u.
+Total charge 3.000 e
+Writing topology
+
+Back Off! I just backed up posre.itp to ./#posre.itp.2#
+
+Writing coordinate file...
+
+Back Off! I just backed up protein.gro to ./#protein.gro.1#
+
+gcq#175: "The Poodle Bites" (F. Zappa)
+
+Reading protein.pdb...
+Read 836 atoms
+Analyzing pdb file
+There are 1 chains and 0 blocks of water and 108 residues with 836 atoms
+
+  chain  #res #atoms
+  1 ' '   108    836  
+
+
+Select the Force Field:
+ 0: Gromacs Forcefield (see manual)
+ 1: Gromacs Forcefield with all hydrogens (proteins only)
+ 2: GROMOS96 43a1 Forcefield (official distribution)
+ 3: GROMOS96 43b1 Vacuum Forcefield (official distribution)
+ 4: GROMOS96 43a2 Forcefield (development) (improved alkane dihedrals)
+ 5: OPLS-AA/L all-atom force field (2001 aminoacid dihedrals)
+Using ffgmx2 force field
+Reading residue database... (ffgmx2)
+Processing chain 1 (836 atoms, 108 residues)
+Checking for duplicate atoms....
+N-terminus: NH3+
+C-terminus: COO-
+Now there are 108 residues with 1648 atoms

@@ -1,0 +1,158 @@
+LoopFilter:
+-----------
+
+Dient dazu, Statistiken zu erstellen, welche ueber die RMS der filtergerankten
+Loesungen geht. Damit kann heuristisch eine bessere Filtereinstellung erzielt
+werden. Die Gewichte der einzelnen Filter werden ueber die Kommandozeile 
+eingegeben und das eigentliche Ranking findet in der Klasse:
+
+LoopModel::rankSpacer() 
+
+statt. LoopFilter iteriert immer ueber eine (durch die Kommandozeile bestimmbare)
+Liste von Proteinen. Dabei werden die Loopbereiche automatisch bestimmt (anhand
+der Eintraege in dem entsprechenden PDB-File.
+
+Die erstellten Statistiken sind im durch Parameter angegebenen Unterverzeichnis und
+als count* bezeichnet. Dabei steht * fuer die Anzahl der bereits abgearbeiteten 
+Proteine. Allerdings werden nicht alle Ausgaben des Statistikfiles durch diese
+Routine gefuellt (der Rest ist einfach 0), sondern nur diese Bereiche, welche
+allgemein mit der RMS zu tun haben, der Anzahl der Loesungen, der Standardabweichung
+und die Ergebnisse (kummuliert) des angegebenen Filterrankings. Die restlichen
+Werte werden mittels des Programmes prop_calibration gefuellt.
+
+
+LoopIteration:
+--------------
+
+Besitzt genau dieselbe Funktionalitaet wie LoopFilter. Allerdings existiert hier noch
+ein zusaetliches Flag, um die gesamten Filterwerte sowie RMS Werte aller erzeugten
+Loesungen in eine Datei auszugeben. Diese Ausgabe eignet sich hervorragend zum
+Optimieren um eine bessere Kombination von Filtern zu erreichen. Das erzeugte
+Outputfile heisst: "ParametersToOptimize" und ist folgendermassen aufgebaut:
+
+RMS, endRMS, Energie, Propensity, Kompaktheit
+
+Eine Zeile stellt dabei jeweils eine Loesung dar. Die gesamten Loesungen fuer 
+einen zu modellierenden Loop sind dabei durch eine Leerzeile getrennt. D.h. es
+gilt fuer die anschliessende Optimierung eine Filterkombination zu finden, welche
+die beste RMS in diesem Block anhand der Filter so weit oben wie moeglich rankt.
+
+Am Ende ist noch der Algorithmus der vollstaendigen Suche ueber alle moeglichen
+Filtergewichte angebracht. Dabei ist zu beachten, dass hier die Funktion zum Ranken
+im Gegensatz zu LoopModel::rankSpacer() 
+
+LoopModel::rankSpacerForOptimization() 
+
+heisst. Dies wurde gemacht, da bei der vollstaendigen Suche etwas andere Anforderungen
+an die Ranking Funktion zu stellen war.
+
+prop_calibration
+----------------
+
+Dieses Programm sollte eigentlich nicht mehr benoetigt werden. Es iteriert ziemlich stupide
+ueber ein File namens "filelist" und arbeitet wie z.B. LoopFilter alle darin vorhandenen
+Proteine ab. Dabei werden wieder Statistikausgaben erzeugt (und zwar in einem Unterverzeichnis
+mit dem Namen statistic, welches auf jeden Fall existieren muss). Die Statistikausgaben
+werden wie in LoopFilter als count* bezeichnet. Allerdings werden hier (zum Teil) andere
+Felder gefuellt. Hier geht es mehr um die Verteilung der Ergebnisse bei einzelnen Filtern.
+
+LoopModelFilter
+---------------
+
+Dieses Programm erzeugt Loesungen fuer einen speziellen, ueber die Kommandozeile eingegebenen
+Loop. Hierbei koennen die einzelnen Filtergewichte ueber die Kommandozeile eingegeben werden. 
+Die beste bisher gefundene Einstellung von mir ist dabei defaultmaessig eingestellt. 
+
+Ausserdem kann hier auch noch ein Ranking nach den Ergebenissen der Seitenkettenplazierung vorgenommen
+werden. Hierbei bedeutet uebrigens ein Ergebnis von -1, dass es nicht moeglich war, die anfaenglichen
+Seitenkettenrotamere so zu plazieren, dass es keine Backbonekollision gab.
+
+Falls es unbestimmte Bereiche (z.B. Loops) im zu bearbeitenden Protein gibt, so sind sie uber eine 
+Datei anzugeben. Der Name der Datei kann ueber Kommandozeile uebergeben werden. Darin sollten
+fuer jeden unbestimmten Bereich Zeilen der folgenden Art aufgefuehrt werden:
+
+2
+3 8
+17 22
+
+Also nur Anfang und Ende nur durch ein Leerzeichen getrennt und jeweils eine Zeile fuer jeden Bereich.
+Am Anfang der Datei muessen die Anzahl der unbestimmten Bereiche (in diesem Falle 2) angegeben werden.
+
+Diese unbestimmten Bereiche sind nur fuer die Seitenkettenplazierung wichtig. Sollten sie jedoch existieren und 
+nicht angegeben werden, so kann der Seitenkettenplazierungsalgorithmus abstuerzen!!!
+
+Fuer andere Optimierungen muessen solche Bereiche nicht angegeben werden!!
+
+Einbinden neuer Filter:
+-----------------------
+
+Dies ist sehr einfach. Nachdem die Filterwerte fuer die einzelnen Loesungen in der 
+Variable vsp berechnet wurden (erst berechnen, nachdem mittels der Konsistenz die
+ungueltigen Loesungen verworfen wurden...), den Aufruf der Funktion 
+
+LoopModel::rankSpacer()
+bzw.
+LoopModel::rankSpacerForOptimization()
+
+so aendern, dass der neue Filter als Parameter uebergeben wird. Danach in der jeweiligen Funktion
+rankSpacer() bzw. rankSpacerForOptimization() den Parameter beim Ranking miteinbinden.
+
+
+Der Inhalt von count*
+---------------------
+
+Zuerst wird fuer jeden einzelnen Filter getrennt nach Looplaenge abgetragen, wie die besten
+6 erzeugten Loesungen hinsichtlich des einzelnen Filters abgeschnitten haetten. Dabei wird
+an der entsprechenden Stelle, wo die Loesung bei diesem Filter plaziert worden waere die 
+Zahl um 1 erhoeht. Gute Filter haben also bei den besten Loesungen links sehr hohe Zahlen 
+stehen, waehrend rechts die Zahlen eher niedrig sind. Als Titel besitzen diese Ausgaben
+jeweils den Namen des Untersuchten Filters.
+
+Danach kommen die Mediane der RMS Werte (hier werden jeweils die besten Loesungen herausgesucht)
+und der FilterRMS Werte. FilterRMS bezieht sich dabei auf das Ranking welches durch die angegebene
+Filterkombination erzielt wurde. Der Titel lautet RMS bzw.  RMS der Loesungen nach dem Filterranking.
+
+Bad prop values bzw. Bad vdw values geben an, wie eine Loesung, welche eine wirklich schlechte
+Propensity (0) bzw. VDW-Werte (> 1000) von der RMS her abgeschnitten hat. Dabei wird genau dieses
+Feld um eins inkrementiert, welches der Position der Loesung im Ranking rein nach der RMS eingenomen
+hat.
+
+Danach kommen Eintraege mit dem Titel: Best RMS of the n best * values, wobei * fuer die Namen
+der einzelnen Filter steht. Hier wurden einfach die n besten Filterwerte genommen und die beste
+RMS bestimmt und ausgegeben. Damit kann man sehr gut erkennen, inwieweit der entsprechende Filter
+mit der RMS korreliert (falls die Werte niedrig beginnen und dann u.U. noch stark sinken, dann
+besteht eine starke Korrelation). Diese Auswertung wurde auch noch fuer die durch Filter
+gerankten Loesungen vorgenommen (hat den Titel:  Best RMSof the n best Filter ranked values.
+Hier werden also die n-best Filterwerte ausgegeben!!
+
+Danach schliesst sich eine Statistik ueber die Anzahl der untersuchten Loops an, sowie ueber
+die durchschnittliche Anzahl von verbliebenen Loesungen (nach der Konsistenz).
+
+Dann werden die Standardabweichungen getrennt nach der Looplaenge sowohl fuer die RMS als
+auch fuer die FilterRMS angegeben.
+
+Die letzten Tabellen schliesslich mit dem Titel Number of sidechain collisions tragen auf
+der y-Achse ab, um den wievielt besten Loop (gemessen an der RMS) es sich handelt. Auf der
+x-Achse wird das Feld inkrementiert, welches aequivalent zu der Anzahl der Seitenkettenkollisionen
+fuer diesen Loop war. Damit kann die Korrelation zwischen Loopqualitaet und Seitenkettenfilter
+bestimmt werden.
+
+
+Was nach einem Checkout von Victor zu beachten ist:
+---------------------------------------------------
+
+Es muessen folgende Files von Hand in das Verzeichnis Nazgul kopiert werden:
+
+torsion.dat
+shortrot.lib
+AMBER.prm
+filelist (wird nur von prop_calibration benoetigt und enthaelt eine zu bearbeitende Liste von Proteinen)
+
+Daneben sollten folgende Verzeichnisse in Nazgul angelegt werden (ist wiederrum nur fuer 
+prop_calibration notwendig):
+
+outputFiles
+statistic
+
+Danach sollten natuerlich noch die Files aa*.lt (wobei * fuer eine Nummer von 2 - ?  steht) angelegt werden.
+Diese stellen die Tabellen zum eigentlichen Loopgenerierungsprozess dar.

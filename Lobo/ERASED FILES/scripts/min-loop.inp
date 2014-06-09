@@ -1,0 +1,69 @@
+* Generate PSF and CHARMM coordinate set for 
+* the small poliala
+*
+!**  input pdb file is set as ''pdbfile=<filename-without-.pdb>''
+
+if @?pdbfile eq 0 goto iamdead
+if @?indstart eq 0 goto iamdead
+if @?indend eq 0 goto iamdead
+
+faster off
+! Read in Topology and  Parameter files
+prnlev 5
+wrnlev 2
+open unit 1 card read name /usr/local/src/c27b3/toppar/top_all22_prot.inp
+read RTF card unit 1
+close unit 1
+
+
+open unit 1 card read name /usr/local/src/c27b3/toppar/par_all22_prot.inp
+read PARA card unit 1
+close unit 1
+
+!open read formatted unit 1 name /usr/local/src/c27b3/toppar/par_hbond.inp
+!read PARA append card unit 1
+!close unit 1
+
+wrnlev 2
+prnlev 5
+
+open read formatted unit 27 name @PDBFILE.psf 
+read psf card unit 27 
+close unit 27
+
+
+open unit 1 card read name @PDBFILE_notmin.pdb 
+read coor pdb unit 1 
+close unit 1
+
+! non bonded interaction
+NBONd  CUTNb  14.0  CTONnb  10.0  CTOFnb  12.0  SWITch  VSWItch -
+       RDIElectric  EPSilon  1.0
+
+! exclude electrostatics
+
+! SKIPe ELEC
+
+!  minimize initial structure in vacuo
+
+CONS FIX SELE RESID 1 :  @INDSTART .OR. RESID @INDEND : 2000 END PURG
+
+energy
+mini sd nsteps 100  nprint 50
+mini conj ncgcyc 10  nsteps 400  nprint 50
+
+set E1 = ?ener
+set E2 = ?vdw
+set E3 = ?elec
+
+open unit 1 card write name @PDBFILE_min.pdb 
+write coor pdb unit 1
+* poliala  Structure with hydrogens
+*
+close unit 1
+
+system "echo 'EEEEE  @E1   @E2   @E3 ' "
+
+stop 
+
+

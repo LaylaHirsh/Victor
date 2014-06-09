@@ -1,0 +1,51 @@
+ #include <iostream>
+ #include <Protein.h>
+ #include <IoTools.h>
+ #include <PdbLoader.h>
+ #include <Spacer.h>
+ #include <vector3.h> 
+ #include <Ligand.h>
+ using namespace Biopool;
+ int main(int argc, char* argv[]){
+    string inputFile="173D.pdb";
+    ifstream inFile(inputFile.c_str());
+    if (!inFile)
+      ERROR("File not found.", exception);
+    PdbLoader pl(inFile);
+    //loads the protein from the file
+    Protein prot;
+    prot.load(pl);
+    cout<<"Protein size: "<<prot.sizeProtein()<<"\n";
+    Spacer *ProteinSpacer=NULL;
+    
+    if 	(ProteinSpacer!=NULL){
+	    ProteinSpacer=prot.getSpacer('A');
+	    LigandSet *ProteinLigandSet=NULL;
+	    cout<<"Spacer size: "<<(*ProteinSpacer).sizeAmino()<<"\n"<<endl;
+	    vector< pair<int,int> > ProteinHoles = (*ProteinSpacer).getHoles();
+	    //Index of the missing residues of the pdb file, the printed values are the last and first presented in the pdb file
+	    // p.e. missing residues in pdb 56, 57, 58, 59, printed values would be 55 and 60.
+	    
+	    if (ProteinHoles.size()>0){
+		cout<<"Missing residues in PDB file\n";
+	    	for (unsigned int i=0; i<ProteinHoles.size(); i++)
+		     cout<<"Index "<<i<<": from: "<< ProteinHoles[i].first <<" to: "<<ProteinHoles[i].second<<"\n";
+	    }
+	    else
+		cout<<"No missing residues in PDB file\n";
+	    if ((ProteinLigandSet)!=NULL){
+		int sizeLigandSet=(*ProteinLigandSet).getStartOffset();
+		cout<<"Start offset: "<<sizeLigandSet<<"\n";
+		for (unsigned int i=0; i<(*ProteinLigandSet).sizeLigand(); i++){
+			Ligand Oneligand=(*ProteinLigandSet).getLigand(i);    
+			cout<<i<<": Is Gap?: "<<(*ProteinLigandSet).isGap(i)<<" ";
+			cout<<"is Metal Compound"<<Oneligand.isMetalCompound()<<" ";
+			cout<<"is Common Metal"<<Oneligand.isCommonMetal()<<" ";    
+			cout<<"is Simple MetalIon"<<Oneligand.isSimpleMetalIon()<<" "; 
+			cout<<"is Water"<<Oneligand.isWater()<<" ";          
+			cout<<"is Cofactor"<<Oneligand.isCofactor()<<"\n";
+	    	}
+	     }
+    }
+    return 0; 
+ }

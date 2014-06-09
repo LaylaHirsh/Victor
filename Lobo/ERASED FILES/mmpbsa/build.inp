@@ -1,0 +1,82 @@
+* Generate PSF and CHARMM coordinate set for 
+* a protein
+*
+
+faster on
+! Read in Topology and  Parameter files
+prnlev 0
+wrnlev 0
+
+open unit 1 card read name /usr/local/src/c27b3/toppar/top_all27_prot_na.rtf
+read RTF card unit 1
+close unit 1
+
+
+open unit 1 card read name /usr/local/src/c27b3/toppar/par_all27_prot_na.prm
+read PARA card unit 1
+close unit 1
+
+open read formatted unit 1 name /usr/local/src/c27b3/toppar/par_hbond.inp
+read PARA append card unit 1
+close unit 1
+
+prnlev 2
+wrnlev 5
+
+open unit 1 card read name protein_gmx.pdb 
+read sequ pdb unit 1 
+close unit 1
+
+! now generate the PSF and also the IC table (SETU keyword)
+
+generate prot setu
+
+stream disu.str
+
+! read in pdb coordinate file 
+open unit 1 card read name prot.pdb
+read coor pdb unit 1
+close unit 1
+
+! build in missing coordinates using values in
+! the parameter set
+ic fill
+ic para
+ic build
+
+! write out the protein structure file (psf) and
+! the coordinate file in pdb format.  
+
+
+
+NBONd  CUTNb  12.0  CTONnb  8.0  CTOFnb  10.0  SWITch  VSWItch -
+       RDIElectric  EPSilon  1.0
+
+!  minimize initial structure in vacuo
+
+cons fix sele type ca end 
+
+mini sd nsteps 100 nprint 20
+mini conj ncgcyc 10 nsteps 100  nprint 20
+
+cons fix sele none end 
+
+mini sd nsteps 200 nprint 20
+mini conj ncgcyc 10 nsteps 200  nprint 20
+
+NBONd  CUTNb  200.0  CTONnb  180.0  CTOFnb  190.0  SWITch  VSWItch -
+       CDIElectric  EPSilon  1.0
+energy
+
+open write formatted unit 27 name protout.psf 
+write psf card unit 27 
+* PSF for prot 
+*
+close unit 27
+
+open unit 1 card write name protout.pdb 
+write coor pdb unit 1
+* poliala  Structure with hydrogens
+*
+close unit 1
+stop

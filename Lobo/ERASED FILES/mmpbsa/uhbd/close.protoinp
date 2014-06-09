@@ -1,0 +1,6 @@
+!sasa setup coef 0.05 inter 0.001 end
+! print elec saforc mol 1 end
+print sasa mol 1 end
+print elec phiwrite mol1 end
+stop
+

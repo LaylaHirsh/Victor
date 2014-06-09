@@ -1,0 +1,7 @@
+quiet
+reference zzz
+mobile temp2.pdb
+zone ccc-ddd:ccc-ddd
+fit
+ratoms n,ca,c
+rzone ccc-ddd

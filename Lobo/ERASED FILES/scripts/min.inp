@@ -1,0 +1,58 @@
+
+* Generate PSF and CHARMM coordinate set for 
+* the small poliala
+
+
+faster off
+! Read in Topology and  Parameter files
+prnlev 5
+wrnlev 2
+open unit 1 card read name /usr/local/src/c27b3/toppar/top_all22_prot.inp
+read RTF card unit 1
+close unit 1
+
+
+open unit 1 card read name /usr/local/src/c27b3/toppar/par_all22_prot.inp
+read PARA card unit 1
+close unit 1
+
+!open read formatted unit 1 name /usr/local/src/c27b3/toppar/par_hbond.inp
+!read PARA append card unit 1
+!close unit 1
+
+wrnlev 2
+prnlev 5
+
+open read formatted unit 27 name tyr1.psf 
+read psf card unit 27 
+close unit 27
+
+
+open unit 1 card read name tyr1_notmin.pdb 
+read coor pdb unit 1 
+close unit 1
+
+! non bonded interaction
+NBONd  CUTNb  12.0  CTONnb  8.0  CTOFnb  10.0  SWITch  VSWItch -
+       CDIElectric  EPSilon  1.0
+
+!  minimize initial structure in vacuo
+energy
+mini sd nsteps 50  nprint 50
+!mini conj ncgcyc 25  nsteps 500  nprint 50
+
+open unit 1 card write name tyr1_min.pdb 
+write coor pdb unit 1
+* poliala  Structure with hydrogens
+*
+close unit 1
+
+! TEST HBONDS
+!
+!hbond ihbfrq 50 acce all ctonhb 3.5 ctofhb 4.0 cuthb 4.5 ctonha 50.0  -
+!      ctofha 70.0 CUTHA 90.0
+!
+! TEST HBOND PRINTOUT
+!print hbonds
+
+stop 

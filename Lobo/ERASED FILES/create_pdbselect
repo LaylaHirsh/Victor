@@ -1,0 +1,47 @@
+#!/usr/bin/perl -w
+
+# This script reads a PDB_SELECT file and produces a list of corresponding 
+# pdb-files (absolute path)
+# arguments: input file, output file
+# modified by Achim Trabold at 09.08.00
+# it now operates in a local directory (that means the input and output file 
+# are expected/created in the current directory
+#
+# Besides this, pdb2chains is used in order to get the relevant parts of the 
+# pdb-File instead of thowing these entries away (like in the former version). 
+#
+# Another difference is the fact, that all the files are copied into the 
+# current directory!!!
+
+if (!defined(@ARGV)) {
+    die "you must specify an input file\n"; 
+}
+if ($#ARGV == 0) {
+    print "no output file specified, using 'pdb_selectList'\n";
+    open(LISTFILE,">pdb_selectList");
+}
+else {
+    open(LISTFILE,">$ARGV[1]");
+}
+open(SELECTFILE,"<$ARGV[0]") or die "file not found\n";
+
+# first three rows contain no relevant data
+for ($i=0; $i<3;$i++) {
+    if (!defined($listitem = <SELECTFILE>)) {
+	die "invalid input file\n";
+    }
+}
+
+while (defined($listitem = <SELECTFILE>)) {
+    $pdbcode = lc(substr($listitem,8,4));
+    $chainID = substr($listitem,12,1);
+      $dir = substr($pdbcode,1,2);
+      `getpdb -x $pdbcode > $pdbcode.pdb`;
+      if (-s "/platte2/LoopData/$pdbcode.pdb") {
+        print LISTFILE "/platte2/LoopData/$pdbcode.pdb\n";
+      }
+	else
+	{
+	 `rm $pdbcode.pdb`;
+	}	
+}

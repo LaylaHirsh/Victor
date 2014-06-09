@@ -1,0 +1,126 @@
+Victor (VIrtual Construction TOolkit for pRoteins)
+--------------------------------------------------------------
+ (c)  Silvio C.E. Tosatto,  1999 - 2004. 
+      E-mail:   <silvio.tosatto@unipd.it>
+--------------------------------------------------------------
+README File 
+Version 1.0
+
+LOBO - LOop Build-up & Optimization module
+--------------------------------------------------------------
+1. Introduction:
+
+This directory contains the source code and scripts needed to use
+the loop modelling part of the software, called LOBO. (NB: The 
+directory is still called "Nazgul" for historical reasons. In fact, 
+in the early stages of development the algorithm -used for ring 
+closure- was so hard to debug to demonstrate an innate malevolence. 
+Hence the original definition...)
+
+The main programs & scripts are:
+
+loboLUT		Creates a single LUT (look-up table)
+
+loboLUT_all	Creates an ensemble of LUTs
+
+lobo		Performs single (manual) loop modelling
+
+loboAuto	Performs single (automatic) loop modelling
+
+loboAuto_all	Performs an ensemble of loop modelling steps
+
+loboFull	Loop modelling decoy set of all segments in a protein  
+
+These programs are all copied to the "Victor/bin/" directory 
+during installation and can be executed from anywhere, provided 
+the instructions for installation were followed. Using the "-h" 
+command line option will display all available options with a
+brief description.
+
+
+--------------------------------------------------------------
+2. Basic Concept:
+
+The LOBO package allows fast loop modelling in protein structures,
+as described in a previous paper (S.C.E.Tosatto, E.Bindewald, 
+J.Hesser, R.Maenner. "A divide & conquer approach to fast loop 
+modelling". Protein Engineering, 2002; 15(4): 279-286). Please 
+refer to the original publication for details.
+
+Briefly put, an ensemble of LUTs (look-up tables) is required 
+to predict loops or arbitrary protein fragments of variable 
+length. To this end it is necessary to construct the LUTs once 
+by running the "loboLUT_all" command. A typical usage would be:
+
+> loboLUT_all -a 24
+
+This will create all LUTs from length 2 to 24. Additional LUTs can 
+be created on a case by case basis using "loboLUT_all". Note that 
+each LUT will require roughly 36 MB of disk space. So the above 
+example will already require some 700+ MB of disk space.
+
+Once the LUTs are constructed it is possible to perform the 
+proper predictions. This is achieved using one of three programs, 
+depending on the objective.
+
+Manually optimized loop predictions can be executed with "loboLUT".
+This program allows the user to choose the exact boundaries for 
+the reconstructed segment and is generally the method of choice 
+for highly detailed comparative models. Expert users can improve 
+the prediction a lot by taking care of the optimal manual parameter 
+selections.
+
+For less experienced users, or if the prediction accuracy is less 
+critical, exist the programs "loboAuto" and "loboAuto_all". These
+allow the automatic selection of loop boundaries based on heuristic 
+criteria. For single loops use "loboAuto". For batch processing use
+"loboAuto_all", which reads a simple flat file format enumerating 
+the insertions and deletions to model. This format is also used by
+the Homer suite of homology modelling programs. 
+
+
+--------------------------------------------------------------
+3. Examples:
+
+
+A) Manually optimized loop modelling with "lobo":
+
+> lobo -i 3dfr.pdb -s 19 -e 24 --maxWrite 20
+
+This command will produce 20 models for the loop at residues 19 to 24
+of protein "3dfr". The file "3dfr.pdb" can be found in the 
+"Victor/Nazgul" directory, where sample output is provided for 
+comparison in file "example_3dfr.out".
+
+
+B) Batch oriented automatic loop modelling with "loboAuto_all":
+
+> loboAuto_all -I t0111.indel -i t0111_raw.pdb -o t0111_full.pdb  \
+    -s t0111.seq -c
+
+This example is part of the example for "homer" found in the 
+directory "Victor/Homer". It model all insertions and deletions
+listed in "t0111.indel" on the structure "t0111_raw.pdb", ie. after
+completion the model "t0111_full.pdb" will contain no chain breaks.
+Sample program output can be found in "example_t0111.out", while 
+a successful full model is stored as "example_t0111_full.pdb".
+
+
+C) Decoy set generation with "loboFull":
+
+> loboFull -i 1igd.pdb -s 5 --maxWrite 1 --withOxygen
+
+This example illustrates the decoy set generation, as originally 
+performed in the publication of the method (S.C.E.Tosatto, 
+E.Bindewald, J.Hesser, R.Maenner. "A divide & conquer approach to 
+fast loop modelling". Protein Engineering, 2002; 15(4): 279-286). 
+In practice, using a sliding window, all 5-mer fragments of the 
+protein "1igd" are subjected to loop modelling. The average RMSD
+is calculated for the ensemble of predictions and divided in the 
+classes: alpha, beta, mixture and overall. In the above example
+only a single structure is written per fragment. In order to 
+generate decoy sets change the "--maxWrite" parameter. The 
+"--withOxygen" parameter is used to produce results which can be
+compared directly to the original publication. 
+
+

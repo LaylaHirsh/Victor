@@ -1,0 +1,455 @@
+1
+                 Chemistry at HARvard Macromolecular Mechanics
+                   (CHARMM) - Developmental Version 27b3     August 15, 2000   
+       Copyright(c) 1984,1992  President and Fellows of Harvard College
+                              All Rights Reserved
+                     Current operating system: GNU LINUX
+                 Created on  3/17/ 3 at 13:54:12 by user: silvio      
+
+            Maximum number of ATOMS:     25140, and RESidues:       14000
+            Current HEAP size:         2048000, and STACK size:    500000
+
+ RDTITL> * GENERATE PSF AND CHARMM COORDINATE SET FOR
+ RDTITL> * A PROTEIN
+ RDTITL> *
+  
+ CHARMM>     
+  
+ CHARMM>    faster on
+ MISCOM> FAST option ON.
+         Scalar FAST Mode
+  
+ CHARMM>    ! Read in Topology and  Parameter files
+ CHARMM>    prnlev 0
+ VOPEN> Attempting to open::protein_gmx.pdb::
+ OPNLGU> Unit  1 opened for READONLY access to protein_gmx.pdb
+ MAINIO> Sequence information being read from unit   1.
+ TITLE>  *
+
+          RESIDUE SEQUENCE --   188 RESIDUES
+          MET ALA GLU HSE ASP PHE GLU THR ILE SER SER GLU THR LEU HSE THR GLY ALA ILE PHE 
+          ALA LEU ARG ARG ASP GLN VAL ARG MET PRO GLY GLY GLY ILE VAL THR ARG GLU VAL VAL 
+          GLU HSD PHE GLY ALA VAL ALA ILE VAL ALA MET ASP ASP ASN GLY ASN ILE PRO MET VAL 
+          TYR GLN TYR ARG HSE THR TYR GLY ARG ARG LEU TRP GLU LEU PRO ALA GLY LEU LEU ASP 
+          VAL ALA GLY GLU PRO PRO HSE LEU THR ALA ALA ARG GLU LEU ARG GLU GLU VAL GLY LEU 
+          GLN ALA SER THR TRP GLN VAL LEU VAL ASP LEU ASP THR ALA PRO GLY PHE SER ASP GLU 
+          SER VAL ARG VAL TYR LEU ALA THR GLY LEU ARG GLU VAL GLY ARG PRO GLU ALA HSE HSD 
+          GLU GLU ALA ASP MET THR MET GLY TRP TYR PRO ILE ALA GLU ALA ALA ARG ARG VAL LEU 
+          ARG GLY GLU ILE VAL ASN SER ILE ALA ILE ALA GLY VAL LEU ALA VAL HSE ALA VAL THR 
+          THR GLY PHE ALA GLN PRO ARG PRO 
+ ***** Message from SEQRDR ***** THE SYSTEM CONTAINS 31 TITRATABLE GROUPS
+ THE USER MUST PREDETERMINE THE PROTONATION STATE THROUGH THE SEQUENCE AND RTF
+ HIS -  0  ASP -  9  GLU - 17  LYS -  0  TYR -  5
+ VCLOSE: Closing unit    1 with status "KEEP"
+ THE PATCH 'NTER  ' WILL BE USED FOR THE FIRST RESIDUE
+ THE PATCH 'CTER  ' WILL BE USED FOR THE LAST  RESIDUE
+ GENPSF> Segment   1 has been generated. Its identifier is PROT.
+ PSFSUM> PSF modified: NONBOND lists and IMAGE atoms cleared.
+ PSFSUM> Summary of the structure file counters :
+         Number of segments      =        1   Number of residues   =      188
+         Number of atoms         =     2875   Number of groups     =      838
+         Number of bonds         =     2908   Number of angles     =     5245
+         Number of dihedrals     =     7662   Number of impropers  =      497
+         Number of HB acceptors  =      280   Number of HB donors  =      310
+         Number of NB exclusions =        0   Total charge =  -10.00000
+ VOPEN> Attempting to open::disu.str::
+ OPNLGU> Unit 99 opened for READONLY access to disu.str
+
+                    INPUT STREAM SWITCHING TO UNIT    99
+ RDTITL> * PATCH DISULFIDE BONDS
+ RDTITL> *
+ Parameter: IN1 <- "" <empty>
+ VCLOSE: Closing unit   99 with status "KEEP"
+
+                    RETURNING TO INPUT STREAM     5
+ VOPEN> Attempting to open::prot.pdb::
+ OPNLGU> Unit  1 opened for READONLY access to prot.pdb
+          SPATIAL COORDINATES BEING READ FROM UNIT  1
+ TITLE>  *
+ VCLOSE: Closing unit    1 with status "KEEP"
+ ALL POSSIBLE COORDINATES HAVE BEEN PLACED
+
+ NONBOND OPTION FLAGS: 
+     ELEC     VDW      ATOMs    RDIElec  SWITch   VATOm    VSWItch 
+     BYGRoup  NOEXtnd  NOEWald 
+ CUTNB  = 12.000 CTEXNB =999.000 CTONNB =  8.000 CTOFNB = 10.000
+ WMIN   =  1.500 WRNMXD =  0.500 E14FAC =  1.000 EPS    =  1.000
+ NBXMOD =      5
+ There are        0 atom  pairs and        0 atom  exclusions.
+ There are        0 group pairs and        0 group exclusions.
+ <MAKINB> with mode   5 found   8153 exclusions and   7518 interactions(1-4)
+ SELRPN>    188 atoms have been selected out of   2875
+
+ NONBOND OPTION FLAGS: 
+     ELEC     VDW      ATOMs    RDIElec  SWITch   VATOm    VSWItch 
+     BYGRoup  NOEXtnd  NOEWald 
+ CUTNB  = 12.000 CTEXNB =999.000 CTONNB =  8.000 CTOFNB = 10.000
+ WMIN   =  1.500 WRNMXD =  0.500 E14FAC =  1.000 EPS    =  1.000
+ NBXMOD =      5
+ There are   540358 atom  pairs and    15671 atom  exclusions.
+ There are        0 group pairs and     2415 group exclusions.
+
+
+ STEEPD> An energy minimization has been requested.
+
+ NSTEP  =          100   NPRINT =           20
+ STEP   =    0.0200000   TOLFUN =    0.0000000
+ TOLGRD =    0.0000000   TOLSTP =    0.0000000
+
+MINI MIN: Cycle      ENERgy      Delta-E         GRMS    Step-size
+MINI INTERN:          BONDs       ANGLes       UREY-b    DIHEdrals    IMPRopers
+MINI EXTERN:        VDWaals         ELEC       HBONds          ASP         USER
+ ----------       ---------    ---------    ---------    ---------    ---------
+MINI>        0 266849.68818      0.00000  24996.48566      0.02000
+MINI INTERN>     4176.26962    769.97727    427.95738    743.30002      6.08801
+MINI EXTERN>   262597.67683  -1871.58095      0.00000      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+MINI>       20   -253.88892 267103.57710      5.57099      0.00401
+MINI INTERN>      209.75764    600.53305     73.56041    791.36453     23.95156
+MINI EXTERN>       64.07384  -2017.12994      0.00000      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+MINI>       40   -615.83184    361.94292      2.22109      0.00193
+MINI INTERN>      164.52161    536.89098     58.08873    787.50057     23.07633
+MINI EXTERN>     -112.36812  -2073.54194      0.00000      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+MINI>       60   -756.57637    140.74453      3.02956      0.00223
+MINI INTERN>      163.31597    515.56223     53.93796    787.58364     22.83789
+MINI EXTERN>     -186.69760  -2113.11646      0.00000      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+MINI>       80   -857.53250    100.95613      1.61523      0.00107
+MINI INTERN>      146.39139    503.10025     46.37847    788.25105     22.92818
+MINI EXTERN>     -227.47453  -2137.10731      0.00000      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+MINI>      100   -917.44609     59.91360      2.22089      0.00124
+MINI INTERN>      145.86371    496.98346     44.91063    788.74789     22.77452
+MINI EXTERN>     -255.90289  -2160.82340      0.00000      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+
+ STEEPD> Minimization exiting with number of steps limit (       100) exceeded.
+
+STPD MIN: Cycle      ENERgy      Delta-E         GRMS    Step-size
+STPD INTERN:          BONDs       ANGLes       UREY-b    DIHEdrals    IMPRopers
+STPD EXTERN:        VDWaals         ELEC       HBONds          ASP         USER
+ ----------       ---------    ---------    ---------    ---------    ---------
+STPD>      100   -917.44609     59.91360      2.22089      0.00149
+STPD INTERN>      145.86371    496.98346     44.91063    788.74789     22.77452
+STPD EXTERN>     -255.90289  -2160.82340      0.00000      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+
+ NONBOND OPTION FLAGS: 
+     ELEC     VDW      ATOMs    RDIElec  SWITch   VATOm    VSWItch 
+     BYGRoup  NOEXtnd  NOEWald 
+ CUTNB  = 12.000 CTEXNB =999.000 CTONNB =  8.000 CTOFNB = 10.000
+ WMIN   =  1.500 WRNMXD =  0.500 E14FAC =  1.000 EPS    =  1.000
+ NBXMOD =      5
+ There are   536277 atom  pairs and    15671 atom  exclusions.
+ There are        0 group pairs and     2415 group exclusions.
+
+
+ CONJUG> An energy minimization has been requested.
+
+ NCGCYC =           10   NSTEP  =          100
+ PCUT   =    0.9999000   PRTMIN =            1
+ STEP   =    0.0200000   TOLFUN =    0.0000000
+ TOLGRD =    0.0000000   TOLITR =          100
+ TOLSTP =    0.0000000
+
+MINI MIN: Cycle      ENERgy      Delta-E         GRMS    Step-size
+MINI INTERN:          BONDs       ANGLes       UREY-b    DIHEdrals    IMPRopers
+MINI EXTERN:        VDWaals         ELEC       HBONds          ASP         USER
+ ----------       ---------    ---------    ---------    ---------    ---------
+MINI>        0   -917.44609     59.91360      2.22089      0.00000
+MINI INTERN>      145.86371    496.98346     44.91063    788.74789     22.77452
+MINI EXTERN>     -255.90289  -2160.82340      0.00000      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+MINI>       20  -1241.76439    324.31830      1.17612      0.40519
+MINI INTERN>      139.34788    465.74810     37.08799    806.71206     22.38455
+MINI EXTERN>     -376.08576  -2336.95921      0.00000      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+MINI>       20  -1241.76439    324.31830      1.17612      0.00000
+MINI INTERN>      139.34788    465.74810     37.08799    806.71206     22.38455
+MINI EXTERN>     -376.08576  -2336.95921      0.00000      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+MINI>       40  -1328.74968     86.98529      0.91244      0.25561
+MINI INTERN>      136.66349    458.50492     34.99883    812.50375     22.68436
+MINI EXTERN>     -390.14050  -2403.96453      0.00000      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+MINI>       40  -1328.74968     86.98529      0.91244      0.00000
+MINI INTERN>      136.66349    458.50492     34.99883    812.50375     22.68436
+MINI EXTERN>     -390.14050  -2403.96453      0.00000      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+MINI>       60  -1382.29769     53.54801      0.72381      0.17923
+MINI INTERN>      137.47218    456.03420     34.01293    815.07422     22.95684
+MINI EXTERN>     -392.38551  -2455.46254      0.00000      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+MINI>       60  -1382.29769     53.54801      0.72381      0.00000
+MINI INTERN>      137.47218    456.03420     34.01293    815.07422     22.95684
+MINI EXTERN>     -392.38551  -2455.46254      0.00000      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+MINI>       80  -1416.17737     33.87968      0.63022      0.14874
+MINI INTERN>      137.33994    454.42600     33.57741    815.31615     23.11448
+MINI EXTERN>     -397.11997  -2482.83137      0.00000      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+MINI>       80  -1416.17737     33.87968      0.63022      0.00000
+MINI INTERN>      137.33994    454.42600     33.57741    815.31615     23.11448
+MINI EXTERN>     -397.11997  -2482.83137      0.00000      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+MINI>      100  -1439.98292     23.80556      0.54910      0.12603
+MINI INTERN>      137.24046    454.06148     33.40691    815.27094     23.16834
+MINI EXTERN>     -401.17374  -2501.95731      0.00000      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+
+ CONJUG> Minimization exiting with number of steps limit (  100) exceeded.
+
+CONJ MIN: Cycle      ENERgy      Delta-E         GRMS    Step-size
+CONJ INTERN:          BONDs       ANGLes       UREY-b    DIHEdrals    IMPRopers
+CONJ EXTERN:        VDWaals         ELEC       HBONds          ASP         USER
+ ----------       ---------    ---------    ---------    ---------    ---------
+CONJ>      100  -1439.98292     23.80556      0.54910      0.02000
+CONJ INTERN>      137.24046    454.06148     33.40691    815.27094     23.16834
+CONJ EXTERN>     -401.17374  -2501.95731      0.00000      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+ SELRPN>      0 atoms have been selected out of   2875
+
+ NONBOND OPTION FLAGS: 
+     ELEC     VDW      ATOMs    RDIElec  SWITch   VATOm    VSWItch 
+     BYGRoup  NOEXtnd  NOEWald 
+ CUTNB  = 12.000 CTEXNB =999.000 CTONNB =  8.000 CTOFNB = 10.000
+ WMIN   =  1.500 WRNMXD =  0.500 E14FAC =  1.000 EPS    =  1.000
+ NBXMOD =      5
+ There are   533771 atom  pairs and    15671 atom  exclusions.
+ There are        0 group pairs and     2415 group exclusions.
+
+
+ STEEPD> An energy minimization has been requested.
+
+ NSTEP  =          200   NPRINT =           20
+ STEP   =    0.0200000   TOLFUN =    0.0000000
+ TOLGRD =    0.0000000   TOLSTP =    0.0000000
+
+MINI MIN: Cycle      ENERgy      Delta-E         GRMS    Step-size
+MINI INTERN:          BONDs       ANGLes       UREY-b    DIHEdrals    IMPRopers
+MINI EXTERN:        VDWaals         ELEC       HBONds          ASP         USER
+ ----------       ---------    ---------    ---------    ---------    ---------
+MINI>        0  -1403.15948    -36.82344      2.33914      0.02000
+MINI INTERN>      137.24046    454.06148     33.40691    815.27094     23.16834
+MINI EXTERN>     -408.34873  -2457.95887      0.00000      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+MINI>       20  -1492.99114     89.83166      0.90469      0.00070
+MINI INTERN>      137.89029    415.60663     31.46756    809.92192     21.88253
+MINI EXTERN>     -434.02430  -2475.73577      0.00000      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+MINI>       40  -1518.08134     25.09020      1.26645      0.00080
+MINI INTERN>      141.06084    411.84086     31.02522    807.75660     21.39891
+MINI EXTERN>     -444.36097  -2486.80280      0.00000      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+MINI>       60  -1537.59926     19.51793      1.48594      0.00093
+MINI INTERN>      142.62035    410.17462     30.69259    805.88785     21.05531
+MINI EXTERN>     -451.07596  -2496.95403      0.00000      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+MINI>       80  -1557.54515     19.94589      0.35337      0.00045
+MINI INTERN>      139.90578    409.46642     30.37338    804.16464     20.80886
+MINI EXTERN>     -455.36597  -2506.89826      0.00000      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+MINI>      100  -1572.59319     15.04804      0.79083      0.00052
+MINI INTERN>      141.28456    409.34169     30.16566    802.61259     20.56614
+MINI EXTERN>     -459.89725  -2516.66659      0.00000      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+MINI>      120  -1585.10123     12.50804      0.93976      0.00060
+MINI INTERN>      142.06856    409.47657     30.04080    801.38918     20.37022
+MINI EXTERN>     -463.22842  -2525.21814      0.00000      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+MINI>      140  -1596.21230     11.11107      1.20096      0.00069
+MINI INTERN>      143.08253    409.42013     30.04950    800.32990     20.19115
+MINI EXTERN>     -465.77197  -2533.51354      0.00000      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+MINI>      160  -1609.09907     12.88676      0.28634      0.00033
+MINI INTERN>      142.37805    409.14416     29.93129    799.44447     20.02811
+MINI EXTERN>     -468.23755  -2541.78760      0.00000      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+MINI>      180  -1619.91808     10.81901      0.40832      0.00038
+MINI INTERN>      142.89981    409.41364     29.86671    798.69551     19.87218
+MINI EXTERN>     -470.34474  -2550.32119      0.00000      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+MINI>      200  -1629.83363      9.91555      0.65810      0.00044
+MINI INTERN>      143.56018    409.79434     29.83193    798.15013     19.73158
+MINI EXTERN>     -472.03675  -2558.86505      0.00000      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+
+ STEEPD> Minimization exiting with number of steps limit (       200) exceeded.
+
+STPD MIN: Cycle      ENERgy      Delta-E         GRMS    Step-size
+STPD INTERN:          BONDs       ANGLes       UREY-b    DIHEdrals    IMPRopers
+STPD EXTERN:        VDWaals         ELEC       HBONds          ASP         USER
+ ----------       ---------    ---------    ---------    ---------    ---------
+STPD>      200  -1629.83363      9.91555      0.65810      0.00053
+STPD INTERN>      143.56018    409.79434     29.83193    798.15013     19.73158
+STPD EXTERN>     -472.03675  -2558.86505      0.00000      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+
+ NONBOND OPTION FLAGS: 
+     ELEC     VDW      ATOMs    RDIElec  SWITch   VATOm    VSWItch 
+     BYGRoup  NOEXtnd  NOEWald 
+ CUTNB  = 12.000 CTEXNB =999.000 CTONNB =  8.000 CTOFNB = 10.000
+ WMIN   =  1.500 WRNMXD =  0.500 E14FAC =  1.000 EPS    =  1.000
+ NBXMOD =      5
+ There are   536217 atom  pairs and    15671 atom  exclusions.
+ There are        0 group pairs and     2415 group exclusions.
+
+
+ CONJUG> An energy minimization has been requested.
+
+ NCGCYC =           10   NSTEP  =          200
+ PCUT   =    0.9999000   PRTMIN =            1
+ STEP   =    0.0200000   TOLFUN =    0.0000000
+ TOLGRD =    0.0000000   TOLITR =          100
+ TOLSTP =    0.0000000
+
+MINI MIN: Cycle      ENERgy      Delta-E         GRMS    Step-size
+MINI INTERN:          BONDs       ANGLes       UREY-b    DIHEdrals    IMPRopers
+MINI EXTERN:        VDWaals         ELEC       HBONds          ASP         USER
+ ----------       ---------    ---------    ---------    ---------    ---------
+MINI>        0  -1629.83363      9.91555      0.65810      0.00000
+MINI INTERN>      143.56018    409.79434     29.83193    798.15013     19.73158
+MINI EXTERN>     -472.03675  -2558.86505      0.00000      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+MINI>       20  -1726.99269     97.15906      0.62667      0.17419
+MINI INTERN>      148.62016    413.41490     29.20090    792.65865     18.70645
+MINI EXTERN>     -482.89616  -2646.69758      0.00000      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+MINI>       20  -1726.99269     97.15906      0.62667      0.00000
+MINI INTERN>      148.62016    413.41490     29.20090    792.65865     18.70645
+MINI EXTERN>     -482.89616  -2646.69758      0.00000      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+MINI>       40  -1770.23211     43.23943      0.46086      0.11752
+MINI INTERN>      148.78619    412.88441     29.43507    791.21689     18.36526
+MINI EXTERN>     -485.46679  -2685.45314      0.00000      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+MINI>       40  -1770.23211     43.23943      0.46086      0.00000
+MINI INTERN>      148.78619    412.88441     29.43507    791.21689     18.36526
+MINI EXTERN>     -485.46679  -2685.45314      0.00000      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+MINI>       60  -1803.49661     33.26449      0.50002      0.11051
+MINI INTERN>      149.32012    414.61324     29.56986    790.18782     18.03349
+MINI EXTERN>     -488.38071  -2716.84043      0.00000      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+MINI>       60  -1803.49661     33.26449      0.50002      0.00000
+MINI INTERN>      149.32012    414.61324     29.56986    790.18782     18.03349
+MINI EXTERN>     -488.38071  -2716.84043      0.00000      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+MINI>       80  -1828.47603     24.97943      0.61952      0.08392
+MINI INTERN>      150.79713    415.73437     29.86936    790.00643     17.81613
+MINI EXTERN>     -484.16605  -2748.53339      0.00000      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+MINI>       80  -1828.47603     24.97943      0.61952      0.00000
+MINI INTERN>      150.79713    415.73437     29.86936    790.00643     17.81613
+MINI EXTERN>     -484.16605  -2748.53339      0.00000      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+MINI>      100  -1846.01602     17.53998      0.54757      0.07657
+MINI INTERN>      150.70825    416.08759     29.88051    789.15432     17.67358
+MINI EXTERN>     -485.05412  -2764.46615      0.00000      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+MINI>      100  -1846.01602     17.53998      0.54757      0.00000
+MINI INTERN>      150.70825    416.08759     29.88051    789.15432     17.67358
+MINI EXTERN>     -485.05412  -2764.46615      0.00000      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+MINI>      120  -1865.39632     19.38031      0.41626      0.08402
+MINI INTERN>      151.35418    416.46658     29.97235    789.28373     17.59373
+MINI EXTERN>     -483.60778  -2786.45911      0.00000      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+MINI>      120  -1865.39632     19.38031      0.41626      0.00000
+MINI INTERN>      151.35418    416.46658     29.97235    789.28373     17.59373
+MINI EXTERN>     -483.60778  -2786.45911      0.00000      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+MINI>      140  -1878.02591     12.62959      0.34954      0.07686
+MINI INTERN>      151.50787    415.10495     29.83740    787.66473     17.49421
+MINI EXTERN>     -482.12542  -2797.50965      0.00000      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+MINI>      140  -1878.02591     12.62959      0.34954      0.00000
+MINI INTERN>      151.50787    415.10495     29.83740    787.66473     17.49421
+MINI EXTERN>     -482.12542  -2797.50965      0.00000      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+MINI>      160  -1887.50341      9.47750      0.31737      0.06784
+MINI INTERN>      151.57564    414.48197     29.79588    787.29073     17.43651
+MINI EXTERN>     -482.24048  -2805.84365      0.00000      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+MINI>      160  -1887.50341      9.47750      0.31737      0.00000
+MINI INTERN>      151.57564    414.48197     29.79588    787.29073     17.43651
+MINI EXTERN>     -482.24048  -2805.84365      0.00000      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+MINI>      180  -1895.51482      8.01141      0.29810      0.06301
+MINI INTERN>      151.62150    414.01052     29.74653    787.42339     17.38939
+MINI EXTERN>     -482.76995  -2812.93619      0.00000      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+MINI>      180  -1895.51482      8.01141      0.29810      0.00000
+MINI INTERN>      151.62150    414.01052     29.74653    787.42339     17.38939
+MINI EXTERN>     -482.76995  -2812.93619      0.00000      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+MINI>      200  -1902.77145      7.25663      0.29056      0.06065
+MINI INTERN>      151.66760    413.59807     29.70262    788.01635     17.36309
+MINI EXTERN>     -483.46603  -2819.65316      0.00000      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+
+ CONJUG> Minimization exiting with number of steps limit (  200) exceeded.
+
+CONJ MIN: Cycle      ENERgy      Delta-E         GRMS    Step-size
+CONJ INTERN:          BONDs       ANGLes       UREY-b    DIHEdrals    IMPRopers
+CONJ EXTERN:        VDWaals         ELEC       HBONds          ASP         USER
+ ----------       ---------    ---------    ---------    ---------    ---------
+CONJ>      200  -1902.77145      7.25663      0.29056      0.02000
+CONJ INTERN>      151.66760    413.59807     29.70262    788.01635     17.36309
+CONJ EXTERN>     -483.46603  -2819.65316      0.00000      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+
+ NONBOND OPTION FLAGS: 
+     ELEC     VDW      ATOMs    CDIElec  SWITch   VATOm    VSWItch 
+     BYGRoup  NOEXtnd  NOEWald 
+ CUTNB  =200.000 CTEXNB =999.000 CTONNB =180.000 CTOFNB =190.000
+ WMIN   =  1.500 WRNMXD =  0.500 E14FAC =  1.000 EPS    =  1.000
+ NBXMOD =      5
+ There are   532284 atom  pairs and    15671 atom  exclusions.
+ There are        0 group pairs and     2415 group exclusions.
+ VEHEAP> Expanding heap size by 4194304 words.
+
+ NONBOND OPTION FLAGS: 
+     ELEC     VDW      ATOMs    CDIElec  SWITch   VATOm    VSWItch 
+     BYGRoup  NOEXtnd  NOEWald 
+ CUTNB  =200.000 CTEXNB =999.000 CTONNB =180.000 CTOFNB =190.000
+ WMIN   =  1.500 WRNMXD =  0.500 E14FAC =  1.000 EPS    =  1.000
+ NBXMOD =      5
+ There are  4123222 atom  pairs and    15671 atom  exclusions.
+ There are        0 group pairs and     2415 group exclusions.
+ENER ENR:  Eval#     ENERgy      Delta-E         GRMS
+ENER INTERN:          BONDs       ANGLes       UREY-b    DIHEdrals    IMPRopers
+ENER EXTERN:        VDWaals         ELEC       HBONds          ASP         USER
+ ----------       ---------    ---------    ---------    ---------    ---------
+ENER>        0  -3283.37410   1380.60265      2.56330
+ENER INTERN>      151.66760    413.59807     29.70262    788.01635     17.36309
+ENER EXTERN>     -552.25122  -4131.47062      0.00000      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+ VOPEN> Attempting to open::protout.psf::
+ OPNLGU> Unit 27 opened for WRITE access to protout.psf
+ RDTITL> * PSF FOR PROT
+ RDTITL> *
+ VCLOSE: Closing unit   27 with status "KEEP"
+ VOPEN> Attempting to open::protout.pdb::
+ OPNLGU> Unit  1 opened for WRITE access to protout.pdb
+ RDTITL> * POLIALA  STRUCTURE WITH HYDROGENS
+ RDTITL> *
+ VCLOSE: Closing unit    1 with status "KEEP"
+
+                    NORMAL TERMINATION BY NORMAL STOP
+                    MAXIMUM STACK SPACE USED IS   79894
+                    STACK CURRENTLY IN USE IS         0
+                    NO WARNINGS WERE ISSUED
+                    HEAP PRINTOUT-  HEAP SIZE   2048000
+                    SPACE CURRENTLY IN USE IS      4224
+                    MAXIMUM SPACE USED IS       4341694
+                    FREE LIST
+            PRINHP> ADDRESS:         1 LENGTH:   1168902 NEXT:   1173127
+            PRINHP> ADDRESS:   1173127 LENGTH:    874874 NEXT: 224772401
+            PRINHP> ADDRESS: 224772401 LENGTH:   4194304 NEXT:         0
+
+                    $$$$$ JOB ACCOUNTING INFORMATION $$$$$
+                     ELAPSED TIME:     3.33  MINUTES 
+                         CPU TIME:     3.33  MINUTES 

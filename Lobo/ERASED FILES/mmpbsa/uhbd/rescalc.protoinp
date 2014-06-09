@@ -1,0 +1,34 @@
+read
+ mol 2
+ file 'n_aa.pdb'
+ pdb 
+end
+edit charge 0.0 mol 2 end
+edit radii 0.0 mol 2 end
+read binary grid phi file grid_x.grd end
+elec                   ! Now calculate the electrostatic potential
+    calc               ! first on a large but relatively coarse grid
+    dime 33 33 33     ! of 110**3 points
+    grid 0.45         ! using a grid spacing of 1.0 Angstroms
+    mol 1              ! for the ligand (molecule 1)
+    maxits 500         ! Set the max. no. of iterations to 500
+    nmap 1.4           ! use probe-accessible surface
+    nsph 100           ! Use 400 sphere points for surface calc.
+    pdie pdie          ! Set the internal dielectric to 4
+    sdie sdie          ! Set the solvent dielectric to 78
+    ions ions         ! Set the ionic strength to 145mM
+    rion 2.0           ! Set the ion-exclusion radius to 2.0A
+    bcfl 4             ! Set boundary potentials by treating each atom
+                       ! as a Debye-Huckel ion 
+    mcenter 2               ! center the grid on molecule 1
+                                            ! center of molecule
+    conv 1E-2
+    solver 1
+    linear             ! Use the non-linear Poisson-Boltzmann equation
+end
+!print elec zforce sele molecule 1 and residue n_aa end end
+!print elec force sele molecule 1 and residue n_aa end end
+!print elec gforce sele molecule 1 and residue n_aa end end
+!print elec dforce sele molecule 1 and residue n_aa end end
+!print elec tforce sele molecule 1 and residue n_aa end end
+print elec phisave sele molecule 1 and residue n_aa end end
