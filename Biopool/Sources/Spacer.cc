@@ -562,7 +562,7 @@ void Spacer::insertAminoAfterWithGaps(
   int nOldSizeAmino = sizeAmino();
   if ( ((int)n<nOldSizeAmino-1) && (dynamic_cast<AminoAcid&>(*components[n]).sizeOutBonds() > 0) )
     {
-		cout <<"Hello world" <<endl;
+		 
       dynamic_cast<AminoAcid&>(*components[n]).unbindOut(
 	       dynamic_cast<AminoAcid&>(*components[n]).getOutBond(0));
     }

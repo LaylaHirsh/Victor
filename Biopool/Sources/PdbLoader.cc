@@ -371,20 +371,14 @@ PdbLoader::loadProtein(Protein& prot){
                             
                             // Insert the Ligand object into LigandSet
                             if (aaNum != oldAaNum){
-                                // Print some indexes for the debug
-                                /* 
-                                cout << aa->getType1L() << " offset:" << sp->getStartOffset() << " gaps:" 
-                                     << sp->sizeGaps() << " sizeAmino:" <<  sp->sizeAmino() <<  " maxPdbNum:" 
-                                     << sp->maxPdbNumber() << " aaNum:" << aaNum  
-                                     << " oldAaNum:" << oldAaNum << " lastAa:" << lastAa << "\n";
-                                */
+                               
                                 if ((aa->size()>0) && (aa->getType1L()!='X')){ // Skip the first empty AminoAcid
                                     if (sp->sizeAmino()==0){
                                         sp->setStartOffset(oldAaNum-1);
                                     }
                                     else{
                                         // Add gaps
-                                        //for (int i = lastAa+1; i < oldAaNum; i++){
+                                  
                                         for (int i = sp->maxPdbNumber()+1; i < oldAaNum; i++){
                                             sp->addGap(i);
                                         }
@@ -525,7 +519,7 @@ PdbLoader::loadProtein(Protein& prot){
                     // assign secondary structure from torsion angles
                     if (!noSecondary){
                         assignSecondary(*sp);
-                        cout << "Torsional SS assigned\n";
+                        //cout << "Torsional SS assigned\n";
                     }
                 }
             }
