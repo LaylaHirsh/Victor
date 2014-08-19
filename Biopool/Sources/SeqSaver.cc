@@ -100,8 +100,6 @@ void SeqSaver::saveSpacer(Spacer& sp){
 //
 //  Method:        SeqSaver::saveLigand
 //
-//  Author:        Marcus Pruemmer
-//
 //  Date:          06/2000
 //
 //  Description:

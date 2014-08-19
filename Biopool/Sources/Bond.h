@@ -1,6 +1,5 @@
 /**
-* @Class:           Bond
-* @Base class:      SimpleBond
+ 
 *                  Attention: copy() strips orig from its bonds and 
 *                  attaches them to the new bond. 
 */
@@ -24,7 +23,8 @@ namespace Biopool {
 
 
 
-class Bond : public SimpleBond{
+class Bond : public SimpleBond
+{
 public: 
 
   // CONSTRUCTORS/DESTRUCTOR:
@@ -83,12 +83,16 @@ private:
  * @param unsigned int 
  * @return  Atom reference
  */
- inline Atom& Bond::getInBondRef(unsigned int n) {
+ inline Atom&
+Bond::getInBondRef(unsigned int n) 
+{
   PRECOND(n < inRef.size(), exception);
   return *inRef[n];
 }
 
-inline const Atom& Bond::getInBondRef(unsigned int n) const{
+inline const Atom&
+Bond::getInBondRef(unsigned int n) const
+{
   PRECOND(n < inRef.size(), exception);
   return *inRef[n];
 }
@@ -98,12 +102,16 @@ inline const Atom& Bond::getInBondRef(unsigned int n) const{
  * @param unsigned int 
  * @return  Atom reference
  */ 
- inline Atom& Bond::getOutBondRef(unsigned int n) {
+ inline Atom&
+Bond::getOutBondRef(unsigned int n) 
+{
   PRECOND(n < outRef.size(), exception);
   return *outRef[n];
 }
 
-inline const Atom& Bond::getOutBondRef(unsigned int n) const{
+inline const Atom&
+Bond::getOutBondRef(unsigned int n) const
+{
   PRECOND(n < outRef.size(), exception);
   return *outRef[n];
 }
@@ -115,7 +123,9 @@ inline const Atom& Bond::getOutBondRef(unsigned int n) const{
  * @param void
  * @return unsigned int 
  */ 
- inline unsigned int Bond::sizeOpenInBonds() const{
+ inline unsigned int 
+Bond::sizeOpenInBonds() const
+{
   return (getMaxInBonds() - sizeInBonds());
 }
 
@@ -125,7 +135,8 @@ inline const Atom& Bond::getOutBondRef(unsigned int n) const{
  * @param void
  * @return unsigned int 
  */  
- inline unsigned int Bond::sizeOpenOutBonds() const{
+ inline unsigned int Bond::sizeOpenOutBonds() const
+{
   return (getMaxOutBonds() - sizeOutBonds());
 }
 

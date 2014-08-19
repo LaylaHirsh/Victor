@@ -51,11 +51,9 @@ compile: all
 install: $(LIBRARY) $(TARGETS)
 	mv $(EXECS) $(UPDIR)/bin
 	mv $(LIBRARY) $(UPDIR)/lib
-	echo $(VICTOR_ROOT)
 	
 #
 # Call global Makefile to do the job.
 #
 
-export VICTOR_ROOT=$(dir $(patsubst %/,%, $(dir $(patsubst %/,%, $(shell pwd)))))
 include ../../Makefile.global

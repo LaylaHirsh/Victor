@@ -3,7 +3,6 @@
 * @Base Class(es):    Polymer
 * @Derived Class(es): -
 * @Containing:        Spacer, Ligandset
-* @Author:            Francesco Lovo
 * @Project Name:      Victor
 * @Description:       This class is a container of Polymers, each one
 *                     storing a Spacer and (eventually) a LigandSet for each
@@ -38,8 +37,6 @@ Protein::getSpacer(char c)
     unsigned int n = getChainNum(c);
     return getSpacer(n);
 }   
-
-
 /**
  * @Description 
  * @param 
@@ -57,7 +54,7 @@ Protein::getPolymer(unsigned int n)
  */
 Spacer*
 Protein::getSpacer(unsigned int n)
-{    
+{
     if ( n > sizeProtein() - 1 )
       ERROR("Index out of range",exception);
     Polymer& p=getPolymer(n);

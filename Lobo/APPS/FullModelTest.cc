@@ -218,7 +218,8 @@ int main(int nArgs, char* argv[]){
   vector<double> min_counterSTRAND;
 
   for (unsigned int index1 = 2; index1 < sp->sizeAmino()-(windowSize+2); 
-       index1++)    {  // Main iteration loop:
+       index1++)    {
+      // Main iteration loop:
       unsigned int index2 = index1 + windowSize;
       
       cout << "Running from " << setw(3) << index1+1 << " to " 
@@ -230,7 +231,7 @@ int main(int nArgs, char* argv[]){
       for (unsigned int i = index1+1; i < index2+1; i++)
 	typeVec.push_back(sp->getAmino(i).getType());
       
-      vector<Spacer> vsp;
+      vector<Spacer > vsp;
       vsp = lm.createLoopModel(sp->getAmino(index1), 
 	   sp->getAmino(index1+1)[N].getCoords(), sp->getAmino(index2), 
 	   sp->getAmino(index2+1)[N].getCoords(), index1, index2, num, 

@@ -33,6 +33,7 @@ using namespace Biopool;
 /**
  * @Description Reads in the maximum allowed number of NMR models, zero otherwise
  * @param none
+ * @Author Silvio Tosatto , 08/05
  */
 
 unsigned int 
@@ -245,6 +246,14 @@ PdbLoader::setWater()
     noWater = false; 
 }
 
+/*
+void 
+PdbLoader::loadSpacer(Spacer& sp){
+    Protein prot;
+    PdbLoader::loadProtein(prot);
+    sp = prot.getSpacer(0);    
+}
+*/
 
 void 
 PdbLoader::loadProtein(Protein& prot){
@@ -253,6 +262,13 @@ PdbLoader::loadProtein(Protein& prot){
     
     vector<char> chainList = getAllChains();
     
+    if (chainList.size()==0){
+        if (verbose)
+            cout << "Warning: Missing chain ID in the PDB, assuming the same chain for the entire file.\n";
+        chainList.push_back(char(' '));
+    }
+    
+    
     unsigned int readingModel = model;
     bool loadChain = false;
 
@@ -260,20 +276,13 @@ PdbLoader::loadProtein(Protein& prot){
     sheetCode = "";
     
     
+    string path = "data/AminoAcidHydrogenData.txt"; 
+    const char* inputFile = getenv("VICTOR_ROOT");
+    if (inputFile == NULL)
+        ERROR("Environment variable VICTOR_ROOT was not found.", exception);
     
- string path = "data/AminoAcidHydrogenData.txt"; 
-  string inputFile = getenv("VICTOR_ROOT");
-  if (inputFile.length() < 3)
-    ERROR("Environment variable VICTOR_ROOT was not found.", exception);
-      
-  inputFile += path;//comment this if you are using a no 64bits OC
-  
-    
-    AminoAcidHydrogen::loadParam(inputFile.c_str());
-    
-    
-    
-    
+    AminoAcidHydrogen::loadParam(((string)inputFile+path).c_str());
+        
     for (unsigned int i=0; i<chainList.size(); i++){
         loadChain=false;
         // Load all chains
@@ -296,7 +305,7 @@ PdbLoader::loadProtein(Protein& prot){
         if (loadChain){
         
             if (verbose){
-                cout << "\nLoading chain: " << chainList[i] <<"\n";
+                cout << "\nLoading chain: ->" << chainList[i] <<"<-\n";
             }
             setChain(chainList[i]);
             
@@ -371,14 +380,20 @@ PdbLoader::loadProtein(Protein& prot){
                             
                             // Insert the Ligand object into LigandSet
                             if (aaNum != oldAaNum){
-                               
+                                // Print some indexes for the debug
+                                /* 
+                                cout << aa->getType1L() << " offset:" << sp->getStartOffset() << " gaps:" 
+                                     << sp->sizeGaps() << " sizeAmino:" <<  sp->sizeAmino() <<  " maxPdbNum:" 
+                                     << sp->maxPdbNumber() << " aaNum:" << aaNum  
+                                     << " oldAaNum:" << oldAaNum << " lastAa:" << lastAa << "\n";
+                                */
                                 if ((aa->size()>0) && (aa->getType1L()!='X')){ // Skip the first empty AminoAcid
                                     if (sp->sizeAmino()==0){
                                         sp->setStartOffset(oldAaNum-1);
                                     }
                                     else{
                                         // Add gaps
-                                  
+                                        //for (int i = lastAa+1; i < oldAaNum; i++){
                                         for (int i = sp->maxPdbNumber()+1; i < oldAaNum; i++){
                                             sp->addGap(i);
                                         }
@@ -457,6 +472,7 @@ PdbLoader::loadProtein(Protein& prot){
             if (verbose)
                 cout << "Parsing done\n";
             
+            ////////////////////////////////////////////////////////////////////
             // Spacer processing
             if (sp->sizeAmino()>0){
                 
@@ -489,9 +505,10 @@ PdbLoader::loadProtein(Protein& prot){
                         if (verbose)
                             cout << "Warning: Fail to connect residues in chain: " << chainList[i] << ".\n"; 
                     } 
+                    if (verbose)
+                        cout << "Connected residues\n";
                 }
-                if (verbose)
-                    cout << "Connected residues1\n";
+                
                 
                 // correct position of leading N atom
                 sp->setTrans(sp->getAmino(0)[N].getTrans());
@@ -499,7 +516,7 @@ PdbLoader::loadProtein(Protein& prot){
                 sp->getAmino(0)[N].setTrans(tmp);
                 sp->getAmino(0).adjustLeadingN();
                 if (verbose)
-                    cout << "Connected residues2\n";
+                    cout << "Fixed leading N atom\n";
                 
                 
                 
@@ -508,27 +525,30 @@ PdbLoader::loadProtein(Protein& prot){
                     for (unsigned int j = 0; j < sp->sizeAmino(); j++) {
                         AminoAcidHydrogen::setHydrogen(&(sp->getAmino(j)),false); // second argument is VERBOSE
                     }
-                    cout << "H assigned\n";
+                    if (verbose)
+                        cout << "H assigned\n";
                     
                     if (!noSecondary){
-                        sp->getDSSP(false); // argument is VERBOSE
-                        cout << "DSSP assigned\n";
+                        sp->setDSSP(false); // argument is VERBOSE
+                        if (verbose)
+                            cout << "DSSP assigned\n";
                     }
                 }
-                else{
-                    // assign secondary structure from torsion angles
-                    if (!noSecondary){
-                        assignSecondary(*sp);
-                        //cout << "Torsional SS assigned\n";
-                    }
+                
+                // assign secondary structure from torsion angles
+                if (!noSecondary){
+                    assignSecondary(*sp);
+                    if (verbose)
+                        cout << "Torsional SS assigned\n";
                 }
+                
             }
             else{
                 if (verbose)
                     cout << "Warning: No residues in chain: " << chainList[i] << ".\n";
             }
             
-            
+            ////////////////////////////////////////////////////////////////////
             // Load data into protein object
             Polymer* pol = new Polymer();
             pol->insertComponent(sp);
@@ -571,7 +591,9 @@ PdbLoader::parsePDBline(string atomLine, string tag, Ligand* lig, AminoAcid* aa)
     coord.z = stod(atomLine.substr(46,8));
     double bfac = 0.0;
     if (atomLine.length() >= 66){
-        bfac = stod(atomLine.substr(60,6));
+        if (atomLine.substr(60,6)!="      "){ // empty bfac
+            bfac = stod(atomLine.substr(60,6));
+        }
     }
     string atType="";
     for (int i = 11; i < 17; i++){

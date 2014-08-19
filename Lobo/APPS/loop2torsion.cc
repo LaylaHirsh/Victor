@@ -19,7 +19,8 @@ void sShowHelp(){
        << "This program extracts torsion angles from loop regions.\n"
        << " Options: \n"
        << "\t-i <filename> \t\t Input pdb file\n"
-       << "\t-c <filename> \t\t chain id\n";
+       << "\t-c <filename> \t\t chain id\n"
+       << "\t-v \t\t verbose\n"; 
 }
 
 
@@ -73,6 +74,7 @@ int main(int nArgs, char* argv[]){
   string inputFile, outputFile,chainID;
   getArg( "i", inputFile, nArgs, argv, "!");
   getArg( "c", chainID, nArgs, argv, " ");
+  bool verbo=getArg( "v", nArgs, argv);
   if ((inputFile == "!"))     {
       cout << "Missing file specification. Aborting. (-h for help)" << endl;
       return -1;
@@ -87,9 +89,7 @@ int main(int nArgs, char* argv[]){
   pl.setNoHAtoms();
   vector<char> allCh; 
    allCh = pl.getAllChains(); 
-      for (unsigned int i = 0; i < allCh.size(); i++)
-           cout << "\t," << allCh[i] << ",";
-      cout << "\n";
+      
 
     /*check on validity of chain: 
     if user select a chain then check validity
@@ -117,14 +117,25 @@ int main(int nArgs, char* argv[]){
   
 
   sp->setStateFromTorsionAngles();
- 
-  for (unsigned int i = 1; i < sp->sizeAmino()-1; i++)    {
-      if (sp->getAmino(i).getState() == COIL)
-	cout << "   " << setw(5) << setprecision(3) << sp->getAmino(i).getPhi()
-	     << "   " << setw(5) << setprecision(3) << sp->getAmino(i).getPsi()
-	     << "    1.0\n";
-    }
-
-
+  if (verbo){
+      cout <<"AA#\tType\tPhi\tPsi\n ";
+        for (unsigned int i = 1; i < sp->sizeAmino()-1; i++)    {
+           if (sp->getAmino(i).getState() == COIL)
+                cout<< i<< "   " << setw(5) << setprecision(3) << sp->getAmino(i).getPhi()
+                    << "   " << setw(5) << setprecision(3) << sp->getAmino(i).getPsi()
+                    << "    1.0\n";
+       }
+  }
+  else{
+        for (unsigned int i = 1; i < sp->sizeAmino()-1; i++)    {
+            if (sp->getAmino(i).getState() == COIL)
+                cout << "   " << setw(5) << setprecision(3) << sp->getAmino(i).getPhi()
+                    << "   " << setw(5) << setprecision(3) << sp->getAmino(i).getPsi()
+                    << "    1.0\n";
+        }
+  }
+  
+  
+  
   return 0;
 }

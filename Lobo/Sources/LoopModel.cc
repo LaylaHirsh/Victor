@@ -1,11 +1,25 @@
-/** 
-  * 
- * @Class:           LoopModel   
-  * 
- * @Description: This class implements methods that allow to create a model and also evaluate it. 
- *  Includes methods to calculate the RMS, propensity, etc.
-  *      
-*/
+// -*- C++ -*------------------------------------------------------------------
+//  $Id: LoopModel.cc,v 1.25 2007-12-18 16:22:13 biocomp Exp $
+//
+//  Class:              LoopModel
+//
+//  Base Class(es):     -
+//
+//  Derived Class(es):  -
+//
+//  Containing:         LoopTable
+//
+//  Author:             Silvio Tosatto
+//
+//  Project Name:       Nazgul
+//
+//  Date:               06/00
+//
+//  Reviewed By:        -
+//
+//  Description:
+//
+// ---------------------------------------------------------------------------
 
 // Includes:
 #include <LoopModel.h>
@@ -13,15 +27,11 @@
 #include <IntCoordConverter.h>
 #include <String2Number.h>
 #include <queue>
- 
-#include <Debug.h>
-#include <limits.h>
-#include <float.h>
+//#include <EnergyCalculatorImpl.h>
 
 // Global constants, typedefs, etc. (to avoid):
-
+using namespace std;
 using namespace Biopool;
-
 
 unsigned int LoopModel::MAX_CHAIN_LENGTH = 64;
 unsigned int LoopModel::OPT_MAX1 = 5;
@@ -41,69 +51,59 @@ double LoopModel::BOND_LENGTH_CA_TO_CB = 1.54;
 
 unsigned int LoopModel::MAX_SPAN = 15;
 unsigned int LoopModel::MAX_ITER_SOL = 500;
-//NOTE:
-//This causes a runtime error on 64 bit OS, use the path variable to avoid it if you are using a 64 bit SO
-//string LoopModel::TABLE_PARAM_FILE = "data/aa";
+string LoopModel::TABLE_PARAM_FILE = "data/aa";
 
 const double WEIGHT_SEC = 10.0;
-const double L_HELIX = 0.414;
-const double L_STRAND = 0.42;
-const double L_COIL = 0.13;
+
 SolvationPotential LoopModel::solv;
 RapdfPotential LoopModel::rapdf;
 PhiPsi LoopModel::tor;
 
-
-/**
- * @Description Calculates distance between two points
- * @param  two point's coords (vgVector3<double>,vgVector3<double>)
- * @return  the corresponding value(static double)
- */
-static double sDistance( vgVector3<double> xv,  vgVector3<double> yv){
+static double sDistance( vgVector3<double> xv,  vgVector3<double> yv)
+{
   return  sqrt(sqr(xv.x-yv.x) + sqr(xv.y-yv.y) + sqr(xv.z-yv.z));
 }
 
 
 // CONSTRUCTORS/DESTRUCTOR:
-/**
- * @Description  Basic constructor
- */
-LoopModel::LoopModel() : pInter(false), pPlot(false), pVerbose(0), pScatter(&cout), table(), solution(){ 
-    char *victor=getenv("VICTOR_ROOT");
-	if (victor  == NULL)
-		ERROR("Environment variable VICTOR_ROOT was not found.\n Use the command:\n export VICTOR_ROOT=......", exception);
-    string path = "data/aa";//comment this if you are using a no 64bits OC
-    string tableFileR = getenv("VICTOR_ROOT");
-  if (tableFileR.length() < 3)
-    ERROR("Environment variable VICTOR_ROOT was not found.", exception);
 
-  //string tableFile = tableFileR + TABLE_PARAM_FILE;
-  string tableFile = tableFileR + path;
+LoopModel::LoopModel() : pInter(false),  
+pPlot(false), pVerbose(0), pScatter(&cout), table(), solution()
+{ 
+  string tableFile = getenv("VICTOR_ROOT");
+  if (tableFile.length() < 3)
+    ERROR("Environment variable VICTOR_ROOT was not found.", exception);
+  string path = "data/aa";
+  tableFile += path;
+
   setTableFileName(tableFile);
  
   ENDRMS_WEIGTH.push_back(125);
 }
 
 
-/**
- * @Description  Basic destructor
- */
-LoopModel::~LoopModel(){
+//  LoopModel::LoopModel(const LoopModel& orig)
+//  {
+//   this->copy(orig);
+//  }
+
+LoopModel::~LoopModel()
+{
   PRINT_NAME;
-  while (table.size() > 0)    {
+  while (table.size() > 0)
+    {
       delete table[table.size()-1];
       table.pop_back();
     }
 
   solution.clear();
 }
-/**
- * @Description   releases memory occupied by loop tables bigger than the index 
- * @param   maximum size to consider(unsigned int)
- * @return   changes the object internally (void)  
- */
-void LoopModel::releaseTables(unsigned int index){
-  while (table.size() > index)    {
+
+void 
+LoopModel::releaseTables(unsigned int index)
+{
+  while (table.size() > index)
+    {
       delete table[table.size()-1];
       table.pop_back();
     }
@@ -112,18 +112,16 @@ void LoopModel::releaseTables(unsigned int index){
 
 
 // PREDICATES:
-/**
- * @Description Sets the vdw_forces
- * @param   reference for the spacer(Spacer& sp),the wto index to consider
- *          (unsigned int,unsigned int) vector that contains the solutions(std::vector<Spacer>&)
- * @return   a vector containing the corresponding values (std::vector<int>)
- */
-std::vector<int>LoopModel::vdwValues(Spacer& sp, unsigned int index1, unsigned int index2,
-std::vector<Spacer>& solVec){
-  std::vector<int> ret_vector; 
-  int count = 0;          
 
-  for (unsigned int loop = 0; loop < solVec.size(); loop++)    {
+vector<int>
+LoopModel::vdwValues(Spacer& sp, unsigned int index1, unsigned int index2,
+vector<Spacer>& solVec)
+{
+  vector<int> ret_vector; 
+  int count = 0;         // contains the total vdw_forces of a loop (put into vector
+
+  for (unsigned int loop = 0; loop < solVec.size(); loop++)
+    {
       count = loop_loop_vdw(solVec[loop], index1 + 1);
       count += loop_spacer_vdw(solVec[loop], index1 + 1, index2 + 1, sp);
       
@@ -132,16 +130,21 @@ std::vector<Spacer>& solVec){
  return ret_vector; 
 }
 
- 
-/**
- * @Description  Calculates the consistency values for each generated solution. 
- * @param   Spacer reference that contains the protein (Spacer&),Index1 and index2 demarcate the area of the loop(unsigned int,unsigned int)
- *   reference that contains the possible solutions/loops( vector<Spacer>&)
- * @return   the consistency values(std::vector<int>).
- */
-std::vector<int>LoopModel::consistencyValues(Spacer& sp, unsigned int index1, 
-unsigned int index2, vector<Spacer>& solVec) {
-  std::vector<int> ret_vector; 
+// -*- C++ -*-----------------------------------------------------------------
+//
+//  Method:        LoopModel::consistencyValues()      
+//
+//  Description:
+//
+//  Calculates the consistency values for each generated solution. The results
+//  are returned in the vector.
+//  
+// ----------------------------------------------------------------------------
+vector<int>
+LoopModel::consistencyValues(Spacer& sp, unsigned int index1, 
+unsigned int index2, vector<Spacer>& solVec) 
+{
+  vector<int> ret_vector; 
   for (unsigned int loop = 0; loop < solVec.size(); loop++) 
       ret_vector.push_back(calculateConsistency(sp, index1, index2, 
 						solVec[loop]) 
@@ -151,19 +154,17 @@ unsigned int index2, vector<Spacer>& solVec) {
   return ret_vector;
 }
 
-/**
- * @Description  Calculates the consistency between two proteins 
- * @param   Spacer reference that contains the protein (Spacer&),Index1 and index2 demarcate the area of the loop(unsigned int,unsigned int)
- *   Spacer reference that contains the protein (Spacer&)
- * @return   the consistency value(double)
- */
-double LoopModel::calculateConsistency(Spacer& sp, unsigned int index1, 
-unsigned int index2, Spacer& sp2) {
+
+double 
+LoopModel::calculateConsistency(Spacer& sp, unsigned int index1, 
+unsigned int index2, Spacer& sp2) 
+{
   double tmp, count = 0;
   IntCoordConverter icc;
 
   tmp = calculateRms(sp, index1, index2, sp2, false);
-  if (tmp > 1.0)  {
+  if (tmp > 1.0)
+  {
       if (pVerbose > 2)
 	  cout << "ENDRMS check failed. ( " 
 	       << tmp << " ) \t\t\t "
@@ -176,8 +177,9 @@ unsigned int index2, Spacer& sp2) {
   }
   
   tmp = calculatePropensities(sp, index1, index2, sp2);
-
-  if (tmp > 0.5)  {
+//    if (tmp < 0.5)
+  if (tmp > 0.5)
+  {
       if (pVerbose > 2)
 	  cout << "PROPENSITY check failed. ( " 
 	       << tmp << " ) \t\t\t"
@@ -189,7 +191,8 @@ unsigned int index2, Spacer& sp2) {
 
   tmp = sDistance(sp2.getAmino( sp2.sizeAmino()-1)[N].getCoords(), 
 		  sp.getAmino(index2)[CA].getCoords());
-  if ( (tmp < 0.9) || (tmp > 1.9) )  {
+  if ( (tmp < 0.9) || (tmp > 1.9) )
+  {
       if (pVerbose > 2)
 	  cout << "loop closure length check failed. ( " << tmp << " ) \t "
 	       << calculateRms2(sp, index1, index2, sp2, false) << "\n";
@@ -198,7 +201,8 @@ unsigned int index2, Spacer& sp2) {
   
   tmp = RAD2DEG * icc.getBondAngle(sp2.getAmino(sp2.sizeAmino()-2)[C], 
 	   sp2.getAmino(sp2.sizeAmino()-1)[N], sp.getAmino(index2)[CA]);
-  if (fabs(tmp - 121.5) > 20.0)  {
+  if (fabs(tmp - 121.5) > 20.0)
+  {
       if (pVerbose > 2)
 	  cout << "loop closure angle check failed. ( " << tmp << " ) \t "
 	       << calculateRms2(sp, index1, index2, sp2, false) << "\n";
@@ -208,7 +212,8 @@ unsigned int index2, Spacer& sp2) {
   tmp = RAD2DEG * icc.getTorsionAngle(sp2.getAmino(
          sp2.sizeAmino()-2)[CA], sp2.getAmino(sp2.sizeAmino()-2)[C], 
 	 sp2.getAmino(sp2.sizeAmino()-1)[N], sp.getAmino(index2)[CA]);
-  if ( (fabs(tmp - 180.0 ) > 40.0) && (fabs(tmp + 180.0 ) > 40.0) )  {
+  if ( (fabs(tmp - 180.0 ) > 40.0) && (fabs(tmp + 180.0 ) > 40.0) )
+  {
       if (pVerbose > 2)
 	  cout << "loop closure torsion check failed. ( " << tmp << " ) \t "
 	       << calculateRms2(sp, index1, index2, sp2, false) << "\n";
@@ -217,14 +222,16 @@ unsigned int index2, Spacer& sp2) {
 
   // proline filter:
   
-  if (sp2.getAmino(0).getType() == "PRO")  {
+  if (sp2.getAmino(0).getType() == "PRO")
+  {
       double tPhi = RAD2DEG * icc.getTorsionAngle(
 	  const_cast<Atom&>(sp.getAmino(index1)[C]), sp2.getAmino(0)[N], 
 	  sp2.getAmino(0)[CA], sp2.getAmino(0)[C]);
       double tPsi = sp2.getAmino(0).getPsi();
 
       if ( (tPhi < -140.0) || (tPhi > -10.0) 
-	   || ( (tPsi < -90.0) && (tPsi > -140.0) ) )      {
+	   || ( (tPsi < -90.0) && (tPsi > -140.0) ) )
+      {
 	  count += 16000;
 	  if (pVerbose > 2)
 	      cout << "PROLINE torsion angle check failed. ( " 
@@ -234,12 +241,14 @@ unsigned int index2, Spacer& sp2) {
   }
   
   for (unsigned int i = 1; i < sp2.sizeAmino()-1; i++)
-  if (sp2[i].getType() == "PRO")   {
+  if (sp2[i].getType() == "PRO") 
+  {
       double tPhi = sp2.getAmino(i).getPhi();
       double tPsi = sp2.getAmino(i).getPsi(); 
       
       if ( (tPhi < -140.0) || (tPhi > -10.0)
-	   ||  ( (tPsi < -90.0) && (tPsi > -140.0) ) )      {
+	   ||  ( (tPsi < -90.0) && (tPsi > -140.0) ) )
+      {
 	  count += 16000;
 	  if (pVerbose > 2)
 	      cout << "PROLINE torsion angle check failed. ( " 
@@ -250,7 +259,8 @@ unsigned int index2, Spacer& sp2) {
   }  
   
   unsigned int tNum = sp2.sizeAmino()-1;
-  if (sp2.getAmino(tNum).getType() == "PRO")  {
+  if (sp2.getAmino(tNum).getType() == "PRO")
+  {
       double tPhi = sp2.getAmino(tNum).getPhi();
 
       double tPsi =  RAD2DEG * icc.getTorsionAngle( sp2.getAmino(tNum)[N], 
@@ -258,7 +268,8 @@ unsigned int index2, Spacer& sp2) {
 	 const_cast<Atom&>(sp.getAmino(index2+1)[N]));
 
       if ( (tPhi < -140.0) || (tPhi > -10.0) 
-	   || ( (tPsi < -90.0) && (tPsi > -140.0) ) )  {
+	   || ( (tPsi < -90.0) && (tPsi > -140.0) ) )
+      {
 	  count += 16000;
 	  if (pVerbose > 2)
 	      cout << "PROLINE torsion angle check failed. ( " 
@@ -270,31 +281,26 @@ unsigned int index2, Spacer& sp2) {
  return count;
 }
  
-/**
- * @Description  Calculates a different random value inside a range, based in a original value
- * @param   original value(int), limit(int)
- * @return   corresponding value(double)
- */
-double sRandom(int c, int m){
+
+double sRandom(int c, int m)
+{
   double MAX_DISP = 0.1 + 0.5 * (m/2 - fabs( c - (m/2)));
 
   return MAX_DISP * rand()/RAND_MAX - (MAX_DISP/2);
 
 }
 
-/**
- * @Description  Refines the possible solutions,refine end rms:
- * @param   Spacer reference that contains the protein (Spacer&),Index1 and index2 demarcate the area of the loop(unsigned int,unsigned int)
- *   reference that contains the possible solutions/loops( vector<Spacer>&)
- * @return   changes the object internally (void)  
- */
-void LoopModel::refineModel(Spacer& sp, unsigned int index1, unsigned int index2,
-std::vector<Spacer>& solVec){
-  
+
+void 
+LoopModel::refineModel(Spacer& sp, unsigned int index1, unsigned int index2,
+vector<Spacer>& solVec)
+{
+  // refine end rms:
   unsigned int offset = index2 - index1 - 1;
   unsigned int max = index2-index1+1;
   
-  for (unsigned int svOffset = 0; svOffset < solVec.size(); svOffset++)    {
+  for (unsigned int svOffset = 0; svOffset < solVec.size(); svOffset++)
+    {
       vgVector3<double> tmp = ( (solVec[svOffset].getAmino(offset)[N].getCoords() 
 				 - sp.getAmino(index2)[N].getCoords()) );
 
@@ -315,14 +321,11 @@ std::vector<Spacer>& solVec){
 	}
     }
 }
-/**
- * @Description  Optimizes the models, can be a verbose process
- * @param    Spacer reference that contains the protein (Spacer&),Index1 and index2 demarcate the area of the loop(unsigned int,unsigned int)
- *   reference that contains the possible solutions/loops( vector<Spacer>&),verbose flag (bool)
- * @return   changes the object internally (void)  
- */
-void LoopModel::optimizeModel(Spacer& sp, unsigned int index1, unsigned int index2,
-std::vector<Spacer>& solVec, bool verbose){
+
+void 
+LoopModel::optimizeModel(Spacer& sp, unsigned int index1, unsigned int index2,
+vector<Spacer>& solVec, bool verbose)
+{
   if (solVec.size() == 0)
     return;
 
@@ -333,8 +336,10 @@ std::vector<Spacer>& solVec, bool verbose){
     }
 
   for (unsigned svOffset = 0; svOffset < (solVec.size() > OPT_NUM ? OPT_NUM : 
-					  solVec.size() ); svOffset++)    {
-      if (verbose)	{
+					  solVec.size() ); svOffset++)
+    {
+      if (verbose)
+	{
 	  cout << "-----------------------------------------\n";
 	  cout << ">>>>> optimizing solution # " << svOffset << "\n";
 	}
@@ -346,7 +351,8 @@ std::vector<Spacer>& solVec, bool verbose){
       double bestScore = minScore;
       int max = index2-index1+1;
 
-      if (verbose){
+      if (verbose)
+	{
 	  cout << "en= " << minEn << "\t";
 	  calculateRms(sp, index1, index2, solVec[svOffset]);
 
@@ -357,7 +363,8 @@ std::vector<Spacer>& solVec, bool verbose){
       Spacer bestSp = solVec[svOffset];
 
       for (unsigned int i = 0; i < OPT_MAX1; i++)
-	for (unsigned int j = 0; j < OPT_MAX2; j++) {
+	for (unsigned int j = 0; j < OPT_MAX2; j++)
+	  {
 	    Spacer tmpSp = solVec[svOffset];
 	    minScore = getENDRMS_WEIGHT() * calculateRms(sp, index1, index2, 
 		         solVec[svOffset], false) 
@@ -365,13 +372,17 @@ std::vector<Spacer>& solVec, bool verbose){
 						solVec[svOffset]);
 
 	    // attempt local modifications
+	
 	    int curr = rand() % (max-1);
+	
+	    //  	cout << curr << "\t";
 	
 	    vgVector3<double> disp(0.0, 0.0, 0.0);
 	
 	    disp[0] += sRandom(curr, max-1);
 	    disp[1] += sRandom(curr, max-1);
 	    disp[2] += sRandom(curr, max-1);
+//  	cout << "\t" << disp[0] << "\t" << disp[1] << "\t" << disp[2] << "\n";
 	
 	    tmpSp.getAmino(curr)[N].setCoords(
 		tmpSp.getAmino(curr)[N].getCoords() + disp);
@@ -380,7 +391,8 @@ std::vector<Spacer>& solVec, bool verbose){
 	    tmpSp.getAmino(curr)[C].setCoords(
 		tmpSp.getAmino(curr)[C].getCoords() + disp);
 
-	    if (curr > 1) {
+	    if (curr > 1)
+	      {
 		tmpSp.getAmino(curr-1)[N].setCoords(
 		  tmpSp.getAmino(curr-1)[N].getCoords() + disp/2);
 		tmpSp.getAmino(curr-1)[CA].setCoords(
@@ -389,7 +401,8 @@ std::vector<Spacer>& solVec, bool verbose){
 		  tmpSp.getAmino(curr-1)[C].getCoords() + disp/2);
 	      }
 
-	    if (curr < max-2) {
+	    if (curr < max-2)
+	      {
 		tmpSp.getAmino(curr+1)[N].setCoords(
 		  tmpSp.getAmino(curr+1)[N].getCoords() + disp/2);
 		tmpSp.getAmino(curr+1)[CA].setCoords(
@@ -402,29 +415,34 @@ std::vector<Spacer>& solVec, bool verbose){
 	    double actScore = getENDRMS_WEIGHT() * calculateRms(sp, index1, index2, 
 		         tmpSp, false) 
 	      + ENERGY_WEIGTH * actEn;
-	    if (actScore < minScore) {
-		if (verbose)  {
+	    if (actScore < minScore)
+	      {
+		if (verbose)
+		  {
 		    cout << i << " " << j << " new minimum= " << actEn << "\t";
 		    calculateRms(sp, index1, index2, tmpSp);
 		  }
 
 		minScore = actScore;
 
-		if (actScore < bestScore) {
+		if (actScore < bestScore)
+		  {
 		    bestScore = actScore;
 		    bestSp = tmpSp;
 		  }
 	      }
 	  }
       solVec[svOffset] = bestSp;
-      if (verbose){
+      if (verbose)
+	{
 	  cout << "-----------------------------------------\n";
 	  cout << "selected = " << calculateEnergy(sp, index1, index2, bestSp) 
 	       << "\t";
 	  calculateRms(sp, index1, index2, bestSp);
 	}
     }
-  if (verbose) {
+  if (verbose)
+    {
       cout << "-----------------------------------------\n";
       unsigned int size1 = sp.sizeAmino();
       double en = 0.0;
@@ -447,14 +465,13 @@ std::vector<Spacer>& solVec, bool verbose){
     }
 }
 
-/**
- * @Description  Calculates the energy 
- * @param    Spacer reference that contains the protein (Spacer&),Index1 and index2 demarcate the area of the loop(unsigned int,unsigned int)
- *   reference that contains the possible solution(const Spacer&)
- * @return   corresponding energy value(double)
- */
-double LoopModel::calculateEnergy(const Spacer& sp, unsigned int index1, 
-unsigned int index2, Spacer& sp2){
+
+
+
+double 
+LoopModel::calculateEnergy(const Spacer& sp, unsigned int index1, 
+unsigned int index2, Spacer& sp2)
+{
   long double en = 0.0;
   unsigned int size1 = sp.sizeAmino();
   unsigned int size2 = sp2.sizeAmino();
@@ -476,14 +493,13 @@ unsigned int index2, Spacer& sp2){
   return en;
 
 }
-/**
- * @Description  Calculates the secondary Preference
- * @param    Spacer reference that contains the protein (const Spacer&),Index1 and index2 demarcate the area of the loop(unsigned int,unsigned int)
- *   reference that contains the possible solution ( Spacer&)
- * @return   corresponding value(double)
- */
-double LoopModel::calculateSecondaryPreference(const Spacer& sp, unsigned int index1, unsigned int index2, Spacer& sp2){
 
+double 
+LoopModel::calculateSecondaryPreference(const Spacer& sp, unsigned int index1, unsigned int index2, Spacer& sp2)
+{
+  // Idee dieser Funktion:
+  // Bestrafe gegensaetzliche Sekundaerstrukturen am Anfang/Ende des Loops
+  // ggue. dem Framework (eg. a/b)
 
   double res = sqr(sp2.getAmino(1).getPhi() 
 		   - const_cast<Spacer&>(sp).getAmino(index1).getPhi()) 
@@ -500,44 +516,42 @@ double LoopModel::calculateSecondaryPreference(const Spacer& sp, unsigned int in
   return 0;
 }
 
-/**
- * @Description  calculates the estimation of the accessible surface area of a protein molecule
- * @param   two amino acids to consider
- * @return   corresponding value(doube)
- */
-double pCalculateOoi(const AminoAcid& aa1, const AminoAcid& aa2){
+
+double 
+pCalculateOoi(const AminoAcid& aa1, const AminoAcid& aa2)
+{
   return (const_cast<Atom&>(aa1[CA]).distance(
 	     const_cast<Atom&>(aa2[CA])) > 14.0 ? 0.0 : 
 	   const_cast<Atom&>(aa1[CA]).distance(
 	      const_cast<Atom&>(aa2[CA])) > 8.0 ? -0.5 : -1.0); 
 }
 
-/**
- * @Description  Calculates the packing
- * @param    Spacer reference that contains the protein (const Spacer&),Index1 and index2 demarcate the area of the loop(unsigned int,unsigned int)
- *   reference that contains the possible solution (  Spacer&)
- * @return   
- */
-double LoopModel::calculatePacking(const Spacer& sp, unsigned int index1, unsigned int index2, Spacer& sp2){
+
+
+double 
+LoopModel::calculatePacking(const Spacer& sp, unsigned int index1, unsigned int index2, Spacer& sp2)
+{
+  // Idee dieser Funktion:
+  // Berechne die Packungsdicht ("Ooi Number") anhand von zwei probes:
+  // 8 und 14 A CA-CA Abstand.
 
   double res = 0.0;
-  for (unsigned int i = 0; i < index2 - index1-1; i++){
+
+  for (unsigned int i = 0; i < index2 - index1-1; i++)
+    {
       for (unsigned int j = 0; j < index1-1; j++)
 	res += pCalculateOoi(sp.getAmino(j), sp2.getAmino(i));
       for (unsigned int j = index2+1; j < sp.sizeAmino(); j++)
 	res += pCalculateOoi(sp.getAmino(j), sp2.getAmino(i));
     }
 
+
   return res / (index2 - index1 - 1);
 }
 
-/**
- * @Description calculates the solvation value  
- * @param    Spacer reference that contains the protein (const Spacer&),Index1 and index2 demarcate the area of the loop(unsigned int,unsigned int)
- *   reference that contains the possible solution (  Spacer&)
- * @return   corresponding value(double)
- */
-double LoopModel::calculateSolvation(const Spacer& sp, unsigned int index1, unsigned int index2, Spacer& sp2){
+double 
+LoopModel::calculateSolvation(const Spacer& sp, unsigned int index1, unsigned int index2, Spacer& sp2)
+{
   long double res = 0.0;
 
   for (unsigned int i = 0; i < sp2.sizeAmino(); i++)
@@ -547,12 +561,8 @@ double LoopModel::calculateSolvation(const Spacer& sp, unsigned int index1, unsi
   return res;
 }
 
-/**
- * @Description  Calculates the hidrogen values
- * @param   the two amino acids to consider
- * @return   corresponding value(double)
- */
-double sCalcHydrogen(AminoAcid& aa1, AminoAcid& aa2){
+double sCalcHydrogen(AminoAcid& aa1, AminoAcid& aa2)
+{
   if (!aa2.isMember(O))
     return 0.0;
   
@@ -567,13 +577,9 @@ double sCalcHydrogen(AminoAcid& aa1, AminoAcid& aa2){
     return 0.0;
 }
 
-/**
- * @Description  calculates the hidrogen value for the protein
- * @param    Spacer reference that contains the protein (const Spacer&),Index1 and index2 demarcate the area of the loop(unsigned int,unsigned int)
- *   reference that contains the possible solution (  Spacer&)
- * @return   corresponding value
- */
-double LoopModel::calculateHydrogen(const Spacer& sp, unsigned int index1, unsigned int index2, Spacer& sp2){
+double 
+LoopModel::calculateHydrogen(const Spacer& sp, unsigned int index1, unsigned int index2, Spacer& sp2)
+{
   long double res = 0.0;
 
   for (unsigned int i = 0; i < sp2.sizeAmino(); i++)
@@ -603,16 +609,14 @@ double LoopModel::calculateHydrogen(const Spacer& sp, unsigned int index1, unsig
   return res;
 }
 
-/**
- * @Description  Calculates the compactness besides the protein and the possible solution
- * @param    Spacer reference that contains the protein (Spacer&),Index1 and index2 demarcate the area of the loop(unsigned int,unsigned int)
- *   reference that contains the possible solution (  Spacer&)
- * @return   corresponding value(double)
- */
-double LoopModel::calculateCompactness(const Spacer& sp, unsigned int index1, unsigned int index2, Spacer& sp2){
+
+double 
+LoopModel::calculateCompactness(const Spacer& sp, unsigned int index1, unsigned int index2, Spacer& sp2)
+{
   long double res = 10000.0;
 
-  for (unsigned int i = 0; i < index2 - index1-1; i++)    {
+  for (unsigned int i = 0; i < index2 - index1-1; i++)
+    {
 	unsigned int limit = (index1 > 3) ? 3 : index1-1;
       for (unsigned int j = 0; j < limit; j++)
 	  if (const_cast<AminoAcid&>(sp.getAmino(j))[CA].distance(
@@ -629,15 +633,14 @@ double LoopModel::calculateCompactness(const Spacer& sp, unsigned int index1, un
   return res;
 }
 
+const double L_HELIX = 0.414;
+const double L_STRAND = 0.42;
+const double L_COIL = 0.13;
 
-/**
- * @Description Calculates the Flanking conformation  
- * @param    Spacer reference that contains the protein (const Spacer&),Index1 and index2 demarcate the area of the loop(unsigned int,unsigned int)
- *   reference that contains the possible solution (  Spacer&)
- * @return   corresponding value(double)
- */
-double LoopModel::calculateFlankingConformation(const Spacer& sp, 
-unsigned int index1, unsigned int index2, Spacer& sp2){
+double 
+LoopModel::calculateFlankingConformation(const Spacer& sp, 
+unsigned int index1, unsigned int index2, Spacer& sp2)
+{
     double res = 1.0;
 
     // get flanks:
@@ -672,13 +675,14 @@ unsigned int index1, unsigned int index2, Spacer& sp2){
 
     if (((tPhi >= -140) && (tPhi <= -40)) && ((tPsi >= -80) && (tPsi <= 40)))
 	L1 = HELIX;
-    else if ((((tPhi >= -180) && (tPhi <= -40)) 
-	     && ( ((tPsi >= 60) && (tPsi <= 180)))) || (tPsi <= -140))
+    else if (((tPhi >= -180) && (tPhi <= -40)) 
+	     && ( ((tPsi >= 60) && (tPsi <= 180))) || (tPsi <= -140))
 	L1 = STRAND;
     else 
 	L1 = COIL;
 
-    if (sp2.sizeAmino() > 3)    {
+    if (sp2.sizeAmino() > 3)
+    {
 	double tPhi = sp2.getAmino(sp2.sizeAmino()-3).getPhi(); 
 	double tPsi = sp2.getAmino(sp2.sizeAmino()-3).getPsi(); 
 
@@ -686,13 +690,14 @@ unsigned int index1, unsigned int index2, Spacer& sp2){
 						  && (tPsi <= 40)))
 	    Ln_1 = HELIX;
 	else if (((tPhi >= -180) && (tPhi <= -40))
-	     && ( (((tPsi >= 60) && (tPsi <= 180))) || (tPsi <= -140)))
+	     && ( ((tPsi >= 60) && (tPsi <= 180))) || (tPsi <= -140))
 	    Ln_1 = STRAND;
 	else 
 	    Ln_1 = COIL;
     }
 
-    if (sp2.sizeAmino() > 2)    {
+    if (sp2.sizeAmino() > 2)
+    {
 	double tPhi = sp2.getAmino(sp2.sizeAmino()-2).getPhi(); 
 	double tPsi = sp2.getAmino(sp2.sizeAmino()-2).getPsi(); 
 
@@ -700,7 +705,7 @@ unsigned int index1, unsigned int index2, Spacer& sp2){
 						  && (tPsi <= 40)))
 	    Ln = HELIX;
 	else if (((tPhi >= -180) && (tPhi <= -40)) 
-	     && (( ((tPsi >= 60) && (tPsi <= 180))) || (tPsi <= -140)))
+	     && ( ((tPsi >= 60) && (tPsi <= 180))) || (tPsi <= -140))
 	    Ln = STRAND;
 	else 
 	    Ln = COIL;
@@ -708,7 +713,8 @@ unsigned int index1, unsigned int index2, Spacer& sp2){
 
     // now do the prop's:
 
-    if (flankN == HELIX)    {
+    if (flankN == HELIX)
+    {
 	if (L1 == HELIX)
 	    res *= 0.38 / L_HELIX;
 	else if (L1 == STRAND)
@@ -716,7 +722,8 @@ unsigned int index1, unsigned int index2, Spacer& sp2){
 	else
 	    res *= 0.138 / L_COIL;
     }
-    else if (flankN == STRAND)    {
+    else if (flankN == STRAND)
+    {
 	if (L1 == HELIX)
 	    res *= 0.484 / L_HELIX;
 	else if (L1 == STRAND)
@@ -725,8 +732,10 @@ unsigned int index1, unsigned int index2, Spacer& sp2){
 	    res *= 0.155 / L_COIL;
     }
 
-    if (sp2.sizeAmino() > 3)    {
-	if (flankC == HELIX)	{
+    if (sp2.sizeAmino() > 3)
+    {
+	if (flankC == HELIX)
+	{
 	    if (Ln_1 == HELIX)
 		res *= 0.388 / L_HELIX;
 	    else if (Ln_1 == STRAND)
@@ -740,7 +749,8 @@ unsigned int index1, unsigned int index2, Spacer& sp2){
 	    else
 		res *= 0.098 / L_COIL;
 	}
-	else if (flankC == STRAND)	{
+	else if (flankC == STRAND)
+	{
 	    if (Ln_1 == HELIX)
 		res *= 0.388 / L_HELIX;
 	    else if (Ln_1 == STRAND)
@@ -760,15 +770,11 @@ unsigned int index1, unsigned int index2, Spacer& sp2){
 }
 
 
-/**
- * @Description  Ranks the possible solutions
-  * @param    Spacer reference that contains the protein (Spacer&),Index1 and index2 demarcate the area of the loop(unsigned int,unsigned int)
- *   reference that contains the possible solutions/loops( vector<Spacer>&), the maximum quantity of solutions to consider(unsigned int))
- * @return   changes the object internally (void)  
- */
-void LoopModel::rankRawScore(Spacer& sp, unsigned int index1, unsigned int index2,
-std::vector<Spacer>& solVec, unsigned int maxWrite){
-  std::vector<Spacer> tmpSolVec;
+void 
+LoopModel::rankRawScore(Spacer& sp, unsigned int index1, unsigned int index2,
+vector<Spacer>& solVec, unsigned int maxWrite)
+{
+  vector<Spacer> tmpSolVec;
   priority_queue<solutionQueueElem> solutionQueue;
 
   cout << "-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-\n";
@@ -776,9 +782,10 @@ std::vector<Spacer>& solVec, unsigned int maxWrite){
        << " solutions were generated.\n";
   cout << "-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-\n";
 
-
-  std::vector<double> tmpScore;
-  for (unsigned int i = 0; i < solVec.size(); i++)    {
+//******  
+  vector<double> tmpScore;
+  for (unsigned int i = 0; i < solVec.size(); i++)
+    {
       solutionQueueElem sqe;
       sqe.dev = calculateConsistency(sp, index1, index2, solVec[i])
                  + 100 * loop_loop_vdw(solVec[i], index1 + 1)
@@ -791,7 +798,8 @@ std::vector<Spacer>& solVec, unsigned int maxWrite){
   unsigned int tmpIndex = 0;
   unsigned int numNotFiltered = 0;
 
-  while (solutionQueue.size() > 0)    {
+  while (solutionQueue.size() > 0)
+    {
 	if ( ( (tmpIndex > 50) && (solutionQueue.top().dev > 1000) )
 	     || (tmpIndex > 1000) )
 	  break;
@@ -816,8 +824,10 @@ std::vector<Spacer>& solVec, unsigned int maxWrite){
   tmpSolVec.clear();
   while (solutionQueue.size() > 0)
       solutionQueue.pop();
+//******  
 
-  for (unsigned int i = 0; i < solVec.size(); i++)    {
+  for (unsigned int i = 0; i < solVec.size(); i++)
+    {
       solutionQueueElem sqe;
       sqe.dev = getENDRMS_WEIGHT() * calculateRms(sp, index1, index2, 
 						  solVec[i], false)
@@ -835,13 +845,15 @@ std::vector<Spacer>& solVec, unsigned int maxWrite){
   tmpIndex = 0;
   if (pVerbose > 1)
     cout << "Raw-score: sum \t endrms \t energy \t  prop \n"
-	 << "               \t " << setw(6) <<"-"<< setprecision(2) 
- 	<<"-"<< getENDRMS_WEIGHT() <<"-"<< "\t\t " 
+	 << "               \t " << setw(6) << setprecision(2) 
+	 << getENDRMS_WEIGHT() << "\t\t " 
 	 << setw(6) << setprecision(2) << ENERGY_WEIGTH << "\n";
 
   unsigned int counter = 0;
-  while (solutionQueue.size() > 0)    {
-      if (pVerbose > 1)      {    
+  while (solutionQueue.size() > 0)
+    {
+      if (pVerbose > 1)
+      {    
 	  double tmpEndRms = calculateEndRms(sp, index1, index2, 
 			      solVec[solutionQueue.top().index1]);
 	  double tmpEnergy = calculateEnergy(sp, index1, 
@@ -876,14 +888,10 @@ std::vector<Spacer>& solVec, unsigned int maxWrite){
   tmpSolVec.clear();
 }
 
-/**
- * @Description  Creates the Scatter Plot
- * @param    Spacer reference that contains the protein (Spacer&),Index1 and index2 demarcate the area of the loop(unsigned int,unsigned int)
- *   reference that contains the possible solutions/loops( vector<Spacer>&),verbose for oxygen (bool)
- * @return   changes the object internally (void)  
- */
-void LoopModel::doScatterPlot(Spacer& sp, unsigned int index1, unsigned int index2,
-vector<Spacer>& solVec, bool withOxygen){
+void 
+LoopModel::doScatterPlot(Spacer& sp, unsigned int index1, unsigned int index2,
+vector<Spacer>& solVec, bool withOxygen)
+{
   if (!pPlot)
       return;
 
@@ -893,7 +901,8 @@ vector<Spacer>& solVec, bool withOxygen){
   *pScatter << "LOOP \t" << index2-index1 << "\t" 
 	   << solVec.size() << "\n";
 
-  for (unsigned int i = 0; i < solVec.size(); i++)  {
+  for (unsigned int i = 0; i < solVec.size(); i++)
+  {
       double tmpEndRms = calculateRms(sp, index1, index2, 
 			     solVec[i], false);
       double tmpEnergy = calculateEnergy(sp, index1, 
@@ -935,36 +944,32 @@ vector<Spacer>& solVec, bool withOxygen){
   
 }
 
-/**
- * @Description  returns the end-RMS values for the solutions in solVec as an array
- * @param    Spacer reference that contains the protein (Spacer&),Index1 and index2 demarcate the area of the loop(unsigned int,unsigned int)
- *   reference that contains the possible solutions/loops( vector<Spacer>&) 
- * @return  corresponding values of final RMS(vector<double>)) 
- */
-std::vector<double> LoopModel::rankRms2(Spacer& sp, unsigned int index1, unsigned int index2,
-		    std::vector<Spacer>& solVec){
-  std::vector<double> tmpSolVec;
+// returns the end-RMS values for the solutions in solVec as an array
+vector<double>
+LoopModel::rankRms2(Spacer& sp, unsigned int index1, unsigned int index2,
+		    vector<Spacer>& solVec)
+{
+  vector<double> tmpSolVec;
 
-  for (unsigned int i = 0; i < solVec.size(); i++)    {
+  for (unsigned int i = 0; i < solVec.size(); i++)
+    {
       tmpSolVec.push_back(calculateRms(sp, index1, index2, solVec[i], false));
     }
   return tmpSolVec;
 }
 
-/**
- * @Description  calculates the RMS as a global RMS
- * @param    Spacer reference that contains the protein (const Spacer&),Index1 and index2 demarcate the area of the loop(unsigned int,unsigned int)
- *   reference that contains the possible solution ( const Spacer&), output flag (bool), oxygen flag (bool)
- * @return   corresponding value(double)
- */
-double LoopModel::calculateRms2(const Spacer& sp, unsigned int index1, 
-unsigned int index2, const Spacer& sp2, bool output, bool withOxygen){
+// this function calculates the RMS as a global RMS
+double 
+LoopModel::calculateRms2(const Spacer& sp, unsigned int index1, 
+unsigned int index2, const Spacer& sp2, bool output, bool withOxygen)
+{
   PRECOND( index2 - index1 == sp2.size(), exception);
  
   double rms2 = 0.0;
   unsigned int rmsDiv = 0;
 
-  for (unsigned int i = 0; i < index2 - index1-1; i++)    {
+  for (unsigned int i = 0; i < index2 - index1-1; i++)
+    {
       double distN = const_cast<Atom&>(sp.getAmino(index1+i+1)[N]).distance(
 				       const_cast<Atom&>(sp2.getAmino(i)[N]));
       double distCA = const_cast<Atom&>(sp.getAmino(index1+i+1)[CA]).distance(
@@ -974,7 +979,8 @@ unsigned int index2, const Spacer& sp2, bool output, bool withOxygen){
       rms2 += sqr(distN) + sqr(distCA) + sqr(distC);
       rmsDiv += 3;
       
-      if (withOxygen)	{
+      if (withOxygen)
+	{
 	  double distO = const_cast<Atom&>(sp.getAmino(index1+i+1)[O]
 					   ).distance(
 				       const_cast<Atom&>(sp2.getAmino(i)[O]));
@@ -994,7 +1000,8 @@ unsigned int index2, const Spacer& sp2, bool output, bool withOxygen){
   rmsDiv += 3;
 
   if (output)
-    if (pVerbose)      {
+    if (pVerbose)
+      {
 	cout << "global RMS= " << setw(6) << setprecision(3)
 	     << sqrt(rms2/(rmsDiv-3)) << "   (" << setw(6) << setprecision(3) 
 	     << sqrt(rms/rmsDiv) << ")\n";
@@ -1004,15 +1011,10 @@ unsigned int index2, const Spacer& sp2, bool output, bool withOxygen){
 }
 
 
-
-/**
- * @Description   calculates the end RMS  
- * @param    Spacer reference that contains the protein (const Spacer&),Index1 and index2 demarcate the area of the loop(unsigned int,unsigned int)
- *   reference that contains the possible solution ( const Spacer&), output flag (bool), oxygen flag (bool)
- * @return   corresponding value(double)
- */
-double LoopModel::calculateEndRms(const Spacer& sp, unsigned int index1, 
-unsigned int index2, const Spacer& sp2){
+double 
+LoopModel::calculateEndRms(const Spacer& sp, unsigned int index1, 
+unsigned int index2, const Spacer& sp2)
+{
 
   IntCoordConverter icc;
   unsigned int offset = index2 - index1 - 1;
@@ -1027,20 +1029,17 @@ unsigned int index2, const Spacer& sp2){
   return sqrt(rmsE/3);
 }
 
-/**
- * @Description  calculates the  RMS  and if set can print the values, considering or not the oxygen
- * @param    Spacer reference that contains the protein (Spacer&),Index1 and index2 demarcate the area of the loop(unsigned int,unsigned int)
- *   reference that contains the possible solution (  Spacer&) , flag for the outout(bool), flag for the oxygen(bool)
- * @return   corresponding value(double)
- */
-double LoopModel::calculateRms(const Spacer& sp, unsigned int index1, 
-unsigned int index2, const Spacer& sp2, bool output, bool withOxygen){
+double 
+LoopModel::calculateRms(const Spacer& sp, unsigned int index1, 
+unsigned int index2, const Spacer& sp2, bool output, bool withOxygen)
+{
   PRECOND( index2 - index1 == sp2.size(), exception);
  
   double rms2 = 0.0;
   unsigned int rmsDiv = 0;
 
-  for (unsigned int i = 0; i < index2 - index1-1; i++)    {
+  for (unsigned int i = 0; i < index2 - index1-1; i++)
+    {
       double distN = const_cast<Atom&>(sp.getAmino(index1+i+1)[N]).distance(
 				       const_cast<Atom&>(sp2.getAmino(i)[N]));
       double distCA = const_cast<Atom&>(sp.getAmino(index1+i+1)[CA]).distance(
@@ -1071,7 +1070,8 @@ unsigned int index2, const Spacer& sp2, bool output, bool withOxygen){
   rmsDiv += 3;
 
   if (output)
-    if (pVerbose > 0)      {
+    if (pVerbose > 0)
+      {
 	cout << "global RMS= " << setw(6) << setprecision(3)
 	     << sqrt(rms2/(rmsDiv-3)) << "   (" << setw(6) << setprecision(3) 
 	     << sqrt(rms/rmsDiv) << ")\t";
@@ -1082,7 +1082,8 @@ unsigned int index2, const Spacer& sp2, bool output, bool withOxygen){
   double rmsE = calculateEndRms(sp, index1, index2, sp2);
    
   if (output)
-    if (pVerbose > 0)      {
+    if (pVerbose > 0)
+      {
 	cout << "end-RMS= " << setw(6) << setprecision(3) << rmsE << "\t";
 	cout << "  " << setw(6) << setprecision(3) 
 	     << icc.getBondLength(const_cast<Atom&>(sp2.getAmino(offset)[N]), 
@@ -1102,17 +1103,14 @@ unsigned int index2, const Spacer& sp2, bool output, bool withOxygen){
   return rmsE;
 }
 
-/**
- * @Description  Sets the structure
- * @param    Spacer reference that contains the protein (Spacer&), reference that contains the possible solution (  Spacer&) ,
- * Index1 and index2 demarcate the area of the loop(unsigned int,unsigned int) 
- * @return   changes the object internally (void)  
- */
-void LoopModel::setStructure(Spacer& sp, Spacer& sp2, unsigned int index1, 
-			unsigned int index2){
+void 
+LoopModel::setStructure(Spacer& sp, Spacer& sp2, unsigned int index1, 
+			unsigned int index2)
+{
   PRECOND(sp2.size() == index2 - index1, exception);
 
-  for (unsigned int i = 0; i < sp2.size(); i++)    {
+  for (unsigned int i = 0; i < sp2.size(); i++)
+    {
       sp.getAmino(index1+1+i).setType(sp2.getAmino(i).getType());
 
       sp.getAmino(index1+1+i)[N].setCoords(sp2.getAmino(i)[N].getCoords());
@@ -1122,7 +1120,8 @@ void LoopModel::setStructure(Spacer& sp, Spacer& sp2, unsigned int index1,
       pSetSideChain(sp.getAmino(index1+i));
     }
 
-  for (unsigned int i = 0; i < sp2.size(); i++)    {
+  for (unsigned int i = 0; i < sp2.size(); i++)
+    {
       if (sp.getAmino(index1+1+i).isMember(O))
 	sp.getAmino(index1+1+i).removeAtom(
 		    sp.getAmino(index1+1+i)[O]);
@@ -1137,24 +1136,17 @@ void LoopModel::setStructure(Spacer& sp, Spacer& sp2, unsigned int index1,
 }
 
 
-/**
- * @Description  Calculates the propensities for a protein
- * @param   reference to the protein(Spacer&)
- * @return   corresponding value(double)
- */
-double LoopModel::calculatePropensities(Spacer& sp2) {
+double 
+LoopModel::calculatePropensities(Spacer& sp2) 
+{
   return tor.calculateEnergy(sp2);
 }
 
 
-/**
- * @Description  Calculates the propensities for the loop
- * @param    Spacer reference that contains the protein (Spacer&),Index1 and index2 demarcate the area of the loop(unsigned int,unsigned int)
- *   reference that contains the possible solution (  Spacer&)
- * @return   corresponding value(double)
- */
-double LoopModel::calculatePropensities(const Spacer& sp, 
-unsigned int index1, unsigned int index2, Spacer& sp2) {
+double 
+LoopModel::calculatePropensities(const Spacer& sp, 
+unsigned int index1, unsigned int index2, Spacer& sp2) 
+{
   double partRes = 0.0; 
   IntCoordConverter icc;
 
@@ -1169,19 +1161,32 @@ unsigned int index1, unsigned int index2, Spacer& sp2) {
 }
  
 
-  
+
+// -*- C++ -*-----------------------------------------------------------------
+//
+//  Method:        LoopModel::compactness()
+//
+//
+//  Date:          10/00
+//
+//  Description:
+//
+//  This routine calculates the compactness of an given solution. It simply
+//  determines for each atom in the loop the three least distances to the 
+//  framework. If the given solution is compact the calculated distances
+//  (and thus the return value which is simply the sum of all distances)
+//  will be small.
+//
+//  index1 and index2 are expected to start counting from 0!
+//  Because of the site of the array best_distances this routine only works 
+//  for loops the length up to 25.
+//
+//  If you intend to change the variable BEST_VALUES, you have to change the 
+//  swap routine in the inner loop!
+//
+// ----------------------------------------------------------------------------
 
 
-/**
- * @Description  This routine calculates the compactness of an given solution. It simply
-*  determines for each atom in the loop the three least distances to the 
-*  framework. If the given solution is compact the calculated distances
-*  (and thus the return value which is simply the sum of all distances)
-*  will be small.
- *  @param    Spacer reference that contains the loop (Spacer&),Index1 and index2 demarcate the area of the loop(unsigned int,unsigned int)
- *   reference that contains the protein (  Spacer&). index1 and index2 are expected to start counting from 0! Max loop lenght=25
- * @return   corresponding value(double)
- */
 double LoopModel::compactness(Spacer& loop, unsigned int index1, 
 unsigned int index2, Spacer& proteine) {
 
@@ -1191,9 +1196,9 @@ unsigned int index2, Spacer& proteine) {
   // the n best distance values are added to the result
   double best_distances[NUMBER_OF_ATOMS][BEST_VALUES];       
   // here we store the best distances for each atom in the loop
-  std::vector<Atom*> loopAtoms;    
+  vector<Atom*> loopAtoms;    
   // contains all the atoms in the loop (just the backbone)
-  std::vector<Atom*> frameAtoms;    
+  vector<Atom*> frameAtoms;    
   // contains all the atoms of an aminoacid in the framework
   int countLoopAtoms = 0;                                    
   // the number of the atoms in the loop (just the backbone)
@@ -1207,15 +1212,18 @@ unsigned int index2, Spacer& proteine) {
 
 
   //initialize the array best_distances
-  for (int i = 0; i < NUMBER_OF_ATOMS; i += 1)     {
-      for (int j = 0; j < BEST_VALUES; j += 1)	{
+  for (int i = 0; i < NUMBER_OF_ATOMS; i += 1) 
+    {
+      for (int j = 0; j < BEST_VALUES; j += 1)
+	{
 	  best_distances[i][j] = 100000;
 	}
     }
 
   // get the number of atoms in the loop and fill the vector loopAtoms
   PRECOND(index2 - index1 == loop.sizeAmino(), exception);
-  for (unsigned int i = 0; i < loop.sizeAmino(); i += 1)     {
+  for (unsigned int i = 0; i < loop.sizeAmino(); i += 1) 
+    {
       AminoAcid& aa = loop.getAmino(i); 
       
       //put all the atoms of the aminoacid into the vector loopAtoms
@@ -1238,7 +1246,8 @@ unsigned int index2, Spacer& proteine) {
     }
 
   // calculate the compactness by iterating over all the atoms in the framework
-  for (unsigned int i = 0; i < proteine.size(); i++)    {
+  for (unsigned int i = 0; i < proteine.size(); i++)
+    {
       if (i + 2 > index1 && i < index2 + 1) {                
 	// we are currently in the loop section of the proteine
 	continue;                                            
@@ -1267,15 +1276,18 @@ unsigned int index2, Spacer& proteine) {
       }
       
       //iterate over all atoms in the loop and the current frame amino acid
-      for (int j = 0; j < countLoopAtoms; j += 1)	{
-	  for (int k = 0; k < countFrameAtoms; k += 1) 	    {
+      for (int j = 0; j < countLoopAtoms; j += 1)
+	{
+	  for (int k = 0; k < countFrameAtoms; k += 1) 
+	    {
               // get the coordinates of the two relevant atoms
 	      vgVector3<double> fv = frameAtoms[k]->getCoords();
 	      vgVector3<double> lv = loopAtoms[j]->getCoords();
 	      distance = sDistance(fv, lv);
 	      
 	      // update the best_values array...
-	      if (best_distances[j][0] > distance) {
+	      if (best_distances[j][0] > distance) 
+		{
 		  // distance gets into the new top position
 		  swap = best_distances[j][0];
 		  swap2 = best_distances[j][1];
@@ -1284,14 +1296,16 @@ unsigned int index2, Spacer& proteine) {
 		  best_distances[j][2] = swap2;
 		  continue;
 		}
-	      if (best_distances[j][1] > distance){
+	      if (best_distances[j][1] > distance)
+		{
 		  // distance gets into the middle position
 		  swap = best_distances[j][1];
 		  best_distances[j][1] = distance;
 		  best_distances[j][2] = swap;
 		  continue;
 		}
-	      if (best_distances[j][2] > distance)	{
+	      if (best_distances[j][2] > distance)
+		{
 		  // distance gets into the last position
 		  best_distances[j][2] = distance;
 		  continue;
@@ -1302,8 +1316,10 @@ unsigned int index2, Spacer& proteine) {
       frameAtoms.clear();
     }
   // now calculate the return value
-  for (int j = 0; j < countLoopAtoms; j += 1)   {
-      for (int k = 0; k < 3; k += 1) {
+  for (int j = 0; j < countLoopAtoms; j += 1) 
+    {
+      for (int k = 0; k < 3; k += 1) 
+	{
 	  ret_value += best_distances[j][k];
 	}
     }
@@ -1311,12 +1327,8 @@ unsigned int index2, Spacer& proteine) {
 }
 
 
-/**
- * @Description  prints the matrix
- * @param   structure that constains the matrix info(vector<double>)
- * @return   prints the results(void)
- */
-static void sPrintMatrix(std::vector<double> span){
+static void sPrintMatrix(vector<double> span)
+{
   cout << ">";
   for (unsigned int i = 0; i < span.size(); i++)
     cout << setw(5) << i << "\t";
@@ -1326,17 +1338,14 @@ static void sPrintMatrix(std::vector<double> span){
   cout << "\n";
 }
 
-/**
- * @Description  calculates the minimum distance considering the given data
- * @param    Spacer reference that contains the protein (Spacer&),Index1 and index2 demarcate the area of the loop(unsigned int,unsigned int)
- *  spanning value(unsigned int), distance(double), verbose flag(bool)
- * @return   corresponding value (static double)
- */
 static double sDeletionAnchors(Spacer& sp, unsigned int& index1, 
-unsigned int& index2, unsigned int span, double dist, bool pVerbose){
+unsigned int& index2, unsigned int span, double dist, bool pVerbose)
+{
   unsigned int span2 = 2 + static_cast<unsigned int>( dist / 2.0 );
 
-  std::vector<double> spanning;
+//    cout << "Opt loop length = " << span << endl;
+
+  vector<double> spanning;
   unsigned int minI = (index1 > span2) ? index1 
     - span2 + 2 : 1;
   unsigned int maxI = (index1 + span2 < sp.sizeAmino()) 
@@ -1346,11 +1355,13 @@ unsigned int& index2, unsigned int span, double dist, bool pVerbose){
     cout << "minI = " << sp.getPdbNumberFromIndex(minI) 
          << "\tmaxI = " << sp.getPdbNumberFromIndex(maxI) << endl;
 
-  for (unsigned int i = minI; i <= maxI; i++)    {
+  for (unsigned int i = minI; i <= maxI; i++)
+    {
       double tmp = sp.getAmino(i)[CA].distance(sp.getAmino(i + span2)[CA]);
 
       if ((sp.getAmino(i).getState() == HELIX) 
-	  || (sp.getAmino(i).getState() == STRAND)){
+	  || (sp.getAmino(i).getState() == STRAND))
+	{
 	  tmp += WEIGHT_SEC;
 
 	  for (unsigned j = 0; j < spanning.size(); j++)
@@ -1358,7 +1369,8 @@ unsigned int& index2, unsigned int span, double dist, bool pVerbose){
 	}
 
       if ((sp.getAmino(i + span2).getState() == HELIX) 
-	  || (sp.getAmino(i + span2).getState() == STRAND)){
+	  || (sp.getAmino(i + span2).getState() == STRAND))
+	{
 	  for (unsigned j = i; j <= maxI; j++)
 	    tmp += WEIGHT_SEC;
 	}
@@ -1374,7 +1386,8 @@ unsigned int& index2, unsigned int span, double dist, bool pVerbose){
   double minDist = 999.9;
   
   for (unsigned int i = 0; i < spanning.size(); i++)
-      if (spanning[i] < minDist){
+      if (spanning[i] < minDist)
+	{
 	  optI = minI + i;
 	  minDist = spanning[i];
 	}
@@ -1385,17 +1398,14 @@ unsigned int& index2, unsigned int span, double dist, bool pVerbose){
   return minDist;
 }
 
-/**
- * @Description  calculates the maximum distance considering the given data
- * @param    Spacer reference that contains the protein (Spacer&),Index1 and index2 demarcate the area of the loop(unsigned int,unsigned int),
- *  spanning value(unsigned int), distance(double), verbose flag(bool)
- * @return   corresponding value(static double)
- */
 static double sInsertionAnchors(Spacer& sp, unsigned int& index1, 
-unsigned int& index2, unsigned int span, double dist, bool pVerbose){
+unsigned int& index2, unsigned int span, double dist, bool pVerbose)
+{
   unsigned int span2 = static_cast<unsigned int>( (span + 1) / 2 );
 
-  std::vector<double> spanning;
+//    cout << "Opt loop length = " << span + span2 << endl;
+
+  vector<double> spanning;
   unsigned int minI = (index1 > span2) ? index1 
     - span + 2 : 1;
   unsigned int maxI = (index1 + span2 < sp.sizeAmino()) 
@@ -1404,7 +1414,8 @@ unsigned int& index2, unsigned int span, double dist, bool pVerbose){
   cout << "minI = " << sp.getPdbNumberFromIndex(minI) 
        << "\tmaxI = " << sp.getPdbNumberFromIndex(maxI) << endl;
 
-  for (unsigned int i = minI; i <= maxI; i++) {
+  for (unsigned int i = minI; i <= maxI; i++)
+    {
       if (i + span + span2 + 2 > sp.sizeAmino())
 	break;
 
@@ -1412,7 +1423,8 @@ unsigned int& index2, unsigned int span, double dist, bool pVerbose){
 						     + span + span2)[CA]);
 
       if ((sp.getAmino(i).getState() == HELIX) 
-	  || (sp.getAmino(i).getState() == STRAND)){
+	  || (sp.getAmino(i).getState() == STRAND))
+	{
 	  tmp -= WEIGHT_SEC;
 
 	  for (unsigned j = 0; j < spanning.size(); j++)
@@ -1423,7 +1435,8 @@ unsigned int& index2, unsigned int span, double dist, bool pVerbose){
 	ERROR("Index out of scope.", exception);
 
       if ((sp.getAmino(i + span2).getState() == HELIX) 
-	  || (sp.getAmino(i + span2).getState() == STRAND)){
+	  || (sp.getAmino(i + span2).getState() == STRAND))
+	{
 	  for (unsigned j = i; j <= maxI; j++)
 	    tmp -= WEIGHT_SEC;
 	}
@@ -1437,7 +1450,8 @@ unsigned int& index2, unsigned int span, double dist, bool pVerbose){
   double maxDist = -999.9;
   
   for (unsigned int i = 0; i < spanning.size(); i++)
-      if (spanning[i] > maxDist){
+      if (spanning[i] > maxDist)
+	{
 	  optI = minI + i;
 	  maxDist = spanning[i];
 	}
@@ -1449,13 +1463,10 @@ unsigned int& index2, unsigned int span, double dist, bool pVerbose){
   return maxDist;
 }
 
-/**
- * @Description  calculates the maximum/minimum distance considering the given data depending in the flag
- * @param    Spacer reference that contains the protein (Spacer&),Index1 and index2 demarcate the area of the loop(unsigned int,unsigned int), 
- * flag for defining as deletion(bool)
- * @return   changes the object internally (void)  
- */
-void LoopModel::defineLoopAnchors(Spacer& sp, unsigned int& index1, unsigned int& index2, bool isDeletion){
+void
+LoopModel::defineLoopAnchors(Spacer& sp, unsigned int& index1, 
+unsigned int& index2, bool isDeletion)
+{
   unsigned int span = index2 - index1; 
   double dist = 999.9;
   if (isDeletion)
@@ -1485,21 +1496,20 @@ void LoopModel::defineLoopAnchors(Spacer& sp, unsigned int& index1, unsigned int
 
 // MODIFIERS:
 
-/**
- * @Description  Copies the original loop in to a new object
- * @param   reference to the original loop model(const LoopModel&)
- * @return   changes the object internally (void)  
- */
-void LoopModel::copy(const LoopModel& orig){
+void 
+LoopModel::copy(const LoopModel& orig)
+{
   PRINT_NAME; 
 
   pInter = orig.pInter; 
   pVerbose = orig.pVerbose; 
   pPlot = orig.pPlot; 
+//    pScatter = const_cast<ostream&>(orig.pScatter);
 
   //  deep copy of: table = orig.table;
   table.clear();
-  for (unsigned int i = 0; i < orig.table.size(); i++)    {
+  for (unsigned int i = 0; i < orig.table.size(); i++)
+    {
       LoopTable* tmp = new LoopTable;
       tmp = orig.table[i];
       table.push_back(tmp);
@@ -1515,17 +1525,27 @@ void LoopModel::copy(const LoopModel& orig){
     ENDRMS_WEIGTH.push_back(orig.ENDRMS_WEIGTH[i]);
 
 }
- 
-/**
- * @Description  Creates the loop model 
- * @param  the start amino acid reference and the corresponding N coord, the start amino acid reference and the corresponding N coord, 
- * indexes for the anchor regions(unsigned int, unsigned int) , numbers of loops(unsigned int ,unsigned int)
- * @return  the posibles solutions (vector<Spacer>  )
- */
-std::vector<Spacer>  LoopModel::createLoopModel(const AminoAcid& start, const vgVector3<double>& 
+
+
+// -*- C++ -*-----------------------------------------------------------------
+//
+//  Method:        LoopModel::createLoopModel()
+//
+//  Author:        Silvio Tosatto 
+//
+//  Date:          06/00
+//
+//  Description:
+//    !!!!!!!!!!!!!!! - to do
+//    s and e are the anchor regions. length is the number of aminoacids of
+//    the chain, including s and e.
+//
+// ----------------------------------------------------------------------------
+ vector<Spacer> LoopModel::createLoopModel(const AminoAcid& start, const vgVector3<double>& 
 startN, const AminoAcid& end, const vgVector3<double>& endN, unsigned int 
 indexS, unsigned int indexE, unsigned int numLoops, unsigned int numLoops2,
-std::vector<string> typeVec){
+vector<string> typeVec)
+{
   PRECOND((indexS > 0) && (indexE > 0), exception);
   LoopTableEntry startEntry, endEntry;
 
@@ -1547,26 +1567,26 @@ std::vector<string> typeVec){
   if (pVerbose)
     cout << "returned...\n";
   // prepare output data:
-  return calculateLoop(convert(startN), indexE-indexS, typeVec);
-
+  //return 
+  vector<Spacer> list=calculateLoop(convert(startN), indexE-indexS, typeVec);
+  return list;
 }
 
 
-/**
- * @Description  Creates temporary clusters for the loops
- * @param   the posibles loops (vector<Spacer>  )
- * @return   changes the object internally (void)  
- */
-void LoopModel::clusterLoops(std::vector<Spacer>& solVec){
-  std::vector<Spacer> tmpSolVec;
+void 
+LoopModel::clusterLoops(vector<Spacer>& solVec)
+{
+  vector<Spacer> tmpSolVec;
 
   tmpSolVec.push_back(solVec[0]);
 
-  for (unsigned int i = 1; i < solVec.size(); i++)    {
+  for (unsigned int i = 1; i < solVec.size(); i++)
+    {
       bool contained = false;
 
       for (unsigned int j = 0; j < tmpSolVec.size(); j++)
-	if (pCalculateLoopRms(solVec[i], tmpSolVec[j]) < SIM_LIMIT) {
+	if (pCalculateLoopRms(solVec[i], tmpSolVec[j]) < SIM_LIMIT)
+	  {
 	    contained = true;
 	    break;
 	  }
@@ -1575,7 +1595,8 @@ void LoopModel::clusterLoops(std::vector<Spacer>& solVec){
 	tmpSolVec.push_back(solVec[i]);
     }
   
-  if (pVerbose > 1)  {
+  if (pVerbose > 1)
+  {
    cout << "-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-\n";
    cout << "A total of " << setw(5) << (solVec.size() - tmpSolVec.size()) 
 	<< " solutions were clustered at " << setw(4) << setprecision(2) 
@@ -1587,19 +1608,37 @@ void LoopModel::clusterLoops(std::vector<Spacer>& solVec){
   solVec = tmpSolVec;
 
 }
- 
-/**
- * @Description  Calculates the van-der-Waals forces between all the atoms in the two amino
-*  acids. If two atoms are two close to each other (=> collision) a large 
-*  van-der-Waals term is returned. If two atoms are bonded, no van-der-Waals term is calculated.
- * @param    pos1 is the position of amino acid 1 in the protein and pos2 is the
- *  positition of amino acid 2 in the protein(int). Start counting from 1, the threshold distance below which we have a collision(double).
- * @return   number of collisions(int)
- */
-int LoopModel::amino_amino_collision(AminoAcid& aa1, AminoAcid& aa2, int pos1, 
-int pos2, double distThreshold) {
-  std::vector<Atom*> v1;  // this vector contains all the atoms of amino acid 1
-  std::vector<Atom*> v2;  // vector contains all the atoms of amino acid 2
+
+
+// -*- C++ -*-----------------------------------------------------------------
+//
+//  Method:        LoopModel::amino_amino_collision()
+//
+//
+//  Date:          07/00
+//
+//  Description:
+//
+//  Calculates the van-der-Waals forces between all the atoms in the two amino
+//  acids. If two atoms are two close to each other (=> collision) a large 
+//  van-der-Waals term is returned.
+//
+//  If two atoms are bonded, no van-der-Waals term is calculated.
+//
+//  pos1 is the position of amino acid 1 in the protein and pos2 is the
+//  positition of amino acid 2 in the protein. Start counting from 1 !!
+//
+// distThreshold is the threshold distance below which we have a collision.
+//
+// ----------------------------------------------------------------------------
+
+
+int 
+LoopModel::amino_amino_collision(AminoAcid& aa1, AminoAcid& aa2, int pos1, 
+int pos2, double distThreshold) 
+{
+  vector<Atom*> v1;  // this vector contains all the atoms of amino acid 1
+  vector<Atom*> v2;  // vector contains all the atoms of amino acid 2
   double distance;   // contains the distance between two atoms
   int ret_value = 0; // adds up the returned van-der-Waals forces
   const int COLLISON_WEIGHT = 1;
@@ -1627,9 +1666,11 @@ int pos2, double distThreshold) {
   if (aa2.getSideChain().isMember(CB))
     v2.push_back(&(aa2.getSideChain()[CB]));
 
-  for (unsigned int i = 0; i < v1.size(); i += 1)     {
+  for (unsigned int i = 0; i < v1.size(); i += 1) 
+    {
       vgVector3<double> xv = v1[i]->getCoords();
-      for (unsigned int j = 0; j < v2.size(); j += 1) 	{
+      for (unsigned int j = 0; j < v2.size(); j += 1) 
+	{
 	  // we have to check whether C is bound to N (in this case we don't 
 	  // check collisions)
 	  if(pos1 + 1 == pos2 && v1[i]->getCode() == C && v2[j]->getCode() == N)
@@ -1647,21 +1688,30 @@ int pos2, double distThreshold) {
   return ret_value;
 }
 
+
 // HELPERS: 
- 
-/**
- * @Description  converts the input coords to something processable.
- *    Converts the aminoacids start and end into the looptable entries 
- *    startEntry and endEntry, which can be passed on to ringClosure.
- * @param  starting amino acid and N coords (AminoAcid,vector3<float>, ending amino acid and N coords (AminoAcid,vector3<float>,
- * reference to the starting and ending Loop Table Entry(LoopTableEntry&), reference to the transformation vector( VectorTransformation&), unsigned int
- * @return   changes the object internally (void)  
- */
-void LoopModel::convertCoords(AminoAcid start, vgVector3<float> startN, 
+
+// -*- C++ -*-----------------------------------------------------------------
+//
+//  Method:        LoopModel::convertCoords()
+//
+//  Author:        Silvio Tosatto 
+//
+//  Date:          06/00
+//
+//  Description:
+//    Converts the aminoacids start and end into the looptable entries 
+//    startEntry and endEntry, which can be passed on to ringClosure.
+//
+// ----------------------------------------------------------------------------
+
+void
+LoopModel::convertCoords(AminoAcid start, vgVector3<float> startN, 
 AminoAcid end, vgVector3<float> endN, LoopTableEntry& startEntry, 
-LoopTableEntry& endEntry, VectorTransformation& vt, unsigned int nAmino){
-  if (startN.length() != 0.0) {// special case if there is no 'start' offset
-     // adjust positions:
+LoopTableEntry& endEntry, VectorTransformation& vt, unsigned int nAmino)
+{
+  if (startN.length() != 0.0) // special case if there is no 'start' offset
+    { // adjust positions:
 
       vgMatrix3<float> rotMat;
       
@@ -1687,7 +1737,17 @@ LoopTableEntry& endEntry, VectorTransformation& vt, unsigned int nAmino){
       alignVectors(refAxis, convert(start[CA].getTrans()), rotMat);
       vt.addAlignVectors(convert(start[CA].getTrans()), refAxis);
       pAddRot(start, startN, end, endN, rotMat);
- 
+
+      // ????? if nAmino % 2 == 0 rotate 180 degrees:
+//        if (nAmino % 2 == 0)
+//  	{
+//  	  vgVector3<float> refAxis2(0,1,0);
+//  	  rotMat = vgMatrix3<float>::createRotationMatrix(refAxis2,
+//  							  DEG2RAD * 180.0);
+//  	  vt.addRot(rotMat);
+//  	  pAddRot(start, startN, end, endN, rotMat);
+//  	}
+
     }
 
   // set data...
@@ -1704,21 +1764,26 @@ LoopTableEntry& endEntry, VectorTransformation& vt, unsigned int nAmino){
 			   endEntry.endDirection).normalize();
 }
 
- 
-/**
- * @Description  tries to find a ring closure between to locations.Tries to find a ring closure between source and destination
-*    num is the starting residue number offset; offsetPhi is used 
-*    (internally) to represent the already computed phi angle offset. 
- * 
- * @param  reference of the source and destination loop table entry (const LoopTableEntry&,LoopTableEntry&) destination, 
- * chain number (unsigned int),number of amino acids( unsigned int ),phi offset( double ),Transformation vector( VectorTransformation),
- * partial solution(std::vector<vgVector3<float> >&),current selection(unsigned int).
- * @return   flag that confirms the  existance of a ring closure (bool)
- */
-bool LoopModel::ringClosure(const LoopTableEntry& source, 
+// -*- C++ -*-----------------------------------------------------------------
+//
+//  Method:        LoopModel::ringClosure()
+//
+//  Author:        Silvio Tosatto 
+//
+//  Date:          06/00
+//
+//  Description:
+//    Tries to find a ring closure between source and destination
+//    num is the starting residue number offset; offsetPhi is used 
+//    (internally) to represent the already computed phi angle offset. 
+//
+// ----------------------------------------------------------------------------
+bool 
+LoopModel::ringClosure(const LoopTableEntry& source, 
 const LoopTableEntry& destination, unsigned int nStart, 
 unsigned int nAminoAcids, double offsetPhi, VectorTransformation vt,
-std::vector<vgVector3<float> >& partialSolution, unsigned int currentSelection){
+vector<vgVector3<float> >& partialSolution, unsigned int currentSelection)
+{
   PRECOND(((nAminoAcids > 0) && (nAminoAcids <= MAX_CHAIN_LENGTH)), exception);
   
   LoopTableEntry tmpSrc = source;
@@ -1732,7 +1797,8 @@ std::vector<vgVector3<float> >& partialSolution, unsigned int currentSelection){
   // rotate the destination back into the X,Y plane relative to the origin:
   vg_ieee64 phi = -(tmpEnd.rotateIntoXYPlane(vt));
 
-  if (nAminoAcids == 1)    { 
+  if (nAminoAcids == 1)
+    { 
       // calculate result and store it
       vgVector3<float> posCA(0,0,0), posC(0,0,0), posN(0,0,0);
 
@@ -1756,7 +1822,7 @@ std::vector<vgVector3<float> >& partialSolution, unsigned int currentSelection){
 
   INVARIANT( (nAminoAcids < table.size()) && (table[nAminoAcids] != NULL),
 	     exception);
-  std::vector<LoopTableEntry> tmpMidVec = table[nAminoAcids]->getNClosest(tmpEnd, 
+  vector<LoopTableEntry> tmpMidVec = table[nAminoAcids]->getNClosest(tmpEnd, 
 					currentSelection+1, nAminoAcids);
   LoopTableEntry newMiddle;
 
@@ -1780,23 +1846,17 @@ std::vector<vgVector3<float> >& partialSolution, unsigned int currentSelection){
 			 (nAminoAcids / 2), 0, vt, partialSolution) );
 }
 
-/**
- * @Description  tries to find a ring closure between to locations.Tries to find a ring closure between source and destination
-*    num is the starting residue number offset; offsetPhi is used 
-*    (internally) to represent the already computed phi angle offset. 
- * 
- * @param  reference of the source and destination loop table entry (const LoopTableEntry&,LoopTableEntry&) destination, 
- * chain number (unsigned int),number of amino acids( unsigned int ),phi offset( double ),Transformation vector( VectorTransformation),
- * partial solution(std::vector<vgVector3<float> >&),current selection(unsigned int).
- * @return   flag that confirms the  existance of a ring closure base(bool)
- */
-bool LoopModel::ringClosureBase(const LoopTableEntry& source, 
+bool 
+LoopModel::ringClosureBase(const LoopTableEntry& source, 
 const LoopTableEntry& destination, unsigned int nStart, 
 unsigned int nAminoAcids, double offsetPhi, VectorTransformation vt, 
-unsigned int num, unsigned int depth, std::vector<vgVector3<float> >& partialSolution){
+unsigned int num, unsigned int depth, 
+vector<vgVector3<float> >& partialSolution)
+{
   PRECOND(((nAminoAcids > 1) && (nAminoAcids <= MAX_CHAIN_LENGTH)), exception);
   
-  if (pVerbose)    {
+  if (pVerbose)
+    {
       cout << "------------------------------------\n";
       cout << "generating " << num << " models...\n";
       cout << "--> rc: nStart = " << nStart << "   nAmino = " 
@@ -1814,7 +1874,8 @@ unsigned int num, unsigned int depth, std::vector<vgVector3<float> >& partialSol
   // rotate the destination back into the X,Y plane relative to the origin:
   vg_ieee64 phi = -(tmpEnd.rotateIntoXYPlane(vt));
 
-  if (nAminoAcids == 1)    { 
+  if (nAminoAcids == 1)
+    { 
       // calculate result and store it
       vgVector3<float> posCA(0,0,0), posC(0,0,0), posN(0,0,0);
 
@@ -1839,21 +1900,23 @@ unsigned int num, unsigned int depth, std::vector<vgVector3<float> >& partialSol
   INVARIANT( (nAminoAcids < table.size()) && (table[nAminoAcids] != NULL),
 	     exception);
 
-  std::vector <LoopTableEntry> middle; 
+  vector <LoopTableEntry> middle; 
   middle = table[nAminoAcids]->getNClosest(tmpEnd, num, nAminoAcids);
 
   // define the origin:
   LoopTableEntry origin;
   origin.endDirection = refNull;
 
-  for (unsigned int i = 0; i < middle.size(); i++)    {
+  for (unsigned int i = 0; i < middle.size(); i++)
+    {
       middle[i].endPoint = middle[i].midPoint;
       middle[i].endDirection = middle[i].midDirection;
       middle[i].endNormal = middle[i].midNormal;
       
       // ... & conquer:
 
-      for (unsigned int j = 0; j < depth; j++)	{
+      for (unsigned int j = 0; j < depth; j++)
+	{
 	  ringClosure(origin, middle[i], 1, midAminoAcids, offsetPhi+phi, 
 		      vt, partialSolution, j);
 	  ringClosure(middle[i], tmpEnd, midAminoAcids+1, (nAminoAcids / 2), 
@@ -1864,23 +1927,33 @@ unsigned int num, unsigned int depth, std::vector<vgVector3<float> >& partialSol
 }
 
 
+// -*- C++ -*-----------------------------------------------------------------
+//
+//  Method:        LoopModel::calculateLoop()
+//
+//  Author:        Silvio Tosatto 
+//
+//  Date:          06/00
+//
+//  Description:
+//    !!!
+//
+// ----------------------------------------------------------------------------
 
-/**
- * @Description  Calculates the Loop
- * @param   N coords (const vgVector3<float>& ), length (unsigned int) , vector containing the amino acid types (std::vector<string> )
- * @return  possible solutions(vector<Spacer>) 
- */
-std::vector<Spacer> LoopModel::calculateLoop(const vgVector3<float>& startN, unsigned int length,
-std::vector<string> typeVec){
+vector<Spacer> 
+LoopModel::calculateLoop(const vgVector3<float>& startN, unsigned int length,
+vector<string> typeVec)
+{
   // build solution spacer:
   
-  std::vector<Spacer> result;
+  vector<Spacer> result;
   unsigned int num = solution.size() / (length*3);
 
   if (length != typeVec.size())
     ERROR("typeVec does not match number of aminoacids.", exception);
 
-  for (unsigned int i = 0; i < num; i++)    {
+  for (unsigned int i = 0; i < num; i++)
+    {
       // determine rough ''quality'' of loop to store in B-factors:
       double bfac = 50.0;
 
@@ -1902,7 +1975,8 @@ std::vector<string> typeVec){
 
       sp.insertComponent(prev);
       
-      for (unsigned int j = 1; j < length; j++)	{
+      for (unsigned int j = 1; j < length; j++)
+	{
 	  // determine rough ''quality'' of loop to store in B-factors:
 	  bfac = (50 + 5 * length) - 5 * fabs(j - length);
 
@@ -1932,12 +2006,21 @@ std::vector<string> typeVec){
 }
   
 
-/**
- * @Description  Load the really used tables .
- * @param  number of amino acids (unsigned int )
- * @return   changes the object internally (void)  
- */
-void LoopModel::loadTables(unsigned int nAmino){
+// -*- C++ -*-----------------------------------------------------------------
+//
+//  Method:        LoopModel::loadTables()
+//
+//  Author:        Silvio Tosatto 
+//
+//  Date:          06/00
+//
+//  Description:
+//    Load tables which are really used.
+//
+// ----------------------------------------------------------------------------
+void
+LoopModel::loadTables(unsigned int nAmino)
+{
   PRECOND(tableFileName.size() >= nAmino, exception);
 
   if (nAmino <= 1) 
@@ -1947,10 +2030,11 @@ void LoopModel::loadTables(unsigned int nAmino){
   for(unsigned int loop = tmpSize; loop <= nAmino; loop++)
     table.push_back(NULL);
 
-  std::vector<unsigned int> index;
+  vector<unsigned int> index;
   unsigned int offset = 1;
 
-  while (nAmino / offset >= 1)    {
+  while (nAmino / offset >= 1)
+    {
       if (nAmino % offset >= 1)
 	index.push_back(nAmino / offset + 1);
       index.push_back(nAmino / offset);
@@ -1958,7 +2042,8 @@ void LoopModel::loadTables(unsigned int nAmino){
     }
 
   for (unsigned int i = 0; i < index.size(); i++)
-    if ((table[index[i]] == NULL) && (index[i] > 1)){
+    if ((table[index[i]] == NULL) && (index[i] > 1))
+	{
 	  if (pVerbose)
 	    cout << "--> " << index[i] << "\n";
 
@@ -1974,12 +2059,9 @@ void LoopModel::loadTables(unsigned int nAmino){
 	}
 }
 
-/**
- * @Description  Sets the side chain for an amino acid
- * @param   the reference of the amion acid(AminoAcid& )
- * @return   changes the object internally (void)  
- */
-void LoopModel::pSetSideChain(AminoAcid& aa){
+void 
+LoopModel::pSetSideChain(AminoAcid& aa)
+{
   if (!aa.getSideChain().isMember(CB))
     return;
 
@@ -1990,24 +2072,37 @@ void LoopModel::pSetSideChain(AminoAcid& aa){
 }
 
 
-/**
- * @Description  This routine calculates the van-der-Waals forces of the loops contained
-* in the vector. The van-der-Waals forces are calculated only between
-* the amino acids in the loop. Not between the loop and the surrounding
-* proteine. This is done in: LoopModel::loop_spacer_vdw()
- * @param reference of the protein(Spacer&),index (unsigned int)
- * @return   the corresponding value
- */
-int LoopModel::loop_loop_vdw(Spacer& sp, unsigned int index1){
+// -*- C++ -*-----------------------------------------------------------------
+//
+//  Method:        LoopModel::loop_loop_vdw()
+//
+//
+//  Date:          07/00
+//
+//  Description:
+//
+// This routine calculates the van-der-Waals forces of the loops contained
+// in the vector. The van-der-Waals forces are calculated only between
+// the amino acids in the loop. Not between the loop and the surrounding
+// proteine. This is done in: LoopModel::loop_spacer_vdw()
+//
+//
+// ----------------------------------------------------------------------------
+
+
+int LoopModel::loop_loop_vdw(Spacer& sp, unsigned int index1)
+{
   int ret_value = 0;           // used to store the resulting vdw-forces
   const double CHECK_THRESHOLD = 6.0; 
   // all amino acids with a distance lower than that are checked
 
   for (unsigned int i = 0; i < sp.size(); i++)
-    for (unsigned int j = i+1; j < sp.size(); j++){
+    for (unsigned int j = i+1; j < sp.size(); j++)
+      {
 	double dist = sDistance(sp.getAmino(i)[CA].getCoords(),
 				sp.getAmino(j)[CA].getCoords());
-	if (dist <= CHECK_THRESHOLD){
+	if (dist <= CHECK_THRESHOLD)
+	  {
 	    ret_value += amino_amino_collision(sp.getAmino(i), 
 			  sp.getAmino(j), i + 1 + index1, j + 1 + index1, 2.0);
 	  }
@@ -2015,16 +2110,31 @@ int LoopModel::loop_loop_vdw(Spacer& sp, unsigned int index1){
   return ret_value;
 }
 
-/**
- * @Description  This routine calculates the van-der-Waals forces between the loop and the 
-* surrounding proteine. Index1 and index2 demarcate the area of the loop in the proteine and thus
-* these amino acids in the proteine are not used in the van-der-Waals
-* calculation. It is assumed, that index1 and index2 start counting from
-* 1. The van-der Waals forces between the amino acids in the loop itself is calculated in: LoopModel::loop_loop_vdw().
- *   @param    Spacer reference that contains the protein (Spacer&),Index1 and index2 demarcate the area of the loop(unsigned int,unsigned int)
- *   reference that contains the possible solution (  Spacer&)
- * @return   corresponding value (int)
- */
+
+// -*- C++ -*-----------------------------------------------------------------
+//
+//  Method:        LoopModel::loop_spacer_vdw()
+//
+//
+//  Date:          07/00
+//
+//  Description:
+//
+// This routine calculates the van-der-Waals forces between the loop and the 
+// surrounding proteine. 
+//
+// Index1 and index2 demarcate the area of the loop in the proteine and thus
+// these amino acids in the proteine are not used in the van-der-Waals
+// calculation. It is assumed, that index1 and index2 start counting from
+// 1.
+//
+// The van-der Waals forces between the amino acids in the loop itself is 
+// calculated in: LoopModel::loop_loop_vdw().
+//
+//
+// ----------------------------------------------------------------------------
+
+
 int LoopModel::loop_spacer_vdw(Spacer& loop, unsigned int index1, 
 unsigned int index2, Spacer& proteine) 
 {
@@ -2032,12 +2142,14 @@ unsigned int index2, Spacer& proteine)
   const double CHECK_THRESHOLD = 6.0;
   // all amino acids with a distance lower than that are checked
 
-  for (unsigned int i = 0; i < proteine.size(); i++){
+  for (unsigned int i = 0; i < proteine.size(); i++)
+    {
       if (i + 2 > index1 && i < index2 + 1)
 	          // we are currently in the loop section of the proteine
 	continue; // or at the edge of the proteine to the loop
 
-      for (unsigned int j = 0; j < loop.size(); j++){
+      for (unsigned int j = 0; j < loop.size(); j++)
+	{
 	  double dist = sDistance(proteine.getAmino(i)[CA].getCoords(),
 				  loop.getAmino(j)[CA].getCoords());
 	  if (dist <= CHECK_THRESHOLD)
@@ -2049,12 +2161,9 @@ unsigned int index2, Spacer& proteine)
 }
       
 
-/**
- * @Description  Sets the amino acid type,bfactor,etc 
- * @param  amino acid pointer( AminoAcid*),amino acid type(string ),bfactor (double)
- * @return   changes the object internally (void)  
- */
-void LoopModel::pAminoAcidSetup(AminoAcid* aa, string type, double bfac){
+void 
+LoopModel::pAminoAcidSetup(AminoAcid* aa, string type, double bfac)
+{
   Atom aN;
   aN.setCode(N);
   aN.setBFac(bfac);
@@ -2073,24 +2182,18 @@ void LoopModel::pAminoAcidSetup(AminoAcid* aa, string type, double bfac){
   (*aa)[C].bindIn((*aa)[CA]);
 }
 
-/**
- * @Description  returns the ENDRMS_WEIGTH
- * @param   length(unsigned int)
- * @return   corresponding value(double)
- */
-double LoopModel::getENDRMS_WEIGHT(unsigned int len){
+double 
+LoopModel::getENDRMS_WEIGHT(unsigned int len)
+{
   if (len >= ENDRMS_WEIGTH.size())
     ERROR("Length out of scope for ENDRMS_WEIGTH array.", exception);
 
   return ENDRMS_WEIGTH[len];
 }
 
-/**
- * @Description  sets the ENDRMS_WEIGTH
- * @param   value to set(double), length (unsigned int)
- * @return   changes the object internally (void)  
- */
-void LoopModel::setENDRMS_WEIGHT(double val, unsigned int len){
+void 
+LoopModel::setENDRMS_WEIGHT(double val, unsigned int len)
+{
   if (ENDRMS_WEIGTH.size() == 0)
     ERROR("ENDRMS_WEIGTH array is invalid, ie. empty?!", exception);
 
@@ -2101,15 +2204,13 @@ void LoopModel::setENDRMS_WEIGHT(double val, unsigned int len){
   ENDRMS_WEIGTH[len] = val;
 }
 
-/**
- * @Description  loads the ENDRMS_WEIGTH value from a istream
- * @param   file reference(istream&)
- * @return   changes the object internally (void)  
- */
-void LoopModel::loadENDRMS_WEIGHT(istream& input){
+void 
+LoopModel::loadENDRMS_WEIGHT(istream& input)
+{
   ENDRMS_WEIGTH.clear();
 
-  while (input){
+  while (input)
+    {
       double tmp;
       input >> tmp;
 
@@ -2120,12 +2221,9 @@ void LoopModel::loadENDRMS_WEIGHT(istream& input){
     }
 }
 
-/**
- * @Description  sets all the ENDRMS_WEIGTH
- * @param   vavlue to set, queantity of ENDRMS_WEIGTH to set (unsigned int)
- * @return   changes the object internally (void)  
- */
-void LoopModel::setAllENDRMS_WEIGHT(double val, unsigned int max){
+void 
+LoopModel::setAllENDRMS_WEIGHT(double val, unsigned int max)
+{
   ENDRMS_WEIGTH.clear();
 
   for (unsigned int i = 0; i <= max; i++)
@@ -2133,24 +2231,18 @@ void LoopModel::setAllENDRMS_WEIGHT(double val, unsigned int max){
     
 }
 
-/**
- * @Description  saves the ENDRMS_WEIGTH value in a ostream
- * @param   file reference(ostream&)
- * @return   changes the object internally (void)  
- */
-void LoopModel::saveENDRMS_WEIGHT(ostream& output){
+void 
+LoopModel::saveENDRMS_WEIGHT(ostream& output)
+{
   for (unsigned int i = 0; i < ENDRMS_WEIGTH.size(); i++)
     output << ENDRMS_WEIGTH[i] << "\t";
   output << "\n";
 }
 
 
-/**
- * @Description calculates the energy between two amino acids  
- * @param   amino acids references( AminoAcid&, AminoAcid&)
- * @return   corresponding value(double)
- */
-double LoopModel::sCalcEn(AminoAcid& aa, AminoAcid& aa2){
+double 
+LoopModel::sCalcEn(AminoAcid& aa, AminoAcid& aa2)
+{
   double en = 0.0;
 
   string aaType = aa.getType();
@@ -2166,12 +2258,9 @@ double LoopModel::sCalcEn(AminoAcid& aa, AminoAcid& aa2){
   return en;
 }
 
-/**
- * @Description calculates the energy between two amino acids  
- * @param   amino acids references( AminoAcid&, AminoAcid&)
- * @return   corresponding value(double)
- */
-double LoopModel::sICalcEn(AminoAcid& aa, AminoAcid& aa2){
+double 
+LoopModel::sICalcEn(AminoAcid& aa, AminoAcid& aa2)
+{
   double en = 0.0;
 
   string aaType = aa.getType();
@@ -2187,12 +2276,30 @@ double LoopModel::sICalcEn(AminoAcid& aa, AminoAcid& aa2){
   return en;
 }
 
-/**
- * @Description calculates the Internal energy between two amino acids  
- * @param   amino acids references( AminoAcid&, AminoAcid&)
- * @return   corresponding value(double)
- */
-double LoopModel::sICalcEnInt(AminoAcid& aa, AminoAcid& aa2){
+double 
+LoopModel::sICalcEnInt(AminoAcid& aa, AminoAcid& aa2)
+{
+  double en = 0.0;
+
+  string aaType = aa.getType();
+  string aaType2 = aa2.getType();
+
+  for (unsigned int j = 0; j < aa.size(); j++)
+    if ( (aa[j].getCode() == N) || (aa[j].getCode() == CA) 
+	 || (aa[j].getCode() == C) || (aa[j].getCode() == O) 
+	 || (aa[j].getCode() == CB) )
+	for (unsigned int k = 0; k < aa2.size(); k++)
+	  if ( (aa2[k].getCode() == N) || (aa2[k].getCode() == CA) 
+	       || (aa2[k].getCode() == C) || (aa2[k].getCode() == O) 
+	       || (aa2[k].getCode() == CB) )
+	    en += rapdf.calculateEnergy(aa[j], aa2[k], aaType, aaType2);
+  
+  return en;
+}
+
+double 
+LoopModel::sCalcEnInt(AminoAcid& aa, AminoAcid& aa2)
+{
   double en = 0.0;
 
   string aaType = aa.getType();
@@ -2212,42 +2319,14 @@ double LoopModel::sICalcEnInt(AminoAcid& aa, AminoAcid& aa2){
 }
 
 
-/**
- * @Description calculates the Internal energy between two amino acids  
- * @param   amino acids references( AminoAcid&, AminoAcid&)
- * @return   corresponding value(double)
- */
-double LoopModel::sCalcEnInt(AminoAcid& aa, AminoAcid& aa2){
-  double en = 0.0;
-
-  string aaType = aa.getType();
-  string aaType2 = aa2.getType();
-
-  for (unsigned int j = 0; j < aa.size(); j++)
-    if ( (aa[j].getCode() == N) || (aa[j].getCode() == CA) 
-	 || (aa[j].getCode() == C) || (aa[j].getCode() == O) 
-	 || (aa[j].getCode() == CB) )
-	for (unsigned int k = 0; k < aa2.size(); k++)
-	  if ( (aa2[k].getCode() == N) || (aa2[k].getCode() == CA) 
-	       || (aa2[k].getCode() == C) || (aa2[k].getCode() == O) 
-	       || (aa2[k].getCode() == CB) )
-	    en += rapdf.calculateEnergy(aa[j], aa2[k], aaType, aaType2);
-  
-  return en;
-}
-
-
-
-/**
- * @Description calculates the energy  
- * @param   protein reference(spacer&), indexes for the Loop section(unsigned int, unsigned int))
- * @return   corresponding value(double)
- */
-double LoopModel::calcOrigEnergy(const Spacer& sp, unsigned int index1, 
-			unsigned int index2){
+double
+LoopModel::calcOrigEnergy(const Spacer& sp, unsigned int index1, 
+			unsigned int index2)
+{
   long double en = 0.0;
 
-  if (pInter)    {
+  if (pInter)
+    {
       for (unsigned int i = 0; i < index1; i++)
 	for (unsigned int j = index1+1; j <= index2; j++)
 	  en += sICalcEn(const_cast<AminoAcid&>(sp.getAmino(i)),
@@ -2263,7 +2342,8 @@ double LoopModel::calcOrigEnergy(const Spacer& sp, unsigned int index1,
 	  en += sICalcEnInt(const_cast<AminoAcid&>(sp.getAmino(i)),
 				       const_cast<AminoAcid&>(sp.getAmino(j)));
     }
-  else    {
+  else
+    {
       for (unsigned int i = 0; i < index1; i++)
 	for (unsigned int j = index1+1; j <= index2; j++)
 	  en += sCalcEn(const_cast<AminoAcid&>(sp.getAmino(i)),

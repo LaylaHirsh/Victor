@@ -2,7 +2,6 @@
  * @Class            Protein
  * @Base Class(es):    Polymer
  * @Containing:        LigandSet, Spacer
-* @Author:            Francesco Lovo
 * @Project Name:      Victor
  *  Warning:           Copy and delete methods needs more work
  */

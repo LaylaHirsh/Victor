@@ -1,6 +1,5 @@
 /**
- * Author:          Francesco Lovo
-* @Project name:    Victor
+ 
 * @Description:     A simple program to test class Protein's features.
 */
 #include <GetArg.h>

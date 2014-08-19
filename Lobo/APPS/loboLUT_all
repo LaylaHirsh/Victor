@@ -5,7 +5,7 @@
 ##
 ##  Author:             Silvio Tosatto
 ##
-##  Project Name:       Nazgul
+##  Project Name:       Lobo
 ##
 ##  Date:               08/03
 ##
@@ -103,20 +103,20 @@ elsif ($args{c})
      {
        push(@list, $tmp1);
        $maxlist++;
-#       print "adding $tmp1 \t I  \t @list \n";
+       print "adding $tmp1 \t I  \t @list \n";
      }
      $tmp2 = int ($temp / 2);
      if (($tmp1 != $tmp2) && ($tmp2 > 3))
      {
        push(@list, $tmp2);
        $maxlist++;
-#	print "adding $tmp2 \t II \t @list \n";
+	print "adding $tmp2 \t II \t @list \n";
      }
     $counter++;
    }
-   print "antes de create LUT";
+    
    createLUT();
-   print "despues de create LUT";
+   
 
 }
 else

@@ -96,20 +96,22 @@ int main(int nArgs, char* argv[])
       
       // find offset
       vgVector3<double> firstA = sp.getAmino(endOffset
-					     -(3*repeatLength/4))[CA].getCoords()
-	- sp.getAmino(endOffset)[CA].getCoords();
+                                -(3*repeatLength/4))[CA].getCoords()
+                                - sp.getAmino(endOffset)[CA].getCoords();
+                                
       vgVector3<double> firstB = sp.getAmino(endOffset
-					     -(1*repeatLength/4))[CA].getCoords()
-	- sp.getAmino(endOffset)[CA].getCoords();
+				-(1*repeatLength/4))[CA].getCoords()
+                                - sp.getAmino(endOffset)[CA].getCoords();
       
       vgVector3<double> firstNorm = (firstA.normalize()).cross(firstB.normalize());
       
       vgVector3<double> secondA = sp.getAmino(endOffset+repeatLength
-					      -(3*repeatLength/4))[CA].getCoords()
-	- sp.getAmino(endOffset)[CA].getCoords();
+				-(3*repeatLength/4))[CA].getCoords()
+                                - sp.getAmino(endOffset)[CA].getCoords();
+                                
       vgVector3<double> secondB = sp.getAmino(endOffset+repeatLength
-					      -(1*repeatLength/4))[CA].getCoords()
-	- sp.getAmino(endOffset)[CA].getCoords();
+				-(1*repeatLength/4))[CA].getCoords()
+                                - sp.getAmino(endOffset)[CA].getCoords();
       
       vgVector3<double> secondNorm = (secondA.normalize()).cross(secondB.normalize());
       

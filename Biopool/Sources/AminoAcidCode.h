@@ -1,10 +1,5 @@
 /**
-
-* @Class:           -
-* @Base class:      -
-* @Derived classes: - 
-* @Author:          Eckart Bindewald, modified by: Silvio Tosatto
-* @Project name:    -
+ 
 * @Description:     Translator: PDB names to internal one-word-code and 
 *                  vice versa. Provides some simple predicates dealing with 
 *                  one-word-code. 
@@ -23,9 +18,8 @@
 #include <string>
 #include <Debug.h>
 
-/**
- */
-enum AminoAcidCode { 
+enum AminoAcidCode 
+{ 
   ALA=0,
   CYS,
   ASP,
@@ -52,164 +46,208 @@ enum AminoAcidCode {
 
 
 /**
- *@Description  Verifies if the AminoAcid type name is known 
-                magic code XXX corresponds to an unknown AminoAcid code
-*@param amino acid three letter code(AminoAcidCode)
- * @return 
- */
-inline bool isKnownAminoAcid(AminoAcidCode code){
+   true, if AminoAcid type name is known 
+   magic code XXX corresponds to an unknown AminoAcid code
+*/
+inline
+bool
+isKnownAminoAcid(AminoAcidCode code)
+{
   return !(code == XXX);
 }
 
-/**
- *@Description  Translate string into AminoAcid code enum. 
- * *@param amino acid one letter name(char)
- * @return corresponding amino acid code(aminoAcidCode)
- */
-inline AminoAcidCode aminoAcidOneLetterTranslator(char name){
+
+/** Translate string into AminoAcid code enum. */
+inline
+AminoAcidCode
+aminoAcidOneLetterTranslator(char name)
+{
   DUMP(name);
-  if (name == ' ')    {
+  if (name == ' ')
+    {
       return XXX;
     }
-  if (name == 'X')    {
+  if (name == 'X')
+    {
       return XXX;
     }
-  if (name == 'A')    {
+  if (name == 'A')
+    {
       return ALA;
     }
-  else if (name == 'C')    {
+  else if (name == 'C')
+    {
       return CYS;
     }
-  else if (name == 'D')    {
+  else if (name == 'D')
+    {
       return ASP;
     }
-  else if (name == 'E')    {
+  else if (name == 'E')
+    {
       return GLU;
     }
-  else if (name == 'F')    {
+  else if (name == 'F')
+    {
       return PHE;
     }
-  else if (name == 'G')    {
+  else if (name == 'G')
+    {
       return GLY;
     }
-  else if (name == 'H')    {
+  else if (name == 'H')
+    {
       return HIS;
     }
-  else if (name == 'I')    {
+  else if (name == 'I')
+    {
       return ILE;
     }
-  else if (name == 'K')    {
+  else if (name == 'K')
+    {
       return LYS;
     }
-  else if (name == 'L')    {
+  else if (name == 'L')
+    {
       return LEU;
     }
-  else if (name == 'M')    {
+  else if (name == 'M')
+    {
       return MET;
     }
-  else if (name == 'N')    {
+  else if (name == 'N')
+    {
       return ASN;
     }
-  else if (name == 'P')    {
+  else if (name == 'P')
+    {
       return PRO;
     }
-  else if (name == 'Q')    {
+  else if (name == 'Q')
+    {
       return GLN;
     }
-  else if (name == 'R')    {
+  else if (name == 'R')
+    {
       return ARG;
     }
-  else if (name == 'S')    {
+  else if (name == 'S')
+    {
       return SER;
     }
-  else if (name == 'T')    {
+  else if (name == 'T')
+    {
       return THR;
     }
-  else if (name == 'V')    {
+  else if (name == 'V')
+    {
       return VAL;
     }
-  else if (name == 'W')    {
+  else if (name == 'W')
+    {
       return TRP;
     }
-  else if (name == 'Y')    {
+  else if (name == 'Y')
+    {
       return TYR;
     }
 
   return XXX; // AminoAcid type name is unknown
 }
 
- 
-/**
- *@Description  Translate string into AminoAcid code enum. 
- * *@param amino acid three letter name(char)
- * @return corresponding amino acid code(aminoAcidCode)
- */
-inline AminoAcidCode aminoAcidThreeLetterTranslator(const string& name){
+
+/** Translate string into AminoAcid code enum. */
+inline
+AminoAcidCode
+aminoAcidThreeLetterTranslator(const string& name)
+{
   DUMP(name);
-  if (name == "")    {
+  if (name == "")
+    {
       return XXX;
     }
-  if (name == "XXX")    {
+  if (name == "XXX")
+    {
       return XXX;
     }
-  if (name == "ALA")    {
+  if (name == "ALA")
+    {
       return ALA;
     }
-  else if (name == "CYS")    {
+  else if (name == "CYS")
+    {
       return CYS;
     }
-  else if (name == "ASP")    {
+  else if (name == "ASP")
+    {
       return ASP;
     }
-  else if (name == "GLU")    {
+  else if (name == "GLU")
+    {
       return GLU;
     }
-  else if (name == "PHE")    {
+  else if (name == "PHE")
+    {
       return PHE;
     }
-  else if (name == "GLY")    {
+  else if (name == "GLY")
+    {
       return GLY;
     }
-  else if (name == "HIS")    {
+  else if (name == "HIS")
+    {
       return HIS;
     }
-  else if (name == "ILE")    {
+  else if (name == "ILE")
+    {
       return ILE;
     }
-  else if (name == "LYS")    {
+  else if (name == "LYS")
+    {
       return LYS;
     }
-  else if (name == "LEU")    {
+  else if (name == "LEU")
+    {
       return LEU;
     }
-  else if (name == "MET")    {
+  else if (name == "MET")
+    {
       return MET;
     }
-  else if (name == "ASN")    {
+  else if (name == "ASN")
+    {
       return ASN;
     }
-  else if (name == "PRO")     {
+  else if (name == "PRO") 
+    {
       return PRO;
     }
-  else if (name == "GLN")    {
+  else if (name == "GLN")
+    {
       return GLN;
     }
-  else if (name == "ARG")    {
+  else if (name == "ARG")
+    {
       return ARG;
     }
-  else if (name == "SER")    {
+  else if (name == "SER")
+    {
       return SER;
     }
-  else if (name == "THR")    {
+  else if (name == "THR")
+    {
       return THR;
     }
-  else if (name == "VAL")    {
+  else if (name == "VAL")
+    {
       return VAL;
     }
-  else if (name == "TRP")    {
+  else if (name == "TRP")
+    {
       return TRP;
     }
-  else if (name == "TYR")    {
+  else if (name == "TYR")
+    {
       return TYR;
     }
 
@@ -218,10 +256,11 @@ inline AminoAcidCode aminoAcidThreeLetterTranslator(const string& name){
 
 /**
  * @Description Returns the corresponding three letter code as a string.
- * @param aminoacidCode
- * @return corresponding amino acid code(string)
+ * @param aminoacidCode 
+ * @return string
  */
-inline string aminoAcidThreeLetterTranslator(AminoAcidCode code) {
+inline string aminoAcidThreeLetterTranslator(AminoAcidCode code) 
+{
   switch (code)
     {
     case XXX:
@@ -280,10 +319,12 @@ inline string aminoAcidThreeLetterTranslator(AminoAcidCode code) {
 /**
  * @Description Returns the corresponding one letter code as a string.
  * @param aminoacidCode 
- * @return corresponding one letter amino acid code(char)
+ * @return char
  */
-inline char aminoAcidOneLetterTranslator(AminoAcidCode code) {
-  switch (code)    {
+inline char aminoAcidOneLetterTranslator(AminoAcidCode code) 
+{
+  switch (code)
+    {
     case XXX:
       return 'X';
     case ALA:
@@ -340,11 +381,13 @@ inline char aminoAcidOneLetterTranslator(AminoAcidCode code) {
 /**
  * @Description Returns the corresponding aminoacid name as a string.
  * @param aminoacidCode 
- * @return coirresponding amino acid name(string)
+ * @return string
  */
 
-inline string aminoAcidFullTranslator(AminoAcidCode code) {
-  switch (code)    {
+inline string aminoAcidFullTranslator(AminoAcidCode code) 
+{
+  switch (code)
+    {
     case XXX:
       return "Unknown";
     case ALA:
@@ -400,9 +443,10 @@ inline string aminoAcidFullTranslator(AminoAcidCode code) {
 /**
  * @Description Returns the corresponding three letter code as a string.
  * @param one letter code (char)
- * @return corresponding three letter amino acid code (string)
+ * @return string
  */
-inline string oneLetter2ThreeLetter(char oneLetter){
+inline string oneLetter2ThreeLetter(char oneLetter)
+{
   AminoAcidCode code;
   code = aminoAcidOneLetterTranslator(oneLetter);
   return aminoAcidThreeLetterTranslator(code);
@@ -410,36 +454,40 @@ inline string oneLetter2ThreeLetter(char oneLetter){
 /**
  * @Description Returns the corresponding one letter code.
  * @param three letter code (string)
- * @return corresponding one letter amino acid code 
+ * @return char
  */
-inline char threeLetter2OneLetter(const string& threeLetter){
+inline char threeLetter2OneLetter(const string& threeLetter)
+{
   AminoAcidCode code;
   code = aminoAcidThreeLetterTranslator(threeLetter);
   return aminoAcidOneLetterTranslator(code);
 }
 /**
- * @Description Returns following amino acid
- * @param reference to the amino acid code (aminoacidcode&), not used int
- * @return reference to the following amino acid code (aminoacidcode&)
+ * @Description Returns one aminoacid code.
+ * @param aminoacid code 
+ * @return aminoacid code
  */
-inline AminoAcidCode& operator++(AminoAcidCode& ac, int){
+inline AminoAcidCode& operator++(AminoAcidCode& ac, int)
+{
   return ac = ( (ac == XXX) ? ALA : AminoAcidCode(ac+1) );
 }
 /**
- * @Description Returns previous amino acid
- * @param reference to the amino acid code (aminoacidcode&), not used int
- * @return reference to the previous amino acid code (aminoacidcode&)
+ * @Description Returns one aminoacid code.
+ * @param aminoacid code 
+ * @return aminoacid code
  */
-inline AminoAcidCode& operator--(AminoAcidCode& ac, int){
+inline AminoAcidCode& operator--(AminoAcidCode& ac, int)
+{
   return ac = ( (ac == ALA) ? XXX : AminoAcidCode(ac-1) );
 }
 
 /**
- * @Description verifies if the amino acid is a polar one.
- * @param aminoacid three letter code (AminoAcidCode)
- * @return true if its polar (boolean)
+ * @Description verifyes if the aminoacid is a polar one.
+ * @param aminoacid code 
+ * @return boolean
  */
-inline bool isPolar(AminoAcidCode code){
+inline bool isPolar(AminoAcidCode code)
+{
   if ( (code == CYS) || 
        (code == ASP) || 
        (code == GLU) || 
@@ -458,11 +506,12 @@ inline bool isPolar(AminoAcidCode code){
 }
 
 /**
- * @Description verifies if the amino acid is a Hydrophobic one.
- * @param aminoacid three letter code (AminoAcidCode)
- * @return true if its Hydrophobic (boolean)
+ * @Description verifyes if the aminoacid is a  Hydrophobic one.
+ * @param aminoacid code 
+ * @return boolean
  */
-inline bool isHydrophobic(AminoAcidCode code){
+inline bool isHydrophobic(AminoAcidCode code)
+{
   if ( (code == ALA) || 
        (code == PHE) || 
        (code == GLY) || 
@@ -478,7 +527,8 @@ inline bool isHydrophobic(AminoAcidCode code){
 
 
 
-enum StateCode { 
+enum StateCode 
+{ 
   HELIX,
   STRAND,
   TURN,
@@ -487,11 +537,12 @@ enum StateCode {
   State_CODE_SIZE // number of State types
 };
 /**
- * @Description obtains the state( HELIX,STRAND,  TURN, COIL) based on the one letter code.
- * @param   one letter code(char)
- * @return statecode
+ * @Description states  name for a translator.
+ * @param translator  one letter code
+ * @return statecode(char)
  */
-inline StateCode stateCodeOneLetterTranslator(char name){
+inline StateCode stateCodeOneLetterTranslator(char name)
+{
   DUMP(name);
   if (name == ' ')
     {
@@ -521,11 +572,12 @@ inline StateCode stateCodeOneLetterTranslator(char name){
   return YYY; // StateCode type name is unknown
 }
 /**
- * @Description obtains the one letter code state( H,E,  T, C,Y) based on the state code .
- * @param  statecode 
- * @return one letter code(char)
+ * @Description states the one letter name for a translator.
+ * @param translator name
+ * @return statecode
  */
-inline char stateCodeOneLetterTranslator(StateCode code) {
+inline char stateCodeOneLetterTranslator(StateCode code) 
+{
   switch (code)
     {
     case YYY:
@@ -549,11 +601,12 @@ inline char stateCodeOneLetterTranslator(StateCode code) {
   return 'X';
 }
 /**
- * @Description Returns the following state code.
- * @param statecode reference (statecode&)
- * @return statecode reference(statecode&)
+ * @Description Returns one state code.
+ * @param statecode code 
+ * @return statecode code
  */
-inline StateCode& operator++(StateCode& sc, int){
+inline StateCode& operator++(StateCode& sc, int)
+{
   return sc = ( (sc == YYY) ? HELIX : StateCode(sc+1) );
 }
 

@@ -46,8 +46,7 @@ public:
   int getAtomStartOffset() { return startAtomOffset; }
   int getIndexFromPdbNumber(int index);  // in: pdb_num, out: array_num
   int getPdbNumberFromIndex(int index);  // in: array_num, out: pdb_num
-  unsigned int maxPdbNumber() { 
-    return startOffset + gaps.size() + sizeAmino(); }
+  int maxPdbNumber() { return startOffset + gaps.size() + sizeAmino(); }
   bool isGap(int index);
   void printGaps();
   unsigned int sizeGaps()  { return gaps.size(); }
@@ -124,7 +123,8 @@ public:
 
   void setStateFromSecondary(string sec);  
   void setStateFromTorsionAngles();  
-  void getDSSP(bool verbose); 
+  void setDSSP(bool verbose);
+  vector< set<char> > getDSSP(){return ss;};
   
  
   const Spacer& getInBond(unsigned int n) const;
@@ -347,6 +347,9 @@ inline void Spacer::acceptCalculator(EnergyVisitor* v){
 inline void Spacer::acceptOptimizer(OptimizationVisitor* v){
   v->PrepareSpacer(*this);
 }
+
+
+
 
 
 // OPERATORS:

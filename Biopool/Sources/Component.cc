@@ -1,7 +1,5 @@
 /**
- * 
-* @Class:             Component
-* @Project Name:      Victor
+ 
 * @Description:       Base class for composite structures. 
 *                     Implementing the Composite pattern.
 */
@@ -22,19 +20,23 @@ Component::Component(unsigned int mI, unsigned int mO) : Bond(mI, mO),
   upperBound(-(DBL_MAX-1),-(DBL_MAX-1),-(DBL_MAX-1)), modified(false)
 { }
 
-Component::Component(const Component& orig) {
+Component::Component(const Component& orig) 
+{
   PRINT_NAME;
   this->copy(orig);  
 }
 
-Component::~Component(){
+Component::~Component()
+{
   PRINT_NAME; 
 } 
 
 
 // PREDICATES:
 
-vgVector3<double> Component::getLowerBound(double dist){
+vgVector3<double> 
+Component::getLowerBound(double dist)
+{
   sync();
   vgVector3<double> tmp = lowerBound;
   for (unsigned int i = 0; i < 3; i++)
@@ -43,7 +45,9 @@ vgVector3<double> Component::getLowerBound(double dist){
   return lowerBound;
 }
 
-vgVector3<double> Component::getUpperBound(double dist){
+vgVector3<double> 
+Component::getUpperBound(double dist)
+{
   sync();
   vgVector3<double> tmp = upperBound;
   for (unsigned int i = 0; i < 3; i++)
@@ -55,23 +59,28 @@ vgVector3<double> Component::getUpperBound(double dist){
 
 // MODIFIERS:
 
-void Component::connectIn(Component* c, unsigned int offset){
+void Component::connectIn(Component* c, unsigned int offset)
+{
   ERROR("connectIn() undefined for this class.", exception);
 }
 
-void Component::connectOut(Component* c, unsigned int offset){
+void Component::connectOut(Component* c, unsigned int offset)
+{
   ERROR("connectOut() undefined for this class.", exception);
 }
 
-Component* Component::unconnectIn(){
+Component* Component::unconnectIn()
+{
   ERROR("unconnectIn() undefined for this class.", exception);
 }
 
-Component* Component::unconnectOut(){
+Component* Component::unconnectOut()
+{
   ERROR("unconnectOut() undefined for this class.", exception);
 }
 
-void Component::copy(const Component& orig){
+void Component::copy(const Component& orig)
+{
   // Attention: new elements have to be copied also in Monomer::copy()
   // since it does *NOT* invoke this function (segmentation fault if it does).
 
@@ -85,10 +94,11 @@ void Component::copy(const Component& orig){
 
   // deep copy of components:
 
-  components.clear(); 
+  components.clear();  // !!!!! <----- 15/12/00 Bug: does not release memory: 
+                       //                            use delete
 
-	for (unsigned int i = 0; i < orig.size(); i++) { // form new ones
-    
+	for (unsigned int i = 0; i < orig.size(); i++)  // form new ones
+    {
 		//Component* c = orig.components[i]->clone();
 		// ---
 		Component* yyy = orig.components[i];//->clone();
@@ -110,7 +120,8 @@ void Component::copy(const Component& orig){
 
 // OPERATORS:
 
-Component& Component::operator=(const Component& orig){
+Component& Component::operator=(const Component& orig)
+{
   PRINT_NAME;
   if (&orig != this)
     copy(orig);

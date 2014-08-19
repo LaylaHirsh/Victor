@@ -1,10 +1,4 @@
-/**
-* @Class:             Atom
-* @Base Class(es):    SimpleBond
-* @Project Name:      Victor
-
-*/
-
+ 
 // Includes:
 #include <Atom.h>
 #include <Group.h>
@@ -18,36 +12,29 @@ using namespace Biopool;
 
 
 // CONSTRUCTORS/DESTRUCTOR:
-/**
- * @description Constructor 
- */
 Atom::Atom(unsigned int mI, unsigned int mO) : SimpleBond(mI,mO), 
   superior(NULL), type(X), coords(0,0,0), Bfac(0.0), trans(0,0,0), rot(1), 
-  modified(false){ 
+  modified(false)
+{ 
   PRINT_NAME;
 }
-/**
- * @description Constructor based in another object
- */
-Atom::Atom(const Atom& orig){
+
+Atom::Atom(const Atom& orig)
+{
   PRINT_NAME;
   this->copy(orig);
 }
-/**
- * @description Destructor 
- */
-Atom::~Atom(){
+
+Atom::~Atom()
+{
   PRINT_NAME;
 }
 
 // PREDICATES:
 
-/**
- * @description finds the distance between two atoms
- * @param reference to an atom(Atom&)
- * @return distance value(double)
- */
-double Atom::distance(Atom& other){
+double 
+Atom::distance(Atom& other)
+{
   sync();
   other.sync();
   
@@ -61,21 +48,17 @@ double Atom::distance(Atom& other){
 
 
 // MODIFIERS:
-/**
- * @description Defines the atom coords 
- * @param values for the x,y,z coords(double,double,double)
- * @return changes are made internally(void)
- */
-void Atom::setCoords(double _x, double _y, double _z){
+
+void 
+Atom::setCoords(double _x, double _y, double _z)
+{
   vgVector3<double> tmp(_x, _y, _z);
   setCoords(tmp);
 }
-/**
- * @description Defines the atom coords 
- * @param a vector containing the values for the x,y,z coords(vgVector3<double>)
- * @return changes are made internally(void)
- */
-void Atom::setCoords(vgVector3<double> c){
+
+void
+Atom::setCoords(vgVector3<double> c)
+{
   sync();
   vgVector3<double> oldTrans = trans;
   coords = c;
@@ -96,12 +79,10 @@ void Atom::setCoords(vgVector3<double> c){
 
   setModified();
 }
-/**
- * @description Copies an atom into another
- * @param reference to the atom(atom&)
- * @return changes are made internally(void)
- */
-void Atom::copy(const Atom& orig){
+
+void 
+Atom::copy(const Atom& orig)
+{
   PRINT_NAME; 
   SimpleBond::copy(orig);
 
@@ -116,12 +97,10 @@ void Atom::copy(const Atom& orig){
   rot = orig.rot;
   modified = orig.modified;
 }
-/**
- * @description synchronize coords with structure
- * @param none
- * @return changes are made internally(void)
- */
-void Atom::sync(){ // 
+
+void 
+Atom::sync() // synchronize coords with structure
+{
   if (inSync())
     return;
 
@@ -131,7 +110,8 @@ void Atom::sync(){ //
   if (isNotFirstAtomInStructure())
     getInBond(0).sync();
   else 
-    if (hasSuperior())   {    // use superior's trans & rot
+    if (hasSuperior())
+      {    // use superior's trans & rot
 	supTrans = getSuperior().getTrans();
 	rot = getSuperior().getRot() * rot;
 	const_cast<Group&>(getSuperior()).setRot(tmpMatrix);
@@ -146,12 +126,10 @@ void Atom::sync(){ //
   propagateRotation();
   modified = false;
 }
-/**
- * @description sets the modified flag for the atom, and for all the out bonds
- * @param none
- * @return changes are made internally(void)
- */
-void Atom::setModified(){
+
+void 
+Atom::setModified()
+{
   if (modified)
     return;
   modified = true;
@@ -160,23 +138,19 @@ void Atom::setModified(){
     getOutBond(i).setModified();
 
 }
-/**
- * @description sets the unmodified flag for the atom 
- * @param none
- * @return changes are made internally(void)
- */
-void Atom::setUnModified(){
+
+void
+Atom::setUnModified()
+{
   modified = false;
 }
 
 
 // OPERATORS:
-/**
- * @description copies one atom into another 
- * @param reference to the atom to copy(const Atom&)
- * @return reference to the new atom(Atom&)
- */
-Atom& Atom::operator=(const Atom& orig){
+
+Atom& 
+Atom::operator=(const Atom& orig)
+{
   PRINT_NAME;
 
   if (&orig != this)
@@ -186,12 +160,10 @@ Atom& Atom::operator=(const Atom& orig){
 
 
 // HELPERS:
-/**
- * @description sets the rotation matrix data
- * @param none
- * @return changes are made internally(void)
- */
-void Atom::propagateRotation(){
+
+void 
+Atom::propagateRotation()
+{
   vgMatrix3<double> tmpMatrix(1);    
   if (rot == tmpMatrix)  
     return;
@@ -221,12 +193,10 @@ void Atom::propagateRotation(){
   rot = tmpMatrix;
 }
 
- /**
- * @description verifies if its not the first atom in the structure
- * @param none
- * @return true if its not the first atom in structure
- */
-inline bool Atom::isNotFirstAtomInStructure(){
+ 
+inline bool 
+Atom::isNotFirstAtomInStructure()
+{
   if (sizeInBonds() && !((getSuperior().getType() == "PRO") 
 	    && (getCode() == N) && (getInBond(0).getCode() == CD)))
     // NB: Proline's N is a special case because unbound PRO 

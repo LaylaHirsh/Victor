@@ -182,8 +182,6 @@ double Biopool::getSolvAccess(Spacer &chain, unsigned int tgt,
 //
 // Function:        Biopool::getSolvAccessVec()
 //
-// Author:          Negri Enrico
-//
 // Date:            10/02/2008
 //
 // Arguments:

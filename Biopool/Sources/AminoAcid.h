@@ -1,12 +1,4 @@
-/**
-
-* @Class:              AminoAcid
-* @Base Class(es):     Group
-* @Containing:         SideChain
-* @Author:             Silvio Tosatto
-* @Project Name:       Victor
-* 
-*/
+ 
 
 #ifndef _AMINOACID_H_
 #define _AMINOACID_H_
@@ -26,10 +18,11 @@
 namespace Biopool {
 /** @brief class implements a simple amino acid.
  * 
-* @Description Includes methods that allow to manages an amino acid: get and set angles, connections, bonds, side chain info, etc .
+* @Description Includes methods that allow to get and set angles, connections, bonds, side chain info, etc.
 * @This NB Angles are in degrees.
  * */
-class AminoAcid : public Group{
+class AminoAcid : public Group
+{
 public: 
 
   // CONSTRUCTORS/DESTRUCTOR:
@@ -97,7 +90,7 @@ public:
   // adds a CB atom to the sidechain, if necessary
   void patchAminoAcidCode(); // determines the 3-letter code from the sidechain
   bool setBondsFromPdbCode(bool connect, AminoAcid* prev = NULL, 
-  bool permissive = false); // returns false if failed to connect
+       bool permissive = false); // returns false if failed to connect
   virtual void sync(); // synchronize coords with structure
   virtual void setModified();
 
@@ -152,320 +145,254 @@ private:
 // -----------------x-------------------x-------------------x-----------------
 
 // PREDICATES:
-/*
- * @description returns the three letter code of the amino acid
- */
-inline unsigned int AminoAcid::getCode() const{
+inline unsigned int 
+AminoAcid::getCode() const
+{
   return aminoAcidThreeLetterTranslator(id);
 }
-/*
- * @description returns the one letter code of the amino acid
- */
-inline char AminoAcid::getType1L() { 
+
+inline char
+AminoAcid::getType1L() 
+{ 
   return threeLetter2OneLetter(id); 
 }
-/*
- * @description returns the size of the amino acid, sidechain and group size
- */
-inline unsigned int AminoAcid::size() const {
+
+inline unsigned int 
+AminoAcid::size() const 
+{
   return (Group::size() + sideChain.size());
 }
-/*
- * @description returns the backbone size of the amino acid 
- * @param
- * @return
- */
-inline unsigned int AminoAcid::sizeBackbone() const{
+
+inline unsigned int 
+AminoAcid::sizeBackbone() const
+{
   return Group::size();
 }
-/*
- * @description returns the value of phi angle 
- * @param override flag, recalculates the phi angle and updates it internally(bool)
- * @return angle value(double)
- */
-inline double AminoAcid::getPhi(bool override){
+
+inline double 
+AminoAcid::getPhi(bool override)
+{
   if ((phi > 990) || (override))
     if (sizeInBonds())
       phi = RAD2DEG * icc.getTorsionAngle(getInBond(0)[C], (*this)[N], 
 				      (*this)[CA], (*this)[C]);
   return phi;
 }
-/*
- * @description returns the value of psi angle 
- * @param override flag, recalculates the psi angle and updates it internally(bool)
- * @return angle value(double)
- */
-inline double AminoAcid::getPsi(bool override){
+
+inline double 
+AminoAcid::getPsi(bool override)
+{
   if ((psi > 990) || (override))
     if (sizeOutBonds())
       psi = RAD2DEG * icc.getTorsionAngle((*this)[N], (*this)[CA], 
 				      (*this)[C], getOutBond(0)[N]);
   return psi;
 }
-/*
- * @description returns the value of omega angle 
- * @param override flag, recalculates the omega angle and updates it internally(bool)
- * @return angle value(double)
- */
-inline double AminoAcid::getOmega(bool override){
+
+inline double 
+AminoAcid::getOmega(bool override)
+{
   if ((omega > 990) || (override))
     if (sizeOutBonds())
       omega = RAD2DEG * icc.getTorsionAngle((*this)[CA], (*this)[C], 
 				      getOutBond(0)[N], getOutBond(0)[CA]);
   return omega;
 }
-/*
- * @description returns the value of chi angle 
- * @param returns the angle corresponding to the n position of the side chain
- * @return angle value(double)
- */
-inline double AminoAcid::getChi(unsigned int n){
+
+inline double 
+AminoAcid::getChi(unsigned int n)
+{
   return sideChain.getChi(n);
 }
-/*
- * @description returns the values of chi angle 
- * @param none
- * @return angle values(vector<double>)
- */
-inline vector<double> AminoAcid::getChi(){
+
+inline vector<double> 
+AminoAcid::getChi()
+{
   return sideChain.getChi();
 }
-/*
- * @description returns the maximum value of chi angle 
- * @param none
- * @return angle value( unsigned int)
- */
-inline unsigned int AminoAcid::getMaxChi(){
+
+inline unsigned int 
+AminoAcid::getMaxChi()
+{
   return sideChain.getMaxChi();
 }
 
-/*
- * @description return the amino acid state
- * @param none
- * @return the code of the state(StateCode)
- */
-inline StateCode AminoAcid::getState(){
+
+inline StateCode 
+AminoAcid::getState()
+{
   return state;
 }
-/*
- * @description returns the amino acid side chain
- * @param none
- * @return reference to the side chain( const SideChain& )
- */
-inline const SideChain& AminoAcid::getSideChain() const{
+
+inline const SideChain& 
+AminoAcid::getSideChain() const
+{
   return sideChain;
 }
-/*
- * @description returns the amino acid side chain
- * @param none
- * @return reference to the side chain(  SideChain& )
- */
-inline SideChain& AminoAcid::getSideChain(){
+
+inline SideChain& 
+AminoAcid::getSideChain()
+{
   return sideChain;
 }
-/*
- * @description verifies if the atom is present in the amino acid
- * @param reference to the atom code(AtomCode$)
- * @return flag to verify the presence(bool)
- */
-inline bool AminoAcid::isMember(const AtomCode& ac) const{
+
+inline bool 
+AminoAcid::isMember(const AtomCode& ac) const
+{
   return (pGetAtom(ac) != NULL);
 }
-/*
- * @description Saves the amino acid
- * @param reference to the saver there the amino acid will be saved(saver&)
- * @return changes are made internally(void)
- */
-inline void AminoAcid::save(Saver& s){
+
+inline void 
+AminoAcid::save(Saver& s)
+{
   s.saveAminoAcid(*this);
 }
 
 
 // MODIFIERS:
-/*
- * @description defines the amino acid type
- * @param amino acid one letter code(char)
- * @return changes are made internally(void)
- */
-inline void AminoAcid::setType1L(char _name) { 
+
+inline void 
+AminoAcid::setType1L(char _name) 
+{ 
   type = aminoAcidOneLetterTranslator(_name);
   id.setName(oneLetter2ThreeLetter(_name));
 }
-/*
- * @description defines the amino acid type
- * @param amino acid three letter code(string)
- * @return changes are made internally(void)
- */
-inline void AminoAcid::setType(string _name){ 
+
+inline void 
+AminoAcid::setType(string _name)
+{ 
   type = aminoAcidThreeLetterTranslator(_name);
   id.setName(_name);
 }
-/*
- * @description defines the chi value for a specific chi position
- * @param chi index(unsigned int), chi value(double)
- * @return  changes are made internally(void)
- */
-inline void AminoAcid::setChi(unsigned int n, double a){
+
+inline void
+AminoAcid::setChi(unsigned int n, double a)
+{
   sideChain.setChi(n, a);
 }
-/*
- * @description defines the chi values of the side chain
- * @param  chi values(vector<double>)
- * @return  changes are made internally(void)
- */
-inline void AminoAcid::setChi(vector<double> cv){
+
+inline void 
+AminoAcid::setChi(vector<double> cv)
+{
   sideChain.setChi(cv);
 }
-/*
- * @description sets the state of the amino acid
- * @param state (StateCode)
- * @return changes are made internally(void)
- */
-inline void AminoAcid::setState(StateCode sc){
+
+inline void 
+AminoAcid::setState(StateCode sc)
+{
   state = sc;
 }
-/*
- * @description removes the side chain 
- * @param none
- * @return changes are made internally(void)
- */
-inline void AminoAcid::removeSideChain(){
+
+inline void 
+AminoAcid::removeSideChain()
+{
   SideChain sc;
   sideChain = sc;
   resetBoundaries();
 }
-/*
- * @description Loads the amino amino acid
- * @param reference to the loader(loader&);
- * @return changes are made internally(void)
- */
-inline void AminoAcid::load(Loader& l){
+
+inline void 
+AminoAcid::load(Loader& l)
+{
   l.loadAminoAcid(*this);
   resetBoundaries();
 }
-/*
- * @description returns the In bond n
- * @param value for n (unsigned int)
- * @return reference to the amino acid(const AminoAcid&)
- */
-inline const AminoAcid& AminoAcid::getInBond(unsigned int n) const{
+
+inline const AminoAcid& 
+AminoAcid::getInBond(unsigned int n) const
+{
   return dynamic_cast<const AminoAcid&>(Bond::getInBond(n));
 }
-/*
- * @description returns the In bond n
- * @param value for n (unsigned int)
- * @return reference to the amino acid( AminoAcid&)
- */
-inline AminoAcid& AminoAcid::getInBond(unsigned int n){
+
+inline AminoAcid& 
+AminoAcid::getInBond(unsigned int n)
+{
   return dynamic_cast<AminoAcid&>(Bond::getInBond(n));
 }
-/*
- * @description returns the out bond n
- * @param value for n (unsigned int)
- * @return reference to the amino acid(const AminoAcid&)
- */
-inline const AminoAcid& AminoAcid::getOutBond(unsigned int n) const{
+
+inline const AminoAcid& 
+AminoAcid::getOutBond(unsigned int n) const
+{
   return dynamic_cast<const AminoAcid&>(Bond::getOutBond(n));
 }
-/*
- * @description returns the out bond n
- * @param value for n (unsigned int)
- * @return reference to the amino acid( AminoAcid&)
- */
-inline AminoAcid& AminoAcid::getOutBond(unsigned int n){
+
+inline AminoAcid& 
+AminoAcid::getOutBond(unsigned int n)
+{
   return dynamic_cast<AminoAcid&>(Bond::getOutBond(n));
 }
-/*
- * @description fixes the amino acid, determining the the 3-letter code from the sidechain
- * @param none
- * @return changes are made internally(void)
- */
-inline void AminoAcid::patchAminoAcidCode() {  
+
+inline void 
+AminoAcid::patchAminoAcidCode() 
+{ // determines the 3-letter code from the sidechain
   sideChain.patchAminoAcidCode();
   setType(sideChain.getType());
 }
-/*
- * @description defines a flag for the group and for the side chain
- * @param none
- * @return changes are made internally(void)
- */
-inline void AminoAcid::setModified(){
+
+inline void 
+AminoAcid::setModified()
+{
   Group::setModified();
   sideChain.setModified();
 }
 
-/*
- * @description defines the energy visitor as an accepted calculator of the amino acid
- * @param pointer to the energy visitor
- * @return changes are made internally(void)
- */
-inline void AminoAcid::acceptCalculator(EnergyVisitor* v){
+
+inline void 
+AminoAcid::acceptCalculator(EnergyVisitor* v)
+{
   v->PrepareAminoAcid(*this);
 }
-/*
- * @description defines the energy visitor as an optimization visitor of the amino acid
- * @param pointer to the optimization visitor
- * @return changes are made internally(void)
- */
-inline void AminoAcid::acceptOptimizer(OptimizationVisitor* v){
+
+inline void
+AminoAcid::acceptOptimizer(OptimizationVisitor* v)
+{
   v->PrepareAminoAcid(*this);
 }
 
 
 // OPERATORS:
-/*
- * @description allows to compare an amino acid to another
- * @param reference to the amino acid(const AminoAcid&)
- * @return flag that verifies that the amino acids are equal(bool)
- */
-inline bool AminoAcid::operator==(const AminoAcid& other) const{
+
+inline bool 
+AminoAcid::operator==(const AminoAcid& other) const
+{
   return (dynamic_cast<const Identity*>(this)) == 
     dynamic_cast<const Identity*>(&other);
 }
-/*
- * @description allows to compare an amino acid to another
- * @param reference to the amino acid(const AminoAcid&)
- * @return flag that verifies that the amino acids are not equal(bool)
- */
-inline bool AminoAcid::operator!=(const AminoAcid& other) const{
+  
+
+inline bool 
+AminoAcid::operator!=(const AminoAcid& other) const
+{
   return (dynamic_cast<const Identity*>(this)) != 
     dynamic_cast<const Identity*>(&other);
 }
 
-/*
- * @description allows to see the amino acid as a vector of atoms, and obtain the n position of it
- * @param index of the atom in the amino acid(unsigned int)
- * @return reference to the atom(Atom&)
- */
-inline Atom& AminoAcid::operator[](unsigned int n){
+
+inline Atom& 
+AminoAcid::operator[](unsigned int n)
+{
   PRECOND(n < this->size(), exception);
   return ((n < Group::size()) ? Group::getAtom(n) : sideChain[n-Group::size()]);
 }
-/*
- * @description allows to see the amino acid as a vector of atoms, and obtain the n position of it
- * @param index of the atom in the amino acid(unsigned int)
- * @return reference to the atom(cont Atom&)
- */
-inline const Atom& AminoAcid::operator[](unsigned int n) const{
+
+inline const Atom& 
+AminoAcid::operator[](unsigned int n) const
+{
   PRECOND(n < this->size(), exception);
   return ((n < Group::size()) ? Group::getAtom(n) : sideChain[n-Group::size()]);
 }
-/*
- * @description allows to see the amino acid as a vector of atoms, and obtain the n position of it
- * @param code of the atom in the amino acid(const AtomCode& )
- * @return reference to the atom(Atom&)
- */
-inline Atom& AminoAcid::operator[](const AtomCode& ac){
+
+inline Atom& 
+AminoAcid::operator[](const AtomCode& ac)
+{
   Atom* a = pGetAtom(ac);
   INVARIANT(a != NULL, exception);
   return *a;
 }
-/*
- * @description allows to see the amino acid as a vector of atoms, and obtain the n position of it
- * @param code of the atom in the amino acid(const AtomCode& )
- * @return reference to the atom(const Atom&)
- */
-inline const Atom& AminoAcid::operator[](const AtomCode& ac) const{
+
+inline const Atom& 
+AminoAcid::operator[](const AtomCode& ac) const
+{
   Atom* a = pGetAtom(ac);
   INVARIANT(a != NULL, exception);
   return *a;

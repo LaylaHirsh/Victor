@@ -1,6 +1,5 @@
 /**
- * Author:          Francesco Lovo
-* @Project name:    Victor
+ 
 * @Description:     A simple program to test class Protein's features.
 */
 #include <GetArg.h>
@@ -91,7 +90,6 @@ int main(int argc, char* argv[])
   
   Protein prot;
   prot.load(pl);
- 
   cout<<"Protein Loaded\n"
       <<"...\n";
   
@@ -111,6 +109,7 @@ int main(int argc, char* argv[])
 
     for (unsigned int i=0; i<prot.sizeProtein();i++){                 
         sp = prot.getSpacer(i);
+        
         cout << i << "\n";
         sp->printGaps();
     }

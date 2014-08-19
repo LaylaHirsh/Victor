@@ -105,7 +105,6 @@ void SeqLoader::loadSpacer(Spacer& sp){
 //
 //  Method:        SeqLoader::loadLigand
 //
-//  Author:        Marcus Pruemmer
 //
 //  Date:          06/2000
 //

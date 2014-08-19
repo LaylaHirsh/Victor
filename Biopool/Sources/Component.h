@@ -1,6 +1,4 @@
-/** 
- * @Class:           Component
-*/
+ 
 
 #ifndef _COMPONENT_H_
 #define _COMPONENT_H_
@@ -23,7 +21,8 @@ namespace Biopool {
 * @Description Implementing the Composite pattern.
 * @This 
  **/
-class Component : public Bond{
+class Component : public Bond
+{
 public: 
 
 // CONSTRUCTORS/DESTRUCTOR:
@@ -108,18 +107,24 @@ private:
 // -----------------x-------------------x-------------------x-----------------
 
 // PREDICATES:
-inline unsigned int Component::size() const{
+inline unsigned int 
+Component::size() const
+{
   return components.size();
 }
 
-inline unsigned int Component::getDepth() const{
+inline unsigned int 
+Component::getDepth() const
+{
   if (superior != NULL)
     return superior->getDepth() + 1;
   else
     return 0;
 }
 
-inline bool Component::collides(Component& other, double dist){
+inline bool 
+Component::collides(Component& other, double dist)
+{
   return ( (lowerBound.x <= other.upperBound.x+dist) 
 	   || (lowerBound.y <= other.upperBound.y+dist)
 	   || (lowerBound.z <= other.upperBound.z+dist)
@@ -128,7 +133,9 @@ inline bool Component::collides(Component& other, double dist){
 	   || (upperBound.z >= other.lowerBound.z-dist) );  
 }  
 
-inline Component& Component::getSuperior(){
+inline Component& 
+Component::getSuperior()
+{
   if (superior != NULL)
     return *superior;
   else
@@ -138,17 +145,22 @@ inline Component& Component::getSuperior(){
     }
 }
 
-inline bool Component::hasSuperior() const{
+inline bool
+Component::hasSuperior() const
+{
   return (superior != NULL);
 }
 
-inline bool Component::inSync(){
+inline bool 
+Component::inSync()
+{
   return (!modified && ( !hasSuperior() || (getSuperior().inSync()))) ;
 }
 
 // MODIFIERS:
 
-inline void Component::setModified(){
+inline void Component::setModified()
+{
   if (modified)
     return;
   modified = true;
@@ -160,15 +172,21 @@ inline void Component::setModified(){
 
 // HELPERS:
 
-inline void Component::setSuperior(Component* c){
+inline void 
+Component::setSuperior(Component* c)
+{
   superior = c;
 }
 
-inline void Component::setLowerBound(vgVector3<double> _lb){
+inline void 
+Component::setLowerBound(vgVector3<double> _lb)
+{
   lowerBound = _lb;
 }
 
-inline void Component::setUpperBound(vgVector3<double> _ub){
+inline void 
+Component::setUpperBound(vgVector3<double> _ub)
+{
   upperBound = _ub;
 }
 

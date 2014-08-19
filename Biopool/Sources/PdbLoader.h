@@ -40,7 +40,8 @@ public:
       noHAtoms(_noHAtoms), noHetAtoms(_noHetAtoms), noSecondary(_noSecondary),
       noConnection(_noConnection), noWater(_noWater), verbose(_verb), 
       allChains(_allChains), chain(' '), model(999), altAtom('A'), helixCode(_NULL),
-      sheetCode(_NULL), helixData(), sheetData(), onlyMetalHetAtoms(_onlyMetal), 
+      //sheetCode(_NULL), helixData(), sheetData(), onlyMetalHetAtoms(_onlyMetal), 
+      sheetCode(_NULL), onlyMetalHetAtoms(_onlyMetal), 
       noNucleotideChains(_noNucleotideChains) { }
 
   // this class uses the implicit copy operator.

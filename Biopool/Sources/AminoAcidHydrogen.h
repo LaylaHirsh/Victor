@@ -1,8 +1,4 @@
-/* 
- * @Class:   AminoAcidHydrogen.h
- *
- * 
- */
+ 
 
 #ifndef _AMINOACIDHYDROGEN_H_
 #define	_AMINOACIDHYDROGEN_H_

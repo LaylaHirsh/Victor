@@ -13,13 +13,15 @@ using namespace Biopool;
 
 double BOND_LENGTH_H_TO_ALL = 1.00;
 map<AminoAcidCode,vector<vector<string> > > AminoAcidHydrogen::paramH;
+
 /**
  * @Description   Load a file with arguments for building hydrogens thank of
  * the IntCoordConverter class
- * @param   name of the file(string)
- * @return changes are made internally(void)
+ * @param   void
+ * @return  void
 */
-void AminoAcidHydrogen::loadParam(string inputFile) {
+void 
+AminoAcidHydrogen::loadParam(string inputFile) {
     ifstream input(inputFile.c_str());
     if (!input)
         ERROR("File not found.", exception);
@@ -62,6 +64,12 @@ void AminoAcidHydrogen::loadParam(string inputFile) {
         line = readLine(input);
     } while (input);
 
+    /*
+    for (unsigned int i=0; i<paramH[aaCode].size();i++){
+        for (unsigned int j=0; j<paramH[aaCode][i].size();j++){
+            cout << i << " " << j << " " << paramH[aaCode][i][j] << "\n";
+        }
+    }*/
     
 }
 
@@ -69,11 +77,13 @@ void AminoAcidHydrogen::loadParam(string inputFile) {
 
 /**
  * @Description   Add Hydrogen to an AminoAcid
- * @param   pointer to an amino acid(AminoAcid*), flag for verbose mode(bool)
- * @return  changes are made internally(void)
+ * @param   void
+ * @return  void
 */
-void AminoAcidHydrogen::setHydrogen(AminoAcid* aa, bool verbose) {
-     
+void 
+AminoAcidHydrogen::setHydrogen(AminoAcid* aa, bool verbose) {
+    
+   
     
     if (aa->isMember(H) || aa->isMember(HA)){
        return;
@@ -94,7 +104,8 @@ void AminoAcidHydrogen::setHydrogen(AminoAcid* aa, bool verbose) {
     //TRP z H N CA 118.50 C 119.50 -1
     // Add H-N backbone, it takes previus aminoacid reference
     
-       
+    
+    
     if (((*aa).sizeInBonds()>0) && ((*aa).getType1L()!='P') ){
         IntCoordConverter icc;
         Atom atH;

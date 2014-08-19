@@ -1,6 +1,5 @@
 /**
 * @Class:             Ligand
-* @Author:            Silvio Tosatto, previous work: Marcus Pruemmer
 * @Project Name:      Victor
 * @ATTENTION:         This class is *NOT* finished yet.
 *                     There are many methods which have only a head

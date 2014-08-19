@@ -21,7 +21,7 @@
 #include <iostream>
 #include <PdbLoader.h>
 #include <cassert>
- using namespace std;
+using namespace std;
 
 using namespace Biopool;
 
@@ -562,7 +562,7 @@ void Spacer::insertAminoAfterWithGaps(
   int nOldSizeAmino = sizeAmino();
   if ( ((int)n<nOldSizeAmino-1) && (dynamic_cast<AminoAcid&>(*components[n]).sizeOutBonds() > 0) )
     {
-		 
+		cout <<"Hello world" <<endl;
       dynamic_cast<AminoAcid&>(*components[n]).unbindOut(
 	       dynamic_cast<AminoAcid&>(*components[n]).getOutBond(0));
     }
@@ -1612,7 +1612,7 @@ void Spacer::getBackboneHbonds(){
  * 
  */
 // calculate SS from H bonds
-void Spacer::getDSSP(bool verbose){
+void Spacer::setDSSP(bool verbose){
     
     // It also calculate bends
     getBackboneHbonds();
@@ -1749,4 +1749,5 @@ void Spacer::getDSSP(bool verbose){
             cout << "\n";
     }
 }
+
 

@@ -32,7 +32,7 @@ SOURCES = Identity.cc SimpleBond.cc Bond.cc \
  AminoAcid.cc Spacer.cc IntSaver.cc IntLoader.cc XyzLoader.cc \
  XyzSaver.cc SeqSaver.cc PdbLoader.cc PdbSaver.cc SeqLoader.cc \
  IntCoordConverter.cc SideChainConstructor.cc RelLoader.cc RelSaver.cc \
- SeqConstructor.cc Ligand.cc LigandSet.cc SolvExpos.cc AminoAcidHydrogen.cc Nucleotide.cc 
+ SeqConstructor.cc Ligand.cc LigandSet.cc SolvExpos.cc AminoAcidHydrogen.cc Nucleotide.cc
 
 OBJECTS = Identity.o SimpleBond.o Bond.o \
  Component.o Monomer.o Polymer.o Atom.o Group.o SideChain.o \
@@ -65,6 +65,6 @@ install: subinstall allinstall
 #
 # Call global Makefile to do the job.
 #
-export VICTOR_ROOT=$(dir $(patsubst %/,%, $(dir $(patsubst %/,%, $(shell pwd)))))
+
 include ../../Makefile.global
 

@@ -1,7 +1,6 @@
 /**  
  *  @Class:             IntLoader
  * @Base Class(es):     Loader
-* @Author:             Pruemmer Marcus
  * @Project Name:       Victor
 *@Description:
  *    Loads components (Atoms, Groups, etc.) in internal format.

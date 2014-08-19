@@ -1,7 +1,5 @@
 /**
- * @Class:           SimpleBond
- * @Derived classes: Bond, Atom
- * @Author:          Silvio Tosatto
+ 
  * @Description:     Defines chemical and abstract bonds between objects.
 *                  eg.: covalent bonds.
 *                  Attention: copy() strips orig from its SimpleBonds and 
@@ -36,19 +34,11 @@ SimpleBond::~SimpleBond(){
 
 // PREDICATES:
 
-// -*- C++ -*-----------------------------------------------------------------
-//
-//  Method:        SimpleBond::isIndirectBond
-//
-//  Author:        Silvio Tosatto 
-//
-//  Date:          08/99
-//
-//  Description:
-//    Checks if this is indirectly bonded to c.
-//    (ie. A to C if A bond B and B bond C) 
-//
-// ----------------------------------------------------------------------------
+/**
+ * @Description:
+*    Checks if this is indirectly bonded to c.
+*    (ie. A to C if A bond B and B bond C) 
+*/
 bool SimpleBond::isIndirectBond(const SimpleBond& c) const{
   for (unsigned int i = 0; i < sizeInBonds(); i++)
     if (getInBond(i).isBond(c))
@@ -61,19 +51,10 @@ bool SimpleBond::isIndirectBond(const SimpleBond& c) const{
 } 
 
 
-// -*- C++ -*-----------------------------------------------------------------
-//
-//  Method:        SimpleBond::isIndirectBond
-//
-//  Author:        Silvio Tosatto 
-//
-//  Date:          08/99
-//
-//  Description:
-//    Checks if this is indirectly bonded to c.
-//    (ie. A to C if A bond B and B bond C) 
-//
-// ----------------------------------------------------------------------------
+/**
+ * @Description:
+*    Checks if this is indirectly bonded to c.
+*    (ie. A to C if A bond B and B bond C) */
 bool SimpleBond::isIndirectInBond(const SimpleBond& c) const{
   for (unsigned int i = 0; i < sizeInBonds(); i++)
     if (getInBond(i).isBond(c))
@@ -83,19 +64,10 @@ bool SimpleBond::isIndirectInBond(const SimpleBond& c) const{
 } 
 
 
-// -*- C++ -*-----------------------------------------------------------------
-//
-//  Method:        SimpleBond::isIndirectBond
-//
-//  Author:        Silvio Tosatto 
-//
-//  Date:          08/99
-//
-//  Description:
-//    Checks if this is indirectly bonded to c.
-//    (ie. A to C if A bond B and B bond C) 
-//
-// ----------------------------------------------------------------------------
+/**
+ * @ Description:
+*    Checks if this is indirectly bonded to c.
+*    (ie. A to C if A bond B and B bond C) */
 bool SimpleBond::isIndirectOutBond(const SimpleBond& c) const{
   for (unsigned int i = 0; i < sizeOutBonds(); i++)
     if (getOutBond(i).isBond(c))
@@ -104,20 +76,10 @@ bool SimpleBond::isIndirectOutBond(const SimpleBond& c) const{
   return false;
 } 
 
-
-// -*- C++ -*-----------------------------------------------------------------
-//
-//  Method:        SimpleBond::isTorsionBond
-//
-//  Author:        Silvio Tosatto 
-//
-//  Date:          11/99
-//
-//  Description:
-//    Checks if this is torsion bond to c.
-//    (ie. A to D if A indirect bond C and C bond D) 
-//
-// ----------------------------------------------------------------------------
+/**
+ * @Description:
+*    Checks if this is torsion bond to c.
+*    (ie. A to D if A indirect bond C and C bond D) */
 bool SimpleBond::isTorsionBond(const SimpleBond& c) const{
   for (unsigned int i = 0; i < sizeOutBonds(); i++)
     if (getOutBond(i).isIndirectBond(c))
@@ -132,18 +94,9 @@ bool SimpleBond::isTorsionBond(const SimpleBond& c) const{
 
 // MODIFIERS:
 
-// -*- C++ -*-----------------------------------------------------------------
-//
-//  Method:        SimpleBond::bindIn
-//
-//  Author:        Silvio Tosatto 
-//
-//  Date:          11/99
-//
-//  Description:
-//    Sets and in-bond from this to c.
-//
-// ----------------------------------------------------------------------------
+/**
+ * @Description:
+*    Sets and in-bond from this to c.*/
 void SimpleBond::bindIn(SimpleBond& c){
   PRINT_NAME;
   if (isInBond(c))
@@ -154,19 +107,9 @@ void SimpleBond::bindIn(SimpleBond& c){
   c.outBonds.push_back(this);
 }
 
-
-// -*- C++ -*-----------------------------------------------------------------
-//
-//  Method:        SimpleBond::bindOut
-//
-//  Author:        Silvio Tosatto 
-//
-//  Date:          11/99
-//
-//  Description:
-//    Sets and out-bond from this to c.
-//
-// ----------------------------------------------------------------------------
+/**
+ * @Description:
+*    Sets and out-bond from this to c.*/
 void SimpleBond::bindOut(SimpleBond& c){
   PRINT_NAME;
   if (isOutBond(c))
@@ -178,37 +121,18 @@ void SimpleBond::bindOut(SimpleBond& c){
 }
 
 
-// -*- C++ -*-----------------------------------------------------------------
-//
-//  Method:        SimpleBond::unbindIn
-//
-//  Author:        Silvio Tosatto 
-//
-//  Date:          08/99
-//
-//  Description:
-//    Removes an in-bond from this to c.
-//
-// ----------------------------------------------------------------------------
+/**
+ * @Description:
+*    Removes an in-bond from this to c.*/
 void SimpleBond::unbindIn(SimpleBond& c){
   PRINT_NAME;
   pUnbindIn(c);
   c.pUnbindOut(*this);
 }
 
-
-// -*- C++ -*-----------------------------------------------------------------
-//
-//  Method:        SimpleBond::unbindOut
-//
-//  Author:        Silvio Tosatto 
-//
-//  Date:          08/99
-//
-//  Description:
-//    Removes an out-bond from this to c.
-//
-// ----------------------------------------------------------------------------
+/**
+ * @Description:
+*    Removes an out-bond from this to c.*/
 void SimpleBond::unbindOut(SimpleBond& c){
   PRINT_NAME;
   pUnbindOut(c);
@@ -216,18 +140,9 @@ void SimpleBond::unbindOut(SimpleBond& c){
 }
 
 
-// -*- C++ -*-----------------------------------------------------------------
-//
-//  Method:        SimpleBond::pUnbindIn
-//
-//  Author:        Silvio Tosatto 
-//
-//  Date:          08/99
-//
-//  Description:
-//    Private method to find the matching in-bond from c to this to remove.
-//
-// ----------------------------------------------------------------------------
+/**
+ * @Description:
+*    Private method to find the matching in-bond from c to this to remove.*/
 void SimpleBond::pUnbindIn(SimpleBond& c){
   PRINT_NAME;
   vector<SimpleBond*>::iterator iter = find(inBonds.begin(), 
@@ -239,18 +154,10 @@ void SimpleBond::pUnbindIn(SimpleBond& c){
 }
 
 
-// -*- C++ -*-----------------------------------------------------------------
-//
-//  Method:        SimpleBond::pUnbindOut
-//
-//  Author:        Silvio Tosatto 
-//
-//  Date:          08/99
-//
-//  Description:
+/**
+ * @Description:
 //    Private method to find the matching out-bond from c to this to remove.
-//
-// ----------------------------------------------------------------------------
+*/
 void SimpleBond::pUnbindOut(SimpleBond& c){
   PRINT_NAME;
   vector<SimpleBond*>::iterator iter = find(outBonds.begin(), 
@@ -262,20 +169,12 @@ void SimpleBond::pUnbindOut(SimpleBond& c){
 }
 
 
-// -*- C++ -*-----------------------------------------------------------------
-//
-//  Method:        SimpleBond::copy
-//
-//  Author:        Silvio Tosatto 
-//
-//  Date:          08/99
-//
-//  Description:
-//    Copy operator.
-//    Attention: copy() strips orig from its bonds and attaches them to 
-//               the new bond. 
-//
-// ----------------------------------------------------------------------------
+/** 
+ * @Description:
+*    Copy operator.
+*    Attention: copy() strips orig from its bonds and attaches them to 
+*               the new bond. 
+*/
 void SimpleBond::copy(const SimpleBond& orig){
   PRINT_NAME;
   maxIn = orig.maxIn;

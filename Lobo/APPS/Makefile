@@ -31,14 +31,14 @@ SOURCES =
 
 OBJECTS =   
 
-TARGETS = loboLUT LoopTablePlot loboFull ClusterLoopTable  \
-     ClusterRama FullModelTest    LoopModelTest LoopTableTest \
-   loop2torsion scatEdit lobo loboAuto createLoopTestset backboneAnalyzer   
-
-EXECS = loboLUT LoopTablePlot loboFull ClusterLoopTable  \
-     ClusterRama FullModelTest    LoopModelTest LoopTableTest \
-   loop2torsion scatEdit lobo loboAuto createLoopTestset backboneAnalyzer   \
-        loboLUT_all loboAuto_all 
+TARGETS = loboLUT LoopTablePlot  ClusterLoopTable  \
+     ClusterRama     LoopTableTest LoopModelTest FullModelTest lobo  \
+   loop2torsion scatEdit   createLoopTestset backboneAnalyzer  loboFull
+# 
+EXECS = loboLUT LoopTablePlot   ClusterLoopTable  \
+     ClusterRama       LoopTableTest FullModelTest lobo   \
+   loop2torsion scatEdit  createLoopTestset backboneAnalyzer  LoopModelTest  \
+        loboLUT_all  loboFull
 
 LIBRARY = APPSlibLobo.a
 
@@ -50,8 +50,7 @@ compile: all
 
 install: $(LIBRARY) $(TARGETS)
 	mv $(EXECS) $(UPDIR)/bin
-	mv $(LIBRARY) $(UPDIR)/lib
-	cp $(UPDIR)/bin/loboAuto_all ./loboAuto_all
+	mv $(LIBRARY) $(UPDIR)/lib 
 	cp $(UPDIR)/bin/loboLUT_all ./loboLUT_all
 	
 

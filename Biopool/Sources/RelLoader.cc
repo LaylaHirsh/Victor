@@ -33,6 +33,8 @@ using namespace Biopool;
 //
 //  Author:        Silvio Tosatto 
 //
+//  Date:          10/99
+//
 //  Description:
 //    Loads a group in relative format. 
 //

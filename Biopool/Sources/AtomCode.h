@@ -1,9 +1,5 @@
 /*
-* @Class:           -
-* @Base class:      -
-* @Derived classes: - 
-* @Author:          Silvio Tosatto, Matthias Heiler
-* @Project name:    Victor
+ 
 * @Description:     Translator: PDB names to internal one-word-code and 
 *                  vice versa. Provides some simple predicates dealing with 
 *                  one-word-code. 
@@ -37,7 +33,8 @@
     is a good idea. ;-)
 
     The default AtomCode X is moved to the very back of this list.
-*/
+
+    */
 enum AtomCode 
 { 
   // Backbone atoms
@@ -192,81 +189,81 @@ enum AtomCode
     position. 
 
     NOT COMPLETE YET! SPECIAL HANDLING FOR SIDE CHAIN REQUIRED! */
-inline bool follows(AtomCode first, AtomCode second){
-  if (first == ATOM_CODE_SIZE || second == ATOM_CODE_SIZE)    {
+inline
+bool
+follows(AtomCode first, AtomCode second)
+{
+  if (first == ATOM_CODE_SIZE || second == ATOM_CODE_SIZE)
+    {
       return false;
     }
-  else    {
+  else
+    {
       return first < second;
     }
 }
 
-/**
- * @description check if atom is side chain beta atom
- * @param Atom code(AtomCode)
- * @return corresponding flag(bool)
- */
-inline bool isBetaAtom(AtomCode code) {
+///check if atom is side chain beta atom
+inline
+bool 
+isBetaAtom(AtomCode code) 
+{
     return ( code == CB  );
 }
- 
-/**
- * @description check if atom is side chain gamma atom
- * @param Atom code(AtomCode)
- * @return corresponding flag(bool)
- */
-inline bool isGammaAtom(AtomCode code) {
+
+///check if atom is side chain gamma atom
+inline
+bool 
+isGammaAtom(AtomCode code) 
+{
     return (( code == SG  ) || ( code == OG ) || ( code == CG )
 	    || ( code == OG1 ) || ( code == CG1 ) || ( code == CG2 ));
 }
- 
-/**
- * @description  check if atom is side chain delta atom
- * @param Atom code(AtomCode)
- * @return corresponding flag(bool)
- */
-inline bool isDeltaAtom(AtomCode code) {
+
+///check if atom is side chain delta atom
+inline
+bool 
+isDeltaAtom(AtomCode code) 
+{
     return (( code == CD  ) || ( code == OD ) || ( code == SD )
 	    || ( code == CD1 ) || ( code == OD1 ) || ( code == ND1 )
 	    || ( code == CD2 ) || ( code == OD2 ) || ( code == ND2 ));
 }
-/**
- * @description  check if atom is side chain epsilon atom
- * @param Atom code(AtomCode)
- * @return corresponding flag(bool)
- */
- 
-inline bool isEpsilonAtom(AtomCode code) {
+
+///check if atom is side chain epsilon atom
+inline
+bool 
+isEpsilonAtom(AtomCode code) 
+{
     return (( code == CE  ) || ( code == NE ) || ( code == CE1 )
 	    || ( code == OE1 ) || ( code == NE1 ) || ( code == CE2 )
 	    || ( code == OE2 ) || ( code == NE2 ) || ( code = CE3 ));
 }
-/**
- * @description  check if atom is side chain zeta atom
- * @param Atom code(AtomCode)
- * @return corresponding flag(bool)
- */
- 
-inline bool isZetaAtom(AtomCode code) {
+
+///check if atom is side chain zeta atom
+inline
+bool 
+isZetaAtom(AtomCode code) 
+{
     return (( code == CZ  ) || ( code == NZ ) || ( code == CZ2 )
 	    || ( code == CZ3 ));
 }
-/**
- * @description  check if atom is side chain eta atom
- * @param Atom code(AtomCode)
- * @return corresponding flag(bool)
- */ 
-inline bool isEtaAtom(AtomCode code) {
+
+///check if atom is side chain eta atom
+inline
+bool 
+isEtaAtom(AtomCode code) 
+{
     return (( code == OH  ) || ( code == NH1 ) || ( code == NH2 )
 	    || ( code == CH2 ));
 }
-/**
- * @description check if is atom a C atom
- * @param Atom code(AtomCode)
- * @return corresponding flag(bool)
- */
- 
-inline bool isCAtom(AtomCode code) {
+
+/** is atom a C atom ?  */
+// To be verified! 
+inline
+bool 
+isCAtom(AtomCode code) 
+{
   return (( code == C   ) || ( code == CB  ) || ( code == CG  ) 
 	  || ( code == CG1 ) || ( code == CG2 ) || ( code == CD  ) 
 	  || ( code == CD1 ) || ( code == CD2 ) || ( code == CE  ) 
@@ -277,13 +274,13 @@ inline bool isCAtom(AtomCode code) {
 	  || ( code == C5  ) || ( code == C6  ) || ( code == C2  ) 
 	  || ( code == C4  ) || ( code == C5M ) );
 }
-/**
- * @description check if is atom a C atom 
- * @param Atom code(AtomCode)
- * @return corresponding flag(bool)
- */
- 
-inline bool isNAtom(AtomCode code) {
+
+/** is atom a C atom ?  */
+// To be verified! 
+inline
+bool 
+isNAtom(AtomCode code) 
+{
   return ( (code == N9) || (code == N7) || (code == N6)
 	   || (code == N1) || (code == N2) || (code == N3)
 	   || (code == N4) || (code == ND1) || (code == ND2)
@@ -291,12 +288,13 @@ inline bool isNAtom(AtomCode code) {
 	   || (code == NZ) || (code == NH1) || (code == NH2)
 	   || (code == N) );
 }
-/**
- * @description check if is atom a C atom
- * @param Atom code(AtomCode)
- * @return corresponding flag(bool)
- */ 
-inline bool isOAtom(AtomCode code) {
+
+/** is atom a C atom ?  */
+// To be verified! 
+inline
+bool 
+isOAtom(AtomCode code) 
+{
   return ( (code == OXT) || (code == O1P) || (code == O2P)
 	   || (code == O5S) || (code == O4S) || (code == O3S)
 	   || (code == O2S) || (code == O6) || (code == O2)
@@ -305,13 +303,13 @@ inline bool isOAtom(AtomCode code) {
 	   || (code == O) || (code == OG) || (code == OG1)
 	   || (code == OD) );  
 }
-/**
- * @description check if is code specifying an H atom  
- * @param Atom code(AtomCode)
- * @return corresponding flag(bool)
- */
- 
-inline bool isHAtom(AtomCode code) {
+
+/** is code specifying an H atom ? */
+// Updated 2014 by Damiano Piovesan
+inline
+bool 
+isHAtom(AtomCode code) 
+{
   return (  (code == H) || (code == H1) || (code == H2) ||  (code == H3) ||  (code == HA) ||
             (code == HA2) || (code == HA3) || (code == HB) || (code == HB1) ||
             (code == HB2) || (code == HB3) || (code == HD1) || (code == HD2) ||
@@ -326,480 +324,596 @@ inline bool isHAtom(AtomCode code) {
             (code == HZ) || (code == HZ1) || (code == HZ2) || (code == HZ3)
 	 );
 }
+
 /**
- * @description  true, if atom type name is known 
+   true, if atom type name is known 
    magic code X corresponds to an unknown atom code
- * @param Atom code(AtomCode)
- * @return corresponding flag(bool)
- */ 
- 
-inline bool isKnownAtom(AtomCode code){
+*/
+inline
+bool
+isKnownAtom(AtomCode code)
+{
   return !(code == X);
 }
 
-/**
- * @description  verifies if it Is code a non-H atom
- * @param Atom code(AtomCode)
- * @return corresponding flag(bool)
- */
- 
-inline bool isHeavyAtom(AtomCode code){
+
+/** Is code a non-H atom? */
+inline
+bool
+isHeavyAtom(AtomCode code)
+{
   return (isKnownAtom(code))&&(!isHAtom(code));
 }
-/**
- * @description  verifies if its a backbone atom
- * @param Atom code(AtomCode)
- * @return corresponding flag(bool)
- */ 
-inline bool  isBackboneAtom(AtomCode code) {
+
+// To be verified! 
+inline
+bool 
+isBackboneAtom(AtomCode code) 
+{
   return code == C || code == CA || code == N || code == O || code == OXT;
 }
 
-
-/**
- * @description  Translate string into atom code enum. 
- * @param reference to the atom name(string&)
- * @return corresponding atom code(AtomCode)
- */
-inline AtomCode AtomTranslator(const string& name){
+/** Translate string into atom code enum. */
+inline
+AtomCode
+AtomTranslator(const string& name)
+{
   DUMP(name);
-  if (name == "")    {
+  if (name == "")
+    {
       return X;
     }
-  if (name == "X")    {
+  if (name == "X")
+    {
       return X;
     }
-  if (name == "N")    {
+  if (name == "N")
+    {
       return N;
     }
-  else if (name == "CA")    {
+  else if (name == "CA")
+    {
       return CA;
     }
-  else if (name == "C")    {
+  else if (name == "C")
+    {
       return C;
     }
-  else if (name == "O")    {
+  else if (name == "O")
+    {
       return O;
     }
-  else if (name == "CB")    {
+  else if (name == "CB")
+    {
       return CB;
     }
-  else if (name == "SG")    {
+  else if (name == "SG")
+    {
       return SG;
     }
-  else if (name == "OG")    {
+  else if (name == "OG")
+    {
       return OG;
     }
-  else if (name == "CG")    {
+  else if (name == "CG")
+    {
       return CG;
     }
-  else if (name == "OG1")    {
+  else if (name == "OG1")
+    {
       return OG1;
     }
-  else if (name == "CG1")    {
+  else if (name == "CG1")
+    {
       return CG1;
     }
-  else if (name == "CG2")    {
+  else if (name == "CG2")
+    {
       return CG2;
     }
-  else if (name == "CD")    {
+  else if (name == "CD")
+    {
       return CD;
     }
-  else if (name == "OD")    {
+  else if (name == "OD")
+    {
       return OD;
     }
-  else if (name == "SD")    {
+  else if (name == "SD")
+    {
       return SD;
     }
-  else if (name == "CD1")    {
+  else if (name == "CD1")
+    {
       return CD1;
     }
-  else if (name == "OD1")    {
+  else if (name == "OD1")
+    {
       return OD1;
     }
-  else if (name == "ND1")    {
+  else if (name == "ND1")
+    {
       return ND1;
     }
-  else if (name == "CD2")    {
+  else if (name == "CD2")
+    {
       return CD2;
     }
-  else if (name == "OD2")    {
+  else if (name == "OD2")
+    {
       return OD2;
     }
-  else if (name == "ND2")    {
+  else if (name == "ND2")
+    {
       return ND2;
     }
-  else if (name == "CE")    {
+  else if (name == "CE")
+    {
       return CE;
     }
-  else if (name == "NE")    {
+  else if (name == "NE")
+    {
       return NE;
     }
-  else if (name == "CE1")    {
+  else if (name == "CE1")
+    {
       return CE1;
     }
-  else if (name == "OE1")    {
+  else if (name == "OE1")
+    {
       return OE1;
     }
-  else if (name == "NE1")    {
+  else if (name == "NE1")
+    {
       return NE1;
     }
-  else if (name == "CE2")    {
+  else if (name == "CE2")
+    {
       return CE2;
     }
-  else if (name == "OE2")    {
+  else if (name == "OE2")
+    {
       return OE2;
     }
-  else if (name == "NE2")    {
+  else if (name == "NE2")
+    {
       return NE2;
     }
-  else if (name == "CE3")    {
+  else if (name == "CE3")
+    {
       return CE3;
     }
-  else if (name == "CZ")    {
+  else if (name == "CZ")
+    {
       return CZ;
     }
-  else if (name == "NZ")    {
+  else if (name == "NZ")
+    {
       return NZ;
     }
-  else if (name == "CZ2")    {
+  else if (name == "CZ2")
+    {
       return CZ2;
     }
-  else if (name == "CZ3")    {
+  else if (name == "CZ3")
+    {
       return CZ3;
     }
-  else if (name == "OH")    {
+  else if (name == "OH")
+    {
       return OH;
     }
-  else if (name == "NH1")    {
+  else if (name == "NH1")
+    {
       return NH1;
     }
-  else if (name == "NH2")    {
+  else if (name == "NH2")
+    {
       return NH2;
     }
-  else if (name == "CH2")    {
+  else if (name == "CH2")
+    {
       return CH2;
     }
-  else if (name == "OXT")    {
+  else if (name == "OXT")
+    {
       return OXT;
     }
-  else if (name == "P")    {
+  else if (name == "P")
+    {
       return P;
     }
-  else if (name == "O1P")    {
+  else if (name == "O1P")
+    {
       return O1P;
     }
-  else if (name == "O2P")    {
+  else if (name == "O2P")
+    {
       return O2P;
     }
-  else if (name == "O5S")    {
+  else if (name == "O5S")
+    {
       return O5S;
     }
-  else if (name == "C5S")    {
+  else if (name == "C5S")
+    {
       return C5S;
     }
-  else if (name == "C4S")    {
+  else if (name == "C4S")
+    {
       return C4S;
     }
-  else if (name == "O4S")    {
+  else if (name == "O4S")
+    {
       return O4S;
     }
-  else if (name == "C3S")    {
+  else if (name == "C3S")
+    {
       return C3S;
     }
-  else if (name == "O3S")    {
+  else if (name == "O3S")
+    {
       return O3S;
     }
-  else if (name == "C2S")    {
+  else if (name == "C2S")
+    {
       return C2S;
     }
-  else if (name == "O2S")    {
+  else if (name == "O2S")
+    {
       return O2S;
     }
-  else if (name == "C1S")    {
+  else if (name == "C1S")
+    {
       return C1S;
     }
-  else if (name == "N9")    {
+  else if (name == "N9")
+    {
       return N9;
     }
-  else if (name == "C8")    {
+  else if (name == "C8")
+    {
       return C8;
     }
-  else if (name == "N7")    {
+  else if (name == "N7")
+    {
       return N7;
     }
-  else if (name == "C5")    {
+  else if (name == "C5")
+    {
       return C5;
     }
-  else if (name == "C6")    {
+  else if (name == "C6")
+    {
       return C6;
     }
-  else if (name == "O6")    {
+  else if (name == "O6")
+    {
       return O6;
     }
-  else if (name == "N6")    {
+  else if (name == "N6")
+    {
       return N6;
     }
-  else if (name == "N1")    {
+  else if (name == "N1")
+    {
       return N1;
     }
-  else if (name == "C2")    {
+  else if (name == "C2")
+    {
       return C2;
     }
-  else if (name == "O2")    {
+  else if (name == "O2")
+    {
       return O2;
     }
-  else if (name == "N2")    {
+  else if (name == "N2")
+    {
       return N2;
     }
-  else if (name == "N3")    {
+  else if (name == "N3")
+    {
       return N3;
     }
-  else if (name == "C4")    {
+  else if (name == "C4")
+    {
       return C4;
     }
-  else if (name == "O4")    {
+  else if (name == "O4")
+    {
       return O4;
     }
-  else if (name == "N4")    {
+  else if (name == "N4")
+    {
       return N4;
     }
-  else if (name == "C5M")    {
+  else if (name == "C5M")
+    {
       return C5M;
     }
   
   
   // Hydrogens
-  else if ( (name == "H" ) || (name == "HN") )    {
+  else if ( (name == "H" ) || (name == "HN") )
+    {
       return H;
     }
-  else if ( (name == "H1" ) || (name == "HN1") ){ // 1H ???
+  else if ( (name == "H1" ) || (name == "HN1") ) // 1H ???
+    {
       return H1;
     }
-  else if ( (name == "H2" ) || (name == "HN2") ) {// 2H ???
-    
+  else if ( (name == "H2" ) || (name == "HN2") ) // 2H ???
+    {
       return H2;
     }
-  else if ( (name == "H3") || (name == "HN3") ) {// 3H ???
-        return H3;
+  else if ( (name == "H3") || (name == "HN3") ) // 3H ???
+    {
+      return H3;
     }
-  else if (name == "HA")    {
+  else if (name == "HA")
+    {
       return HA;
     }
-   else if ( (name == "HA2") || (name == "1HA") ) {// HA1 conflict old GLY
-    
+   else if ( (name == "HA2") || (name == "1HA") ) // HA1 conflict old GLY
+    {
       return HA2;
     }
-   else if ( (name == "HA3") || (name == "2HA") ){ // HA2 conflict old GLY
+   else if ( (name == "HA3") || (name == "2HA") ) // HA2 conflict old GLY
+    {
       return HA3;
     }
-  else if (name == "HB")      {
+  else if (name == "HB") 
+    {
       return HB;
     }
-  else if (name == "HB1" ) { // 1HB conflict
-   
+  else if (name == "HB1" ) // 1HB conflict
+    {
       return HB1;
     }
-  else if (name == "HB2" ) {// 2HB conflict
-    
+  else if (name == "HB2" ) // 2HB conflict
+    {
       return HB2;
     }
-  else if ( (name == "HB3") || (name == "3HB") ){
-    
+  else if ( (name == "HB3") || (name == "3HB") )
+    {
       return HB3;
     }
-  else if (name == "HD1"){
+  else if (name == "HD1")
+    {
       return HD1;
     }
-  else if ( (name == "HD2") || (name == "1HD") )    {
+  else if ( (name == "HD2") || (name == "1HD") )
+    {
       return HD2;
     }
-  else if ( (name == "HD3") || (name == "2HD") )    {
+  else if ( (name == "HD3") || (name == "2HD") )
+    {
       return HD3;
     }
-  else if ( (name == "HD11") || (name == "1HD1") )    {
+  else if ( (name == "HD11") || (name == "1HD1") )
+    {
       return HD11;
     }
-  else if ( (name == "HD12") || (name == "2HD1") )    {
+  else if ( (name == "HD12") || (name == "2HD1") )
+    {
       return HD12;
     }
-  else if ( (name == "HD13") || (name == "3HD1") )    {
+  else if ( (name == "HD13") || (name == "3HD1") )
+    {
       return HD13;
     }
-  else if ( (name == "HD21") || (name == "1HD2") )    {
+  else if ( (name == "HD21") || (name == "1HD2") )
+    {
       return HD21;
     }
-  else if ( (name == "HD22") || (name == "2HD2") )    {
+  else if ( (name == "HD22") || (name == "2HD2") )
+    {
       return HD22;
     }
-  else if ( (name == "HD23") || (name == "3HD2") )    {
+  else if ( (name == "HD23") || (name == "3HD2") )
+    {
       return HD23;
     }
-  else if (name == "HE") {// 1HE conflict
-    
+  else if (name == "HE") // 1HE conflict
+    {
       return HE;
     }
-  else if (name == "HE1") {// 1HE conflict
-    
+  else if (name == "HE1") // 1HE conflict
+    {
       return HE1;
     }
-  else if (name == "HE2"){ // 1HE, 2HE conflict
-    
+  else if (name == "HE2") // 1HE, 2HE conflict
+    {
       return HE2;
     }
-  else if ( (name == "HE3") || (name == "3HE") ) {// 2HE conflict
-    
+  else if ( (name == "HE3") || (name == "3HE") ) // 2HE conflict
+    {
       return HE3;
     }
-  else if ((name == "HE21") || (name == "1HE2") )  {
-    
+  else if ((name == "HE21") || (name == "1HE2") )  
+    {
       return HE21;
     }
-  else if ((name == "HE22") || (name == "2HE2") ) { 
-    
+  else if ((name == "HE22") || (name == "2HE2") )  
+    {
       return HE22;
     }
-  else if ( name == "HG" )    {
+  else if ( name == "HG" )
+    {
       return HG;
     }
-  else if (name == "HG1")    {
+  else if (name == "HG1")
+    {
       return HG1;
     }
-  else if ( (name == "1HG") || (name == "HG2") )    {
+  else if ( (name == "1HG") || (name == "HG2") )
+    {
       return HG2;
     }
-  else if (name == "HG11") { // 1HG1 conflict
-   
+  else if (name == "HG11") // 1HG1 conflict
+    {
       return HG11;
     }
-  else if (name == "HG12")  { // 2HG1 conflict
-   
+  else if (name == "HG12")  // 2HG1 conflict
+    {
       return HG12;
     }
-  else if ( (name == "3HG1") || (name == "HG13") ) { // 2HG1 conflict
-   
+  else if ( (name == "3HG1") || (name == "HG13") ) // 2HG1 conflict
+    {
       return HG13;
     }
-  else if ( (name == "HG21") || (name == "1HG2") )    {
+  else if ( (name == "HG21") || (name == "1HG2") )
+    {
       return HG21;
     }
-  else if ( (name == "HG22") || (name == "2HG2") )    {
+  else if ( (name == "HG22") || (name == "2HG2") )
+    {
       return HG22;
     }
-  else if ((name == "HG23") || (name == "3HG2") )    {
+  else if ((name == "HG23") || (name == "3HG2") )
+    {
       return HG23;
     }
-  else if ((name == "HG3") || (name == "2HG"))    {
+  else if ((name == "HG3") || (name == "2HG"))
+    {
       return HG3;
     }
-  else if (name == "HH")    {
+  else if (name == "HH")
+    {
       return HH;
     }
-  else if (name == "HH2")    {
+  else if (name == "HH2")
+    {
       return HH2;
     }
-  else if ( (name == "HH11") || (name == "1HH1") )    {
+  else if ( (name == "HH11") || (name == "1HH1") )
+    {
       return HH11;
     }
-  else if ( (name == "HH12") || (name == "2HH1") )    {
+  else if ( (name == "HH12") || (name == "2HH1") )
+    {
       return HH12;
     }
-  else if ( (name == "HH21") || (name == "1HH2") )    {
+  else if ( (name == "HH21") || (name == "1HH2") )
+    {
       return HH21;
     }
-  else if ( (name == "HH22") || (name == "2HH2") )    {
+  else if ( (name == "HH22") || (name == "2HH2") )
+    {
       return HH22;
     }
-  else if (name == "HZ")    {
+  else if (name == "HZ")
+    {
       return HZ;
     }
-  else if ( (name == "HZ1") || (name == "1HZ"))    {
+  else if ( (name == "HZ1") || (name == "1HZ"))
+    {
       return HZ1;
     }
-  else if ( (name == "HZ2") || (name == "2HZ"))    {
+  else if ( (name == "HZ2") || (name == "2HZ"))
+    {
       return HZ2;
     }
-  else if ( (name == "HZ3") || (name == "3HZ"))    {
+  else if ( (name == "HZ3") || (name == "3HZ"))
+    {
       return HZ3;
     }
 
   
   
   // side chain pseudo atoms:
-  else if (name == "XA")    {
+  else if (name == "XA")
+    {
       return XA;
     }
-  else if (name == "XD")    {
+  else if (name == "XD")
+    {
       return XD;
     }
-  else if (name == "XR")    {
+  else if (name == "XR")
+    {
       return XR;
     }
-  else if (name == "XN")    {
+  else if (name == "XN")
+    {
       return XN;
     }
-  else if (name == "XC")    {
+  else if (name == "XC")
+    {
       return XC;
     }
-  else if (name == "XQ")    {
+  else if (name == "XQ")
+    {
       return XQ;
     }
-  else if (name == "XE")    {
+  else if (name == "XE")
+    {
       return XE;
     }
-  else if (name == "XG")    {
+  else if (name == "XG")
+    {
       return XG;
     }
-  else if (name == "XG")    {
+  else if (name == "XG")
+    {
       return XG;
     }
-  else if (name == "XH")    {
+  else if (name == "XH")
+    {
       return XH;
     }
-  else if (name == "XI")    {
+  else if (name == "XI")
+    {
       return XI;
     }
-  else if (name == "XL")    {
+  else if (name == "XL")
+    {
       return XL;
     }
-  else if (name == "XK")    {
+  else if (name == "XK")
+    {
       return XK;
     }
-  else if (name == "XM")    {
+  else if (name == "XM")
+    {
       return XM;
     }
-  else if (name == "XF")    {
+  else if (name == "XF")
+    {
       return XF;
     }
-  else if (name == "XP")    {
+  else if (name == "XP")
+    {
       return XP;
     }
-  else if (name == "XS")    {
+  else if (name == "XS")
+    {
       return XS;
     }
-  else if (name == "XT")    {
+  else if (name == "XT")
+    {
       return XT;
     }
-  else if (name == "XW")    {
+  else if (name == "XW")
+    {
       return XW;
     }
-  else if (name == "XY")    {
+  else if (name == "XY")
+    {
       return XY;
     }
-  else if (name == "XV")    {
+  else if (name == "XV")
+    {
       return XV;
     }
 
   return X; // atom type name is unknown
 }
 
-/**
- * @description  Translate atom code enum into a string. 
- * @param atom code(AtomCode)
- * @return corresponding atom name (string)
- */
-inline string AtomTranslator(AtomCode code) {
-  switch (code)    {
+inline string AtomTranslator(AtomCode code) 
+{
+  switch (code)
+    {
     case X:
       return "X";
     case N:
@@ -1083,21 +1197,14 @@ inline string AtomTranslator(AtomCode code) {
 
 //********
 
-/**
- * @Description Obtain an out stream containing the atom name
- * @param reference to the outstream(ostream&), reference to the atomCode(AtomCode&)
- * @returns reference to the outstream(ostream)
- */
-inline ostream& operator<<(ostream& os, const AtomCode& rval){
+inline ostream& operator<<(ostream& os, const AtomCode& rval)
+{
   os << AtomTranslator(rval);
   return os;
 }
-/**
- * @Description Obtain an in stream containing the atom name
- * @param reference to the instream(istream&), reference to the atomCode(AtomCode&)
- * @returns reference to the instream(istream)
- */
-inline istream& operator>>(istream& is, AtomCode& rval){
+
+inline istream& operator>>(istream& is, AtomCode& rval)
+{
   string name;
   is >> name;
   rval = AtomTranslator(name);
@@ -1107,13 +1214,9 @@ inline istream& operator>>(istream& is, AtomCode& rval){
 //*******
 // imported from Qmean (aa_map.cpp)
 //*******
-/**
- * @description Obtains all the atoms bindings, considering a specific group
- * @param group name(string)
- * @return corresponding identifier(int)
- */
 inline int get_all_atom_bin(string group_name) {
-  switch (group_name[0])    {
+  switch (group_name[0])
+    {
     case 'A':
       if (group_name == "AN") return 1;
       if (group_name == "ACA") return 2;

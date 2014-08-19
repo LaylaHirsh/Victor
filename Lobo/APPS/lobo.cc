@@ -34,7 +34,7 @@ int main(int nArgs, char* argv[]){
   unsigned int pdbIndex1, pdbIndex2, num, num2, maxWrite;
 
   getArg( "i", inputFile, nArgs, argv, "!");
-  getArg( "o", outputFile, nArgs, argv, "test.pdb");
+  getArg( "o", outputFile, nArgs, argv, "target.pdb");
   getArg( "-seq", sequenceFile, nArgs, argv, "null");
   getArg( "-scwrl", scwrlFile, nArgs, argv, "null");
   getArg( "s", pdbIndex1, nArgs, argv, 0);
@@ -127,7 +127,8 @@ int main(int nArgs, char* argv[]){
         }
 
       }
-    
+      else 
+	chainID=allCh[0];    
     
       pl.setPermissive();
       Protein prot;

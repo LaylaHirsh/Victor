@@ -110,6 +110,8 @@ int main(int nArgs, char* argv[]){
         }
 
       }
+      else
+           chainID=allCh[0];
     
     
       pl.setPermissive();
@@ -127,7 +129,7 @@ int main(int nArgs, char* argv[]){
   vector<double> min_counterMIX;
   vector<double> min_counterHELIX; // store single minimum RMSDs
   vector<double> min_counterSTRAND;
-  vector<Spacer> vsp;
+  vector<Spacer > vsp;
   for (unsigned int index1 = 2; index1 < sp->sizeAmino()-(windowSize+2); 
        index1++)    {  // Main iteration loop:
       unsigned int index2 = index1 + windowSize;
@@ -143,7 +145,8 @@ int main(int nArgs, char* argv[]){
       for (unsigned int i = index1+1; i < index2+1; i++)
 	typeVec.push_back(sp->getAmino(i).getType());
       
-      
+      cout <<sp->getAmino(index1).getType()<<" "<< sp->getAmino(index1+1)[N].getCoords().x<< " "<<sp->getAmino(index2).getType()<< " "<<
+	   sp->getAmino(index2+1)[N].getCoords().x<<" "<< index1<< " "<<index2<< " "<<num<<  num2<< " "<<typeVec[0];
       vsp = lm.createLoopModel(sp->getAmino(index1), 
 	   sp->getAmino(index1+1)[N].getCoords(), sp->getAmino(index2), 
 	   sp->getAmino(index2+1)[N].getCoords(), index1, index2, num, 
@@ -162,16 +165,16 @@ int main(int nArgs, char* argv[]){
       if (fullRank)	for (unsigned int i = 0; i < vsp.size(); i++)
 	  {
 	    cout << setw(3) << i << "   ";
-	    lm.calculateRms(*sp, index1, index2, vsp[i], true, 
+	    lm.calculateRms(*sp, index1, index2,  vsp[i], true, 
 			    withOxygen);
 	  }
       else
 	if (vsp.size() > 0)	  {
-	    lm.calculateRms(*sp, index1, index2, vsp[0], true, withOxygen);
+	    lm.calculateRms(*sp, index1, index2,  vsp[0], true, withOxygen);
 	  }     
       
       if (vsp.size() > 0)	{
-	  tmp = lm.calculateRms2(*sp, index1, index2, vsp[0], false, 
+	  tmp = lm.calculateRms2(*sp, index1, index2,  vsp[0], false, 
 				 withOxygen);
 
 	  tmpMin = tmp;
@@ -263,7 +266,7 @@ int main(int nArgs, char* argv[]){
 		ERROR("Could not create file.", exception);
 	      PdbSaver ps(outFile);
 	      
-	      lm.setStructure(*sp2, vsp[i], index1, index2);
+	      lm.setStructure(*sp2,  vsp[i], index1, index2);
 	      sp2->save(ps);
 	    };
 	}

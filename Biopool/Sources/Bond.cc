@@ -1,8 +1,5 @@
 /**
-* @Class:           Bond
-* @Base class:      SimpleBond
-* @Derived classes: - 
-* @Project name:    -
+ 
 * @Description:     Defines chemical and abstract bonds between objects 
 *                  which are compositions of atoms. Eg. 'bond' between 
 *                  two amino acids.
@@ -15,21 +12,20 @@
 #include <Bond.h>
 
 using namespace Biopool;
-/**
- * @description basic constructor*/
+
 Bond::Bond(unsigned int mI, unsigned int mO) : SimpleBond(mI, mO), 
-  inRef(), outRef(){ 
+  inRef(), outRef()
+{ 
   PRINT_NAME; 
   inRef.reserve(mI);
   outRef.reserve(mO);
 }
-/**
- * @description constructor based on another bond reference*/
-Bond::Bond(const Bond& orig) { 
-    PRINT_NAME; copy(orig); }
-/**
- * @description basic destructor*/
-Bond::~Bond(){
+
+Bond::Bond(const Bond& orig) 
+{ PRINT_NAME; copy(orig); }
+
+Bond::~Bond()
+{
   PRINT_NAME;
   while (!inRef.empty())
     inRef.pop_back();
@@ -44,22 +40,20 @@ Bond::~Bond(){
  * @Description  Returns reference to the i-th open in-bond atom.
 *    NB: This is undefined (ie. returns error) for Bond, but is needed for
 *    later structures (AminoAcid, etc.).
- * @param ith position(unsigned int )
- * @return  Atom reference(Atom&)
+ * @param unsigned int 
+ * @return  Atom reference
  */
  
-Atom& Bond::getOpenInBondRef(unsigned int n) {
+Atom&
+Bond::getOpenInBondRef(unsigned int n) 
+{
   ERROR("getOpenInBondRef() undefined for this class.", exception);
   return *inRef[n];
 }
-/**
- * @Description  Returns reference to the i-th open in-bond atom.
-*    NB: This is undefined (ie. returns error) for Bond, but is needed for
-*    later structures (AminoAcid, etc.).
- * @param ith position(unsigned int )
- * @return  Atom reference(Atom&)
- */
-const Atom& Bond::getOpenInBondRef(unsigned int n) const{
+
+const Atom&
+Bond::getOpenInBondRef(unsigned int n) const
+{
   ERROR("getOpenInBondRef() undefined for this class.", exception);
   return *inRef[n];
 }
@@ -68,21 +62,18 @@ const Atom& Bond::getOpenInBondRef(unsigned int n) const{
  * @Description  Returns reference to the i-th open out-bond atom.
 *    NB: This is undefined (ie. returns error) for Bond, but is needed for
 *    later structures (AminoAcid, etc.).
- * @param ith position (unsigned int)
- * @return   atom reference(atom&)
+ * @param unsigned int
+ * @return   atom reference
  */
- Atom& Bond::getOpenOutBondRef(unsigned int n) {
+ Atom& Bond::getOpenOutBondRef(unsigned int n) 
+{
   ERROR("getOpenOutBondRef() undefined for this class.", exception);
   return *outRef[n];
 }
-/**
- * @Description  Returns reference to the i-th open out-bond atom.
-*    NB: This is undefined (ie. returns error) for Bond, but is needed for
-*    later structures (AminoAcid, etc.).
- * @param ith position (unsigned int)
- * @return   atom reference(atom&)
- */
-const Atom& Bond::getOpenOutBondRef(unsigned int n) const{
+
+const Atom&
+Bond::getOpenOutBondRef(unsigned int n) const
+{
   ERROR("getOpenOutBondRef() undefined for this class.", exception);
   return *outRef[n];
 }
@@ -94,8 +85,10 @@ const Atom& Bond::getOpenOutBondRef(unsigned int n) const{
  * @return    void
  */
  
-void Bond::bindIn(Atom& _this, Bond& c, Atom& _other){
-  if (isInBond(c))  { // already bound
+void Bond::bindIn(Atom& _this, Bond& c, Atom& _other)
+{
+  if (isInBond(c))  // already bound
+    {
       _this.bindIn(_other); // check if atoms are already bound as well
       return;
     };
@@ -117,9 +110,11 @@ void Bond::bindIn(Atom& _this, Bond& c, Atom& _other){
  * @param   atom reference, bond reference, atom reference
  * @return  void  
  */ 
- void Bond::bindOut(Atom& _this, Bond& c, Atom& _other){
-  if (isOutBond(c)) { // already bound
-    
+ void
+Bond::bindOut(Atom& _this, Bond& c, Atom& _other)
+{
+  if (isOutBond(c))  // already bound
+    {
       _this.bindOut(_other); // check if atoms are already bound as well
       return;
     };
@@ -141,7 +136,8 @@ void Bond::bindIn(Atom& _this, Bond& c, Atom& _other){
  * @param     bond reference 
  * @return    void
  */
- void Bond::unbindIn(Bond& c){
+ void Bond::unbindIn(Bond& c)
+{
   PRINT_NAME;
   pUnbindIn(c, true);
   c.pUnbindOut(*this);
@@ -153,7 +149,8 @@ void Bond::bindIn(Atom& _this, Bond& c, Atom& _other){
  * @param   bond reference 
  * @return    void
  */ 
- void Bond::unbindOut(Bond& c){
+ void Bond::unbindOut(Bond& c)
+{
   PRINT_NAME;
   pUnbindOut(c, true);
   c.pUnbindIn(*this);
@@ -167,12 +164,14 @@ void Bond::bindIn(Atom& _this, Bond& c, Atom& _other){
  */
 //
 // ----------------------------------------------------------------------------
-void Bond::pUnbindIn(Bond& c, bool unbind){
+void Bond::pUnbindIn(Bond& c, bool unbind)
+{
   PRINT_NAME;
   int index = 0;
 
   for (unsigned int i = 0; i < inBonds.size(); i++)
-    if (*inBonds[i] == dynamic_cast<SimpleBond&>(c))     {
+    if (*inBonds[i] == dynamic_cast<SimpleBond&>(c))
+      {
 	index = i;
 	inBonds.erase(inBonds.begin()+i);
 	break;
@@ -180,12 +179,15 @@ void Bond::pUnbindIn(Bond& c, bool unbind){
   
   if (index == 0)
     DEBUG_MSG("Bond::pUnbindIn(Bond& c): WARNING: Bond not found.");
-  else    {
-      if (unbind)	{
+  else
+    {
+      if (unbind)
+	{
 	  // find bound atom in c
 	  int index2 = 0;
 	  for (unsigned int i = 0; i < c.outRef.size(); i++)
-	    if (c.outRef[i] == inRef[index])	    {
+	    if (c.outRef[i] == inRef[index])
+	    {
 	      index2 = i;
 	      break;
 	    }
@@ -207,7 +209,8 @@ void Bond::pUnbindOut(Bond& c, bool unbind)
   int index = 0;
 
   for (unsigned int i = 0; i < outBonds.size(); i++)
-    if (*outBonds[i] == dynamic_cast<SimpleBond&>(c))      {
+    if (*outBonds[i] == dynamic_cast<SimpleBond&>(c))
+      {
 	index = i;
 	outBonds.erase(outBonds.begin()+i);
 	break;
@@ -215,12 +218,15 @@ void Bond::pUnbindOut(Bond& c, bool unbind)
   
   if (index == 0)
     DEBUG_MSG("Bond::pUnbindOut(Bond& c): WARNING: Bond not found.");
-  else    {
-      if (unbind)	{
+  else
+    {
+      if (unbind)
+	{
 	  // find bound atom in c
 	  int index2 = 0;
 	  for (unsigned int i = 0; i < c.inRef.size(); i++)
-	    if (c.inRef[i] == outRef[index])	    {
+	    if (c.inRef[i] == outRef[index])
+	    {
 	      index2 = i;
 	      break;
 	    }
@@ -236,7 +242,8 @@ void Bond::pUnbindOut(Bond& c, bool unbind)
  * @return    void
  */ 
  void 
-Bond::copy(const Bond& orig){
+Bond::copy(const Bond& orig)
+{
   PRINT_NAME;
   SimpleBond::copy(orig);
 

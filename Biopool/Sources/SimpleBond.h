@@ -1,12 +1,4 @@
-/**
- * @Class:           SimpleBond
- * @Derived classes: Bond, Atom
- * @Author:          Silvio Tosatto
- * @Description:     
-*                  Attention: copy() strips orig from its SimpleBonds and 
-*                  attaches them to the new SimpleBond. 
-* 
-*/
+
 #ifndef _SIMPLEBOND_H_
 #define _SIMPLEBOND_H_
 
@@ -97,259 +89,120 @@ private:
 // PREDICATES:
 
 
-// -*- C++ -*-----------------------------------------------------------------
-//
-//  Description:
-//    Returns type (eg. C-Atom, GLY amino acid, etc.).  
-//
-// ----------------------------------------------------------------------------
+ 
+/**
+ * @Description    Is c bonded to this ?
+ *  */
 inline string SimpleBond::getType() const{ 
   return this->id; 
 }
 
 
-// -*- C++ -*-----------------------------------------------------------------
-//
-//  Method:        SimpleBond::isBond
-//
-//  Author:        Silvio Tosatto 
-//
-//  Date:          08/99
-//
-//  Description:
-//    Is c bonded to this ?
-//
-// ----------------------------------------------------------------------------
+ 
+/**
+ * @Description    Is c bonded to this ?
+ */ 
+ 
 inline bool SimpleBond::isBond(const SimpleBond& c) const{
   return (isInBond(c) || isOutBond(c));
 } 
-
-
-// -*- C++ -*-----------------------------------------------------------------
-//
-//  Method:        SimpleBond::isInBond
-//
-//  Author:        Silvio Tosatto 
-//
-//  Date:          08/99
-//
-//  Description:
-//    Is c in-bonded to this ?
-//
-// ----------------------------------------------------------------------------
+/**
+ * @Description Is c in-bonded to this ?
+ */ 
+ 
 inline bool SimpleBond::isInBond(const SimpleBond& c) const{
   return find(inBonds.begin(), inBonds.end(), &c) != inBonds.end();
 }
-
-
-// -*- C++ -*-----------------------------------------------------------------
-//
-//  Method:        SimpleBond::isOutBond
-//
-//  Author:        Silvio Tosatto 
-//
-//  Date:          08/99
-//
-//  Description:
-//    Is c out-bonded to this ?
-//
-// ----------------------------------------------------------------------------
+/**
+ * @Description  Is c out-bonded to this ?
+ */ 
+ 
 inline bool
 SimpleBond::isOutBond(const SimpleBond& c) const
 {
   return find(outBonds.begin(), outBonds.end(), &c) != outBonds.end();
 }
 
-
-// -*- C++ -*-----------------------------------------------------------------
-//
-//  Method:        SimpleBond::sizeInBond
-//
-//  Author:        Silvio Tosatto 
-//
-//  Date:          08/99
-//
-//  Description:
-//    How many in-bonds are there ?
-//
-// ----------------------------------------------------------------------------
+ 
+/**
+ * @Description    How many in-bonds are there ?
+ */ 
 inline unsigned int  SimpleBond::sizeInBonds() const{
   return inBonds.size();
 }
 
-
-// -*- C++ -*-----------------------------------------------------------------
-//
-//  Method:        SimpleBond::sizeOutBond
-//
-//  Author:        Silvio Tosatto 
-//
-//  Date:          08/99
-//
-//  Description:
-//    How many out-bonds are there ?
-//
-// ----------------------------------------------------------------------------
+/**
+ * @Description   How many out-bonds are there ?
+ */  
 inline unsigned int SimpleBond::sizeOutBonds() const{
   return outBonds.size();
 }
 
-
-// -*- C++ -*-----------------------------------------------------------------
-//
-//  Method:        SimpleBond::getInBond
-//
-//  Author:        Silvio Tosatto 
-//
-//  Date:          08/99
-//
-//  Description:
-//    Returns i-th in-bond.
-//
-// ----------------------------------------------------------------------------
+/**
+ * @Description   Returns i-th in-bond.
+ */  
 inline SimpleBond& SimpleBond::getInBond(unsigned int n) {
   PRECOND(n < sizeInBonds(), exception);
   return *inBonds[n];
 }
 
-
-// -*- C++ -*-----------------------------------------------------------------
-//
-//  Method:        SimpleBond::getOutBond
-//
-//  Author:        Silvio Tosatto 
-//
-//  Date:          08/99
-//
-//  Description:
-//    Returns i-th out-bond.
-//
-// ----------------------------------------------------------------------------
+/**
+ * @Description   Returns i-th out-bond.
+ */ 
 inline SimpleBond& SimpleBond::getOutBond(unsigned int n) {
   PRECOND(n < sizeOutBonds(), exception);
   return *outBonds[n];
 }
 
-
-// -*- C++ -*-----------------------------------------------------------------
-//
-//  Method:        SimpleBond::getInBond
-//
-//  Author:        Silvio Tosatto 
-//
-//  Date:          08/99
-//
-//  Description:
-//    Returns i-th in-bond.
-//
-// ----------------------------------------------------------------------------
+/**
+ * @Description   Returns i-th in-bond.
+ */  
 inline const SimpleBond& SimpleBond::getInBond(unsigned int n) const {
   PRECOND(n < sizeInBonds(), exception);
   return *inBonds[n];
 }
-
-
-// -*- C++ -*-----------------------------------------------------------------
-//
-//  Method:        SimpleBond::getOutBond
-//
-//  Author:        Silvio Tosatto 
-//
-//  Date:          08/99
-//
-//  Description:
-//    Returns i-th out-bond.
-//
-// ----------------------------------------------------------------------------
+/**
+ * @Description   Returns i-th out-bond.
+ */  
 inline const SimpleBond& SimpleBond::getOutBond(unsigned int n) const {
   PRECOND(n < sizeOutBonds(), exception);
   return *outBonds[n];
 }
-
-
-// -*- C++ -*-----------------------------------------------------------------
-//
-//  Method:        SimpleBond::getMaxInBonds
-//
-//  Author:        Silvio Tosatto 
-//
-//  Date:          08/99
-//
-//  Description:
-//    Get maximum of in-bonds.
-//
-// ----------------------------------------------------------------------------
+/**
+ * @Description  Get maximum of in-bonds.
+ */ 
+ 
 inline unsigned int SimpleBond::getMaxInBonds() const{
   return maxIn;
 }
 
-
-// -*- C++ -*-----------------------------------------------------------------
-//
-//  Method:        SimpleBond::getMaxOutBonds
-//
-//  Author:        Silvio Tosatto 
-//
-//  Date:          08/99
-//
-//  Description:
-//    Get maximum of out-bonds.
-//
-// ----------------------------------------------------------------------------
+/**
+ * @Description Get maximum of out-bonds. 
+ */  
 inline unsigned int SimpleBond::getMaxOutBonds() const{
   return maxOut;
 }
 
 // MODIFIERS:
 
-
-// -*- C++ -*-----------------------------------------------------------------
-//
-//  Method:        SimpleBond::setType
-//
-//  Author:        Silvio Tosatto 
-//
-//  Date:          08/99
-//
-//  Description:
-//    Sets type (eg. C atom, GLY amino acid, etc.) of this.
-//
-// ----------------------------------------------------------------------------
+/**
+ * @Description   Sets type (eg. C atom, GLY amino acid, etc.) of this.
+ */  
 inline void SimpleBond::setType(string _name) { 
   id.setName(_name); 
 }
 
-
-// -*- C++ -*-----------------------------------------------------------------
-//
-//  Method:        SimpleBond::setMaxInBonds
-//
-//  Author:        Silvio Tosatto 
-//
-//  Date:          08/99
-//
-//  Description:
-//    Sets maximum of in-bonds.
-//
-// ----------------------------------------------------------------------------
+/**
+ * @Description   Sets maximum of in-bonds.
+ */ 
 inline void SimpleBond::setMaxInBonds(unsigned int m){
   PRECOND((m >= inBonds.size()), exception);
   maxIn = m;
 }
-
-
-// -*- C++ -*-----------------------------------------------------------------
-//
-//  Method:        SimpleBond::setMaxOutBonds
-//
-//  Author:        Silvio Tosatto 
-//
-//  Date:          08/99
-//
-//  Description:
-//    Sets maximum of out-bonds.
-//
-// ----------------------------------------------------------------------------
+/**
+ * @Description  Sets maximum of out-bonds.
+ */ 
+ 
 inline void SimpleBond::setMaxOutBonds(unsigned int m){
   PRECOND((m >= outBonds.size()), exception);
   maxOut = m;

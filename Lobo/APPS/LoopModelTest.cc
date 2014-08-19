@@ -148,7 +148,7 @@ int main(int nArgs, char* argv[]){
   LoopModel lm;  
   lm.setVerbose();
 
-
+   
   double tmpEW = lm.getENDRMS_WEIGHT();
   sGetOption(tmpEW, "-endrmsWeigth", nArgs, argv);
   lm.setENDRMS_WEIGHT(tmpEW);
@@ -292,7 +292,6 @@ int main(int nArgs, char* argv[]){
   // adapt indexes to internal AA count:
   unsigned int index1 = sp->getIndexFromPdbNumber(pdbIndex1); 
   unsigned int index2 = sp->getIndexFromPdbNumber(pdbIndex2);
-
   if ((index1 >= sp->sizeAmino()) || (index2 >= sp->sizeAmino()))
     ERROR("Invalid index encountered.", exception); 
 
@@ -347,7 +346,10 @@ int main(int nArgs, char* argv[]){
     typeVec.push_back(sp->getAmino(i).getType());
 
   vector<Spacer> vsp;
-  vsp = lm.createLoopModel(sp->getAmino(index1), 
+  cout<<sp->getAmino(index1).getType() <<" "<<sp->getAmino(index1+1).getType()<<" ";
+  cout<< sp->getAmino(index2).getType()<<" "<<sp->getAmino(index2+1).getType()<<" "<< index1<<" "<< index2<<" "<< num<<" "<<num2<<" "<<typeVec[0];
+  vsp =
+          lm.createLoopModel(sp->getAmino(index1), 
 	   sp->getAmino(index1+1)[N].getCoords(), sp->getAmino(index2), 
 	   sp->getAmino(index2+1)[N].getCoords(), index1, index2, num, 
 	   num2, typeVec);
@@ -423,7 +425,7 @@ int main(int nArgs, char* argv[]){
 
   cout << "-----------------------------------------\n";
 
-  return 0;
+ return 0;
 }
 
 

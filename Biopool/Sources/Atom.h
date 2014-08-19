@@ -2,6 +2,7 @@
 * @Class:              Atom
 * @Base Class(es):     SimpleBond
 * @Containing:         Identity, AtomCode
+* @Author:             Silvio Tosatto
 * @Project Name:       Victor
 */
 
@@ -24,7 +25,8 @@ class Group;
 * 
 * @Description Includes methods that allow to get and set type, bind, unbind,coordinates , code,  etc.NB Angles are in degrees.
  **/
-class Atom : public SimpleBond{
+class Atom : public SimpleBond
+{
 public: 
 
 // CONSTRUCTORS/DESTRUCTOR:
@@ -116,215 +118,180 @@ private:
 // -----------------x-------------------x-------------------x-----------------
 
 // PREDICATES:
-/**
- * @Description returns the corresponding atom type
- */
-inline AtomCode Atom::getCode() const{ 
+
+inline AtomCode
+Atom::getCode() const
+{ 
   return type; 
 }
-/**
- * @Description returns the corresponding atom id
 
- */
-inline unsigned long Atom::getNumber() const { 
+inline unsigned long
+Atom::getNumber() const 
+{ 
   return id; 
 }
-/**
- * @Description returns the corresponding coordinates of the atom in a vector
- */
-inline vgVector3<double> Atom::getCoords(){
+
+inline vgVector3<double> 
+Atom::getCoords()
+{
   if (!inSync())
     sync();
   return coords;
 }
 
-/**
- * @Description returns a reference to the group of the atom
- */
-inline Group& Atom::getSuperior(){
+
+inline Group& 
+Atom::getSuperior()
+{
   PRECOND( superior != NULL, exception);
   return *superior;
 }
-/**
- * @Description returns a reference to the group of the atom
- */
-inline const Group& Atom::getSuperior() const{
+ 
+inline const Group& 
+Atom::getSuperior() const
+{
   PRECOND( superior != NULL, exception);
   return *superior;
 }
- /**
- * @Description velifies if the atom is part of a group
- */
-inline bool Atom::hasSuperior(){
+ 
+inline bool 
+Atom::hasSuperior()
+{
   return (superior != NULL);
 }
-/**
- * @Description returns the translation vector of the atom
- */
-inline vgVector3<double> Atom::getTrans() const{
+
+inline vgVector3<double> 
+Atom::getTrans() const
+{
   return trans;
 }
-/**
- * @Description return the rotation matrix
- */
-inline vgMatrix3<double> Atom::getRot() const{
+
+inline vgMatrix3<double> 
+Atom::getRot() const
+{
   return rot;
 }
-/**
- * @Description verifies if its syncronized
- */
-inline bool Atom::inSync(){
+
+inline bool 
+Atom::inSync()
+{
   return (!modified); 
 }
 
 // MODIFIERS:
- /**
- * @Description connects the atom to the given structure
- * @param reference to the previous atom(Atom&), flag to set the translation vector(bool)
- * @return changes are made internally(void)
- */
-inline void  Atom::bindStructure(Atom& before, bool connect){
+ 
+inline void  
+Atom::bindStructure(Atom& before, bool connect)
+{
   if (connect)
     this->setTrans( this->getCoords() - before.getCoords() );
   this->bindIn(before);
 }
-/**
- * @Description bind in the atom 
- * @param reference to a simple bond(SimpleBond&)
- * @return changes are made internally(void)
- */
-inline void Atom::bindIn(SimpleBond& c){
+
+inline void 
+Atom::bindIn(SimpleBond& c)
+{
   SimpleBond::bindIn(c);
   setModified();  
 }
-/**
- * @Description bind out the atom 
- * @param reference to a simple bond(SimpleBond&)
- * @return changes are made internally(void)
- */
-inline void Atom::bindOut(SimpleBond& c){
+
+inline void 
+Atom::bindOut(SimpleBond& c)
+{
   SimpleBond::bindOut(c);
   setModified();  
 }
-/**
- * @Description unbind in the atom 
- * @param reference to a simple bond(SimpleBond&)
- * @return changes are made internally(void)
- */
-inline void Atom::unbindIn(SimpleBond& c){
+
+inline void 
+Atom::unbindIn(SimpleBond& c)
+{
   SimpleBond::unbindIn(c);
   setModified();  
 }
-/**
- * @Description unbind out the atom 
- * @param reference to a simple bond(SimpleBond&)
- * @return changes are made internally(void)
- */
-inline void Atom::unbindOut(SimpleBond& c){
+
+inline void 
+Atom::unbindOut(SimpleBond& c)
+{
   SimpleBond::unbindOut(c);
   setModified();  
 }
-/**
- * @Description sets the atom type and id
- * @param atom name(string)
- * @return changes are made internally(void)
- */
-inline void Atom::setType(string _name) { 
+
+inline void 
+Atom::setType(string _name) 
+{ 
   id.setName(_name); 
   type = AtomTranslator(_name); 
 }
-/**
- * @Description sets the atom type and id
- * @param atom type(AtomCode)
- * @return changes are made internally(void)
- */
-inline void Atom::setCode(AtomCode ac) { 
+
+inline void 
+Atom::setCode(AtomCode ac) 
+{ 
   type = ac;
   id.setName(AtomTranslator(ac)); 
 }
-/**
- * @Description sets the atom   id
- * @param atom number(unsigned long)
- * @return changes are made internally(void)
- */
-inline void Atom::setNumber(unsigned long _number) { 
+
+inline void 
+Atom::setNumber(unsigned long _number) 
+{ 
   id.setNumber(_number); 
 }
-/**
- * @Description sets the atom translation vector
- * @param a vector containing the values for the translation vector(vgVector3<double>)
- * @return changes are made internally(void)
- */
-inline void Atom::setTrans(vgVector3<double> t){
+
+inline void 
+Atom::setTrans(vgVector3<double> t)
+{
   trans = t;
   setModified();
 }
-/**
- * @Description add some values to the translation vector
- * @param values to be add(vgVector3<double> )
- * @return changes are made internally(void)
- */
-inline void Atom::addTrans(vgVector3<double> t){
+
+inline void 
+Atom::addTrans(vgVector3<double> t)
+{
   trans += t;
   setModified();
 }
-/**
- * @Description defines the rotation matrix
- * @param values to set(vgMatrix3<double>)
- * @return changes are made internally(void)
- */
-inline void Atom::setRot(vgMatrix3<double> r){
+
+inline void 
+Atom::setRot(vgMatrix3<double> r)
+{
   rot = r;
   setModified();
 }
-/**
- * @Description add some values to the rotation matrix
- * @param values to be add(vgMatrix3<double> )
- * @return changes are made internally(void)
- */
-inline void Atom::addRot(vgMatrix3<double> r){
+
+inline void 
+Atom::addRot(vgMatrix3<double> r)
+{
   rot = r * rot;
   setModified();
 }
-/**
- * @Description obtains the inBond 
- * @param index (unsigned)
- * @return reference to the atom(const Atom&)
- */
-inline const Atom& Atom::getInBond(unsigned n) const{
+
+inline const Atom& 
+Atom::getInBond(unsigned n) const
+{
   return dynamic_cast<const Atom&>(SimpleBond::getInBond(n));
 }
-/**
- * @Description obtains the inBond 
- * @param index (unsigned)
- * @return reference to the atom( Atom&)
- */
-inline Atom& Atom::getInBond(unsigned n){
+
+inline Atom& 
+Atom::getInBond(unsigned n)
+{
   return dynamic_cast<Atom&>(SimpleBond::getInBond(n));
 }
-/**
- * @Description obtains the outBond 
- * @param index (unsigned)
- * @return reference to the atom(const Atom&)
- */
-inline const Atom& Atom::getOutBond(unsigned n) const{
+
+inline const Atom& 
+Atom::getOutBond(unsigned n) const
+{
   return dynamic_cast<const Atom&>(SimpleBond::getOutBond(n));
 }
-/**
- * @Description obtains the outBond 
- * @param index (unsigned)
- * @return reference to the atom( Atom&)
- */
-inline Atom& Atom::getOutBond(unsigned n){
+
+inline Atom& 
+Atom::getOutBond(unsigned n)
+{
   return dynamic_cast<Atom&>(SimpleBond::getOutBond(n));
 }
 
-/**
- * @Description sets the group for the atom
- * @param pointer to the group(group*)
- * @return changes are made internally(void)
- */
-inline void Atom::setSuperior(Group* gr){
+
+inline void 
+Atom::setSuperior(Group* gr)
+{
   this->superior = gr;
 }
 

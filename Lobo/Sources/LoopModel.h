@@ -1,21 +1,32 @@
-/** 
-  * 
- * @Class:              LoopModel 
-  *      
-*/
+// -*- C++ -*------------------------------------------------------------------
+//  $Id: LoopModel.h,v 1.14.2.1 2012-03-01 16:41:45 biocomp Exp $
+//
+//  Class:              LoopModel
+//
+//  Base Class(es):     -
+//
+//  Derived Class(es):  -
+//
+//  Containing:         LoopTable
+//
+//  Author:             Silvio Tosatto
+//
+//  Project Name:       Nazgul
+//
+//  Date:               06/00
+//
+//  Reviewed By:        -
+//
+//  Description:
+//
+// ---------------------------------------------------------------------------
 
 #ifndef _LOOPMODEL_H_
 #define _LOOPMODEL_H_
 
 // Includes:
-#include <stdio.h>
-#include <stdlib.h>
-#include <string>
-#include <vector3.h>
-#include <matrix3.h>
-#include <RamachandranData.h>
-#include <LoopTableEntry.h>
 #include <Debug.h>
+#include <string.h>
 #include <LoopTable.h>
 #include <VectorTransformation.h>
 #include <Spacer.h>
@@ -31,11 +42,9 @@
 namespace Biopool {
   
 // Global constants, typedefs, etc. (to avoid):
- /** @brief  This class implements methods that allow to create a model and also evaluate it.
- * 
- * @Description  Includes methods to calculate the RMS, propensity, etc.
- * */
-class LoopModel{
+
+class LoopModel
+{
 public: 
 
 // CONSTRUCTORS/DESTRUCTOR:
@@ -44,25 +53,25 @@ public:
   virtual ~LoopModel();
 
 // PREDICATES:
-  std::vector<string>& getTableFileName();
+  vector<string>& getTableFileName();
 
-  std::vector<int> vdwValues(Spacer& sp, unsigned int index1, 
-			unsigned int index2, std::vector<Spacer>& solVec);
+  vector<int> vdwValues(Spacer& sp, unsigned int index1, 
+			unsigned int index2, vector<Spacer>& solVec);
 
   void rankRawScore(Spacer& sp, unsigned int index1, unsigned int index2,
-	       std::vector<Spacer>& solVec, unsigned int maxWrite = 9999);
+	       vector<Spacer>& solVec, unsigned int maxWrite = 9999);
 
   void doScatterPlot(Spacer& sp, unsigned int index1, unsigned int index2,
-	       std::vector<Spacer>& solVec, bool withOxygen = true);
+	       vector<Spacer>& solVec, bool withOxygen = true);
 
   void refineModel(Spacer& sp, unsigned int index1, unsigned int index2,
-	       std::vector<Spacer>& solVec);
+	       vector<Spacer>& solVec);
 
   void optimizeModel(Spacer& sp, unsigned int index1, unsigned int index2,
-	       std::vector<Spacer>& solVec, bool verbose = true);
+	       vector<Spacer>& solVec, bool verbose = true);
 
-  std::vector<double> rankRms2(Spacer& sp, unsigned int index1, unsigned int index2,
-			  std::vector<Spacer>& solVec);
+  vector<double> rankRms2(Spacer& sp, unsigned int index1, unsigned int index2,
+			  vector<Spacer>& solVec);
 
   double calcOrigEnergy(const Spacer& sp, unsigned int index1, 
 			unsigned int index2);
@@ -77,8 +86,8 @@ public:
   void setStructure(Spacer& sp, Spacer& sp2, unsigned int index1, 
 		    unsigned int index2);
 
-  std::vector<int> consistencyValues(Spacer& sp, unsigned int index1, 
-				unsigned int index2, std::vector<Spacer>& solVec);
+  vector<int> consistencyValues(Spacer& sp, unsigned int index1, 
+				unsigned int index2, vector<Spacer>& solVec);
 
   double calculatePropensities(Spacer& sp); 
   double calculatePropensities(const Spacer& sp, unsigned int index1, 
@@ -101,15 +110,15 @@ public:
   void setQuiet() { pVerbose = 0; pPlot = false; }
   void setScatterPlot(ostream* _sc) { pPlot = true; pScatter = _sc; }
 
-  void releaseTables(unsigned int index = 0); 
+  void releaseTables(unsigned int index = 0); // releases memory occupied by loop tables
   void setTableFileName(string basename, string ending = ".lt");
-  void setTableFileName(std::vector<string>& _tFN);
-  std::vector<Spacer> createLoopModel(const AminoAcid& start,
+  void setTableFileName(vector<string>& _tFN);
+  vector<Spacer>   createLoopModel(const AminoAcid& start,
 		   const vgVector3<double>& startN, const AminoAcid& end, 
 		   const vgVector3<double>& endNAtom, unsigned int indexS, 
 		   unsigned int indexE, unsigned int numLoops, 
-		   unsigned int numLoops2, std::vector<string> typeVec);
-  void clusterLoops(std::vector<Spacer>& vsp);
+		   unsigned int numLoops2, vector<string> typeVec);
+  void clusterLoops(vector<Spacer>& vsp);
   
   void copy(const LoopModel& orig);
 
@@ -156,29 +165,32 @@ public:
 //ATTRIBUTES
   static unsigned int MAX_SPAN;
     static unsigned int MAX_ITER_SOL;
-    //static string TABLE_PARAM_FILE; This causes a runtime error on 64 bit OS, use the path variable to avoid it if you are using a 64 bit SO
+    static string TABLE_PARAM_FILE;
 
-    static Biopool::SolvationPotential solv;
-    static Biopool::RapdfPotential rapdf;
-    static Biopool::PhiPsi tor;
+    static SolvationPotential solv;
+    static RapdfPotential rapdf;
+    static PhiPsi tor;
 
 protected:
 // HELPERS: 
+  // converts the input coords to something processable:
   void convertCoords(AminoAcid start, vgVector3<float> startN, AminoAcid end,
 		     vgVector3<float> endN, LoopTableEntry& startEntry, 
 		     LoopTableEntry& endEntry, VectorTransformation& vt, 
 		     unsigned int nAmino);
+  // tries to find a ring closure between to locations:
   bool ringClosureBase(const LoopTableEntry&, const LoopTableEntry&, 
 		       unsigned int, unsigned int, double, 
 		       VectorTransformation vt, unsigned int num, 
 		       unsigned int depth, 
-		       std::vector<vgVector3<float> >& partialSolution);
+		       vector<vgVector3<float> >& partialSolution);
   bool ringClosure(const LoopTableEntry&, const LoopTableEntry&, unsigned int,
 		   unsigned int, double, VectorTransformation vt,
-		   std::vector<vgVector3<float> >& partialSolution, 
+		   vector<vgVector3<float> >& partialSolution, 
 		   unsigned int currentSelection = 1);
-  std::vector<Spacer> calculateLoop(const vgVector3<float>& startN, 
-			       unsigned int length, std::vector<string> typeVec);
+  // claculates the actual coordinates for output:
+  vector<Spacer> calculateLoop(const vgVector3<float>& startN, 
+			       unsigned int length, vector<string> typeVec);
 
 private:
 // HELPERS: 
@@ -206,15 +218,15 @@ private:
   bool pInter, pPlot;
   unsigned int pVerbose;
   ostream* pScatter;
-  std::vector<LoopTable*> table;
-  std::vector<string> tableFileName; 
-  std::vector<vgVector3<float> > solution;
+  vector<LoopTable*> table;
+  vector<string> tableFileName; 
+  vector<vgVector3<float> > solution;
   static unsigned int MAX_CHAIN_LENGTH;
   static double BOND_ANGLE_N_TO_CB;
   static double BOND_ANGLE_CB_TO_C;
   static double BOND_LENGTH_CA_TO_CB;
 
-  std::vector<double> ENDRMS_WEIGTH;
+  vector<double> ENDRMS_WEIGTH;
 
 };
 
@@ -224,47 +236,37 @@ private:
 
 
 // PREDICATES:
-/**
- * @Description  Obtains the names of the files that contains the tables
- * @param   none
- * @return  reference to the table file name(vector<string>&)
- */
-inline std::vector<string>& LoopModel::getTableFileName(){
+
+inline vector<string>& 
+LoopModel::getTableFileName()
+{
   return tableFileName;
 }
 
 // MODIFIERS:
-/**
- * @Description  sets the names of the file that contains the table, based on the chain possible lengths, creates a file name for each one.
- * @param   the base name for the file (string) , the ending part for the name(string)
- *  * @return   changes the object internally (void)  
- */
-inline void LoopModel::setTableFileName(string basename, string ending){
 
+inline void 
+LoopModel::setTableFileName(string basename, string ending)
+{
+//  PRECOND( _tFN.size() == MAX_CHAIN_LENGTH, exception);
   tableFileName.clear();
   for (unsigned int i = 0; i < MAX_CHAIN_LENGTH; i++)
     tableFileName.push_back(basename + (uitos(i)).c_str() + ending);
 }
-/**
- * @Description  sets the names of the files, based on the given names as parameter.
- * @param   a vector containing the file names to load
- * @return   changes the object internally (void)  
- */
-inline void LoopModel::setTableFileName(std::vector<string>& _tFN){
+
+inline void 
+LoopModel::setTableFileName(vector<string>& _tFN)
+{
   PRECOND( _tFN.size() == MAX_CHAIN_LENGTH, exception);
   tableFileName.clear();
   for (unsigned int i = 0; i < _tFN.size(); i++)
     tableFileName.push_back(_tFN[i]);
 }
-/**
- * @Description  Adds a rotation, considering a portion of amino acids
- * @param  reference of inicial amino acid and reference for the corresponding coords(AminoAcid&, vgVector3<float>&), 
- *         final reference amino acid and the corresponding coords(AminoAcid&, vgVector3<float>&),
- *         reference for the rotation matrix(const vgMatrix3<float>& )
- * @return   changes the object internally (void)  
- */
-inline void LoopModel::pAddRot(AminoAcid& start, vgVector3<float>& startN, 
-AminoAcid& end, vgVector3<float>& endN, const vgMatrix3<float>& rotMat){
+
+inline void 
+LoopModel::pAddRot(AminoAcid& start, vgVector3<float>& startN, 
+AminoAcid& end, vgVector3<float>& endN, const vgMatrix3<float>& rotMat)
+{
   for (unsigned int i = 0; i < start.sizeBackbone(); i++)
     start[i].setCoords( convert(rotMat) * start[i].getCoords() );
   startN  =  rotMat * startN;
@@ -272,15 +274,11 @@ AminoAcid& end, vgVector3<float>& endN, const vgMatrix3<float>& rotMat){
     end[i].setCoords( convert(rotMat) * end[i].getCoords() );
   endN  =  rotMat * endN;
 }
-/**
- * @Description  Adds a translation, considering a portion of amino acids
- * @param  reference of inicial amino acid and reference for the corresponding coords(AminoAcid&, vgVector3<float>&), 
- *         final reference amino acid and the corresponding coords(AminoAcid&, vgVector3<float>&),
- *         reference for the translation matrix(const vgMatrix3<float>& )
- * @return   changes the object internally (void)  
- */
-inline void LoopModel::pAddTrans(AminoAcid& start, vgVector3<float>& startN, 
-AminoAcid& end, vgVector3<float>& endN, const vgVector3<float>& trans){
+
+inline void 
+LoopModel::pAddTrans(AminoAcid& start, vgVector3<float>& startN, 
+AminoAcid& end, vgVector3<float>& endN, const vgVector3<float>& trans)
+{
   for (unsigned int i = 0; i < start.sizeBackbone(); i++)
     start[i].setCoords( start[i].getCoords() - convert(trans));
   for (unsigned int i = 0; i < end.sizeBackbone(); i++)
@@ -288,12 +286,10 @@ AminoAcid& end, vgVector3<float>& endN, const vgVector3<float>& trans){
   startN -= trans;
   endN -= trans;
 }
-/**
- * @Description  Calculates the root mean square for the loop
- * @param   the two spacers' references, both should have the same length 
- * @return  corresponding value ( double)
- */
-inline double LoopModel::pCalculateLoopRms(Spacer& sp1, Spacer& sp2){
+
+inline double 
+LoopModel::pCalculateLoopRms(Spacer& sp1, Spacer& sp2)
+{
   if (sp1.sizeAmino() != sp2.sizeAmino())
     ERROR("Arguments do not match.", exception);
   
@@ -305,13 +301,11 @@ inline double LoopModel::pCalculateLoopRms(Spacer& sp1, Spacer& sp2){
 
   return sqrt(res / (3 * sp1.sizeAmino()));
 }
-/**
- * @Description  Obtains the conserved sequence in the SCWRL format 
- * @param   reference to the spacer that contains all the sequence(Spacer&), the starting and ending index for the conserved part(unsigned int, unsigned int)
- * @return  conserved sequence ( string )
- */
-inline string LoopModel::getSCWRLConservedSequence(const Spacer& sp, unsigned int index1, 
-unsigned int index2){
+
+inline string 
+LoopModel::getSCWRLConservedSequence(const Spacer& sp, unsigned int index1, 
+unsigned int index2)
+{
   string tmp = "";
 
   for (unsigned int i = 0; i <= index1; i++)

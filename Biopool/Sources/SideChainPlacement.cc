@@ -1,7 +1,6 @@
 /**
  * @Class:             SideChainPlacement
  * @Base Class(es):    EnergyCalculator
- * @Author:            Andreas Kindler
  * @Description: 
 *    is Singleton(unique), which calculate the energy of Atom based chemical 
 *    Structures. 

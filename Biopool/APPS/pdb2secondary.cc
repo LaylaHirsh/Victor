@@ -24,7 +24,8 @@ int main(int nArgs, char* argv[])
       sShowHelp();
       return 1;
     };
-
+   vector<char> allCh;
+  string  chainID="!";
   string inputFile;
   getArg( "i", inputFile, nArgs, argv, "!");
 
@@ -34,19 +35,50 @@ int main(int nArgs, char* argv[])
       return -1;
     }
 
-  Spacer sp;
+  Spacer *sp;
   ifstream inFile(inputFile.c_str());
   if (!inFile)
     ERROR("File not found.", exception);
 
   PdbLoader il(inFile);
   il.setNoHAtoms();
-  sp.load(il); 
-
+ // sp.load(il); 
+  allCh = il.getAllChains(); 
+  for (unsigned int i = 0; i < allCh.size(); i++)
+    cout << "\t," << allCh[i] << ",";
+  cout << "\n";
+ 
+  /*check on validity of chain: 
+  if user select a chain then check validity
+   else select first valid one by default*/
+  if (chainID != "!")  {
+      bool validChain=false;
+      for (unsigned int i = 0; i < allCh.size(); i++ ) {
+        if (allCh[i]==chainID[0])  {
+          il.setChain(chainID[0]);
+          cout << "Loading chain " << chainID << "\n";
+          validChain=true;
+          break;
+        }
+      }
+      if (!validChain) {
+         cout << "Chain " << chainID << " is not available\n";
+        return -1;
+      }
+      
+  }
+  else{ chainID[0]=allCh[0];
+        cout << "Using chain " << chainID <<"\n";
+  }
+  Protein prot;
+  prot.load(il);
+  sp=prot.getSpacer(chainID[0]);
+  
+  allCh = il.getAllChains(); 
   cout << ">" << inputFile << "\n";
-  for (unsigned int i = 0; i < sp.sizeAmino(); i++)
+  for (unsigned int i = 0; i < sp->sizeAmino(); i++)
     {
-      switch (sp.getAmino(i).getState()) 
+      switch (sp->getAmino(i).getState()) 
 	{
 	case HELIX:
 	  cout << "H"; break;

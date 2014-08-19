@@ -1,6 +1,5 @@
 /**
 * @Class:           Identity
-* @Author:          Matthias Heiler, extended by: Silvio Tosatto
 * @Project name:    Victor
 * @Description:     Implements object id.
  */

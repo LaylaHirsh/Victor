@@ -1,12 +1,4 @@
-/** 
-  * 
- * @Class:             Group
- * @Author:            Silvio Tosatto
- * @Project Name:      Victor
-  * 
- * @Description:
-  *     This class implements a simple chemical group.
-*/
+ 
 // Includes:
 #include <Group.h>
 #include <IoTools.h>

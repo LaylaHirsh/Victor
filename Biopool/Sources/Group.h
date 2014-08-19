@@ -1,11 +1,4 @@
-/**  
- * @Class:              Group
- * @Base Class(es):     Identity, Bond
- * @Containing:         Atom
- * @Author:             Silvio Tosatto
- * @Project Name:       Victor
-  */
-
+ 
 #ifndef _GROUP_H_
 #define _GROUP_H_
 
